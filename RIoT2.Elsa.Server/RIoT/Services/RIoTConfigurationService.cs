@@ -1,6 +1,4 @@
-﻿using RIoT2.Core.Utils;
-using RIoT2.Elsa.Server.RIoT.Services.Interfaces;
-using ReportTemplate = RIoT2.Elsa.Server.RIoT.Models.ReportTemplate;
+﻿using RIoT2.Elsa.Server.RIoT.Services.Interfaces;
 
 namespace RIoT2.Elsa.Server.RIoT.Services
 {

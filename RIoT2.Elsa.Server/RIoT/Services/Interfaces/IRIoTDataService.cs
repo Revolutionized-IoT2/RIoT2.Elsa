@@ -1,9 +1,11 @@
-﻿using RIoT2.Elsa.Server.RIoT.Models;
+﻿using RIoT2.Core.Models;
 
 namespace RIoT2.Elsa.Server.RIoT.Services.Interfaces
 {
     public interface IRIoTDataService
     {
         List<ReportTemplate> GetReportTemplates();
+        List<CommandTemplate> GetCommandTemplates();
+        void ExecuteCommand(Command command);
     }
 }

@@ -19,6 +19,10 @@
     <PackageReference Include="RIoT2.Core" Version="0.1.15" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="RIoT\Models\" />
+  </ItemGroup>
+
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>

@@ -1,6 +1,4 @@
-﻿using RIoT2.Elsa.Server.RIoT.Models;
-
-namespace RIoT2.Elsa.Server.RIoT.Services.Interfaces
+﻿namespace RIoT2.Elsa.Server.RIoT.Services.Interfaces
 {
     public interface IRIoTConfigurationService
     {
