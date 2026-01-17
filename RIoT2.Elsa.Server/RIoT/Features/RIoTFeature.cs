@@ -5,6 +5,10 @@ using Elsa.Http.UIHints;
 using Elsa.Studio.Workflows.UI.Contracts;
 using Elsa.Workflows;
 using Microsoft.Extensions.DependencyInjection;
+using RIoT2.Core.Interfaces.Services;
+using RIoT2.Core.Services;
+using RIoT2.Elsa.Server.RIoT.Services;
+using RIoT2.Elsa.Server.RIoT.Services.Interfaces;
 using RIoT2.Elsa.Server.RIoT.UIHints;
 
 namespace RIoT2.Elsa.Server.RIoT.Features
@@ -27,10 +31,11 @@ namespace RIoT2.Elsa.Server.RIoT.Features
             Module.AddActivitiesFrom<RIoTFeature>();
 
             // Register custom services
+            Services.AddSingleton<IRIoTConfigurationService, RIoTConfigurationService>();
+            //Services.AddSingleton<IWorkflowMqttService, WorkflowMqttService>();
+            //Services.AddHostedService(p => p.GetRequiredService<MqttBackgroundService>());
             Services.AddScoped<IPropertyUIHandler, RIoTTriggerOptionsProvider>();
-  
-            //Services.AddSingleton<IReportGenerator, ReportGenerator>();
-            //Services.AddScoped<IReportRepository, ReportRepository>();
+            Services.AddSingleton<IRIoTDataService, RIoTDataService>();
 
             // Configure workflow options
             /*
@@ -47,8 +52,11 @@ namespace RIoT2.Elsa.Server.RIoT.Features
         /// </summary>
         public override void Apply()
         {
-            // Optional: Perform actions that depend on other features
-            // being fully configured
+            Services.Configure<WebApplicationOptions>(options =>
+            {
+                // Note: Actual endpoint mapping happens in Program.cs
+                // This is just for documentation purposes
+            });
         }
     }
 }

@@ -2,18 +2,18 @@ using Elsa.EntityFrameworkCore.Extensions;
 using Elsa.EntityFrameworkCore.Modules.Management;
 using Elsa.EntityFrameworkCore.Modules.Runtime;
 using Elsa.Extensions;
-using Elsa.Studio.Workflows.Extensions;
 using Microsoft.AspNetCore.Mvc;
-using RIoT2.Elsa.Server.RIoT.UIHints;
-
+using RIoT2.Elsa.Server.RIoT.Endpoints;
 using RIoT2.Elsa.Server.RIoT.Extensions;
-using Elsa.Studio.Workflows.UI.Contracts;
+using RIoT2.Elsa.Server.RIoT.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.UseStaticWebAssets();
 
 var services = builder.Services;
 var configuration = builder.Configuration;
+
+services.AddLogging(logging => logging.AddConsole());
 
 services
     .AddElsa(elsa => elsa
@@ -34,7 +34,6 @@ services
         .UseRIoT() // <-- Register the RIoT feature 
         .AddActivitiesFrom<Program>()
         .AddWorkflowsFrom<Program>()
-
     );
 
 
@@ -49,9 +48,22 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
+/*
+// Register application shutdown logic to stop the RIoT MQTT service gracefully
+IHostApplicationLifetime lifetime = app.Lifetime;
+lifetime.ApplicationStopping.Register(onShutdown);
+
+void onShutdown() //this code is called when the application stops
+{
+    var mqttService = app.Services.GetRequiredService<MqttBackgroundService>();
+    mqttService.StopAsync(default).Wait();
+}*/
+// End of application shutdown logic
+
+//app.UseHttpsRedirection();
 app.MapStaticAssets();
 app.UseRouting();
+app.MapRIoTEndpoints(); // <-- Map the RIoT endpoints
 app.UseCors();
 app.UseStaticFiles();
 app.UseAuthentication();
