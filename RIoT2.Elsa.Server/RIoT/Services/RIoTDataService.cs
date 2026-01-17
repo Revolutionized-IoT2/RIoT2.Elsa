@@ -13,7 +13,7 @@ namespace RIoT2.Elsa.Server.RIoT.Services
             _configuration = configurationService;
         }
 
-        public void ExecuteCommand(Core.Models.Command command)
+        public void ExecuteCommand(string id, object data)
         {
             throw new NotImplementedException();
         }
@@ -23,7 +23,15 @@ namespace RIoT2.Elsa.Server.RIoT.Services
             throw new NotImplementedException();
         }
 
+        public object GetReport(string reportId)
+        {
+            return new
+            {
+                Value = 42
+            }; 
+        }
 
+        /*
         public List<ReportTemplate> GetReportTemplates()
         {
             if (!String.IsNullOrEmpty(_configuration.OrchestratorBaseUrl))
@@ -38,9 +46,9 @@ namespace RIoT2.Elsa.Server.RIoT.Services
                 }
             }
             return new List<ReportTemplate>();
-        }
+        }*/
 
-        /* For testing
+        //For testing
         public List<ReportTemplate> GetReportTemplates()
         {
             return new List<ReportTemplate>()
@@ -62,6 +70,6 @@ namespace RIoT2.Elsa.Server.RIoT.Services
                     MaintainHistory = true,
                 },
             };
-        }*/
+        }
     }
 }

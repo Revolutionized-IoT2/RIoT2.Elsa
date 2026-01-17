@@ -1,20 +1,22 @@
-﻿using Elsa.Api.Client.Shared.UIHints.DropDown;
+﻿using Acornima.Ast;
+using Elsa.Api.Client.Shared.UIHints.DropDown;
 using Elsa.Extensions;
 using Elsa.Workflows;
 using Elsa.Workflows.Attributes;
 using Elsa.Workflows.Models;
 using Elsa.Workflows.UIHints;
 using RIoT2.Elsa.Server.RIoT.UIHints;
+using System.Text;
 
 namespace RIoT2.Elsa.Server.RIoT.Activities
 {
     [Activity(
-        Namespace = "RIoT2.Elsa.Server.RIoT.Activities",
+        Namespace = "RIoT2",
         Category = "RIoT",
         Description = "Triggers a workflow when a specified RIoT event occurs.",
         DisplayName = "RIoT Trigger",
         Kind = ActivityKind.Trigger)]
-    public class RIoTTrigger : Trigger
+    public class RIoTTrigger : Trigger, IStartNode
     {
         [Input(
         Description = "Choose RIoT trigger from the list",
@@ -23,7 +25,7 @@ namespace RIoT2.Elsa.Server.RIoT.Activities
         )]
         public Input<SelectListItem> SelectedTrigger { get; set; } = null!;
 
-        [Output(Description = "Event data received")]
+        [Output(Description = "Received trigger data")]
         public Output<object> EventData { get; set; } = default!;
 
         protected override async ValueTask ExecuteAsync(ActivityExecutionContext context)

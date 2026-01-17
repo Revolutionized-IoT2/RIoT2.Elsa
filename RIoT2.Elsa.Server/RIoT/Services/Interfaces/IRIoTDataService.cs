@@ -6,6 +6,7 @@ namespace RIoT2.Elsa.Server.RIoT.Services.Interfaces
     {
         List<ReportTemplate> GetReportTemplates();
         List<CommandTemplate> GetCommandTemplates();
-        void ExecuteCommand(Command command);
+        object GetReport(string reportId);
+        void ExecuteCommand(string id, object data);
     }
 }
