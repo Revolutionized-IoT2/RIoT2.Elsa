@@ -5,13 +5,14 @@
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
-      "applicationUrl": "http://localhost:5001",
+      "applicationUrl": "http://192.168.0.122:5001",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "RIOT2_ORCHESTRATOR_ID": "E27E898E-82DB-42C9-AC58-E93413CE7266",
+        "RIOT2_WORKFLOW_ID": "E27E898E-82DB-42C9-AC58-E93413CE7266",
         "RIOT2_MQTT_IP": "192.168.0.30",
         "RIOT2_MQTT_USERNAME": "edge",
-        "RIOT2_MQTT_PASSWORD": "password"
+        "RIOT2_MQTT_PASSWORD": "password",
+        "RIOT2_WORKFLOW_BASEURL": "http://192.168.0.122:5001"
       }
     },
     "https": {
@@ -21,10 +22,11 @@
       "applicationUrl": "https://localhost:5002;http://localhost:5001",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "RIOT2_ORCHESTRATOR_ID": "E27E898E-82DB-42C9-AC58-E93413CE7266",
+        "RIOT2_WORKFLOW_ID": "E27E898E-82DB-42C9-AC58-E93413CE7266",
         "RIOT2_MQTT_IP": "192.168.0.30",
         "RIOT2_MQTT_USERNAME": "edge",
-        "RIOT2_MQTT_PASSWORD": "password"
+        "RIOT2_MQTT_PASSWORD": "password",
+        "RIOT2_WORKFLOW_BASEURL": "http://192.1680.122:5001"
       }
     }
   }

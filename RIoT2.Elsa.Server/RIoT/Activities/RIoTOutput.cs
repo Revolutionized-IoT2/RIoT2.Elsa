@@ -44,7 +44,7 @@ namespace RIoT2.Elsa.Server.RIoT.Activities
             if (!String.IsNullOrEmpty(commandId))
             {
                 object data = CommandData.Get(context) ?? new { };
-                _riot.ExecuteCommand(commandId, data);
+                _riot.ExecuteCommandAsync(commandId, data);
             }
         }
     }

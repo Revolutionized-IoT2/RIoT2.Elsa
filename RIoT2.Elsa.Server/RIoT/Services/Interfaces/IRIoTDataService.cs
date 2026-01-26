@@ -1,12 +1,15 @@
-﻿using RIoT2.Core.Models;
+﻿using RIoT2.Elsa.Server.RIoT.Models;
 
 namespace RIoT2.Elsa.Server.RIoT.Services.Interfaces
 {
     public interface IRIoTDataService
     {
-        List<ReportTemplate> GetReportTemplates();
-        List<CommandTemplate> GetCommandTemplates();
-        object GetReport(string reportId);
-        void ExecuteCommand(string id, object data);
+        Task<List<Template>> GetReportTemplatesAsync();
+        Task<List<Template>> GetCommandTemplatesAsync();
+        Task<List<Template>> GetVariableTemplatesAsync();
+        Task<object> GetReportValueAsync(string reportId);
+        Task<object> GetCommandValueAsync(string commandId);
+        Task<object> GetVariableValueAsync(string variableId);
+        Task ExecuteCommandAsync(string id, object data);
     }
 }

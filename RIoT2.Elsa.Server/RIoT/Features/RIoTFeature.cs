@@ -1,12 +1,7 @@
 ﻿using Elsa.Extensions;
 using Elsa.Features.Abstractions;
 using Elsa.Features.Services;
-using Elsa.Http.UIHints;
-using Elsa.Studio.Workflows.UI.Contracts;
 using Elsa.Workflows;
-using Microsoft.Extensions.DependencyInjection;
-using RIoT2.Core.Interfaces.Services;
-using RIoT2.Core.Services;
 using RIoT2.Elsa.Server.RIoT.Services;
 using RIoT2.Elsa.Server.RIoT.Services.Interfaces;
 using RIoT2.Elsa.Server.RIoT.UIHints;
@@ -32,10 +27,10 @@ namespace RIoT2.Elsa.Server.RIoT.Features
 
             // Register custom services
             Services.AddSingleton<IRIoTConfigurationService, RIoTConfigurationService>();
-            //Services.AddSingleton<IWorkflowMqttService, WorkflowMqttService>();
-            //Services.AddHostedService(p => p.GetRequiredService<MqttBackgroundService>());
+            Services.AddSingleton<IWorkflowMqttService, WorkflowMqttService>();
             Services.AddScoped<IPropertyUIHandler, RIoTTriggerOptionsProvider>();
             Services.AddSingleton<IRIoTDataService, RIoTDataService>();
+            Services.AddHostedService<MqttBackgroundService>();
 
             // Configure workflow options
             /*

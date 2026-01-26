@@ -1,5 +1,6 @@
 ﻿using RIoT2.Core.Models;
 using RIoT2.Core.Utils;
+using RIoT2.Elsa.Server.RIoT.Models;
 using RIoT2.Elsa.Server.RIoT.Services.Interfaces;
 
 namespace RIoT2.Elsa.Server.RIoT.Services
@@ -13,63 +14,130 @@ namespace RIoT2.Elsa.Server.RIoT.Services
             _configuration = configurationService;
         }
 
-        public void ExecuteCommand(string id, object data)
+        public async Task ExecuteCommandAsync(string id, object data)
         {
-            throw new NotImplementedException();
-        }
-
-        public List<CommandTemplate> GetCommandTemplates()
-        {
-            throw new NotImplementedException();
-        }
-
-        public object GetReport(string reportId)
-        {
-            return new
+            Command c = new Command
             {
-                Value = 42
-            }; 
+                Id = id,
+                Value = new ValueModel(data)
+            };
+
+            await Web.PostAsync(_configuration.OrchestratorBaseUrl + $"/api/command/execute", Json.Serialize(c));
         }
 
-        /*
-        public List<ReportTemplate> GetReportTemplates()
+        public async Task<List<Template>> GetCommandTemplatesAsync()
         {
             if (!String.IsNullOrEmpty(_configuration.OrchestratorBaseUrl))
             {
-                var url = _configuration.OrchestratorBaseUrl + $"/api/nodes/report/templates";
-                var response = Web.GetAsync(url).Result;
+                var url = _configuration.OrchestratorBaseUrl + $"/api/command/templates";
+                var response = await Web.GetAsync(url);
 
                 if (response.IsSuccessStatusCode)
                 {
-                    var json = response.Content.ReadAsStringAsync().Result;
-                    return Json.Deserialize<List<ReportTemplate>>(json);
+                    var json = await response.Content.ReadAsStringAsync();
+                    return Json.Deserialize<List<Template>>(json);
                 }
             }
-            return new List<ReportTemplate>();
-        }*/
+            return [];
+        }
 
-        //For testing
-        public List<ReportTemplate> GetReportTemplates()
+        /// <summary>
+        /// This method retrieves the current value of a report by its ID.
+        /// </summary>
+        /// <param name="reportId"></param>
+        /// <returns></returns>
+        public async Task<object> GetReportValueAsync(string reportId)
         {
-            return new List<ReportTemplate>()
+            var r = new Report
             {
-                new ReportTemplate
-                {
-                    Name = "XXX Report",
-                    Id = "report-789",
-                    Type = Core.ValueType.Text,
-                    Address = "sensor/temperature",
-                    MaintainHistory = true,
-                },
-                new ReportTemplate
-                {
-                    Name = "Temperature",
-                    Id = "report-333",
-                    Type = Core.ValueType.Text,
-                    Address = "sensor/temperature",
-                    MaintainHistory = true,
-                },
+                Id = reportId
             };
+
+            if (!String.IsNullOrEmpty(_configuration.OrchestratorBaseUrl))
+            {
+                var url = _configuration.OrchestratorBaseUrl + $"/api/report/{reportId}/value";
+                var response = await Web.GetAsync(url);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    r = Json.Deserialize<Report>(json);
+                }
+            }
+            return r.Value.GetAsObject();
+        }
+
+        /// <summary>
+        /// This method retrieves the current value of a command by its ID.
+        /// </summary>
+        /// <param name="commandId"></param>
+        /// <returns></returns>
+        public async Task<object> GetCommandValueAsync(string commandId)
+        {
+            var c = new Command { Id = commandId };
+
+            if (!String.IsNullOrEmpty(_configuration.OrchestratorBaseUrl))
+            {
+                var url = _configuration.OrchestratorBaseUrl + $"/api/command/{commandId}/value";
+                var response = await Web.GetAsync(url);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    c = Json.Deserialize<Command>(json);
+                }
+            }
+            return c.Value.GetAsObject();
+        }
+
+        public async Task<List<Template>> GetReportTemplatesAsync()
+        {
+            if (!String.IsNullOrEmpty(_configuration.OrchestratorBaseUrl))
+            {
+                var url = _configuration.OrchestratorBaseUrl + $"/api/report/templates";
+                var response = await Web.GetAsync(url);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    return Json.Deserialize<List<Template>>(json);
+                }
+            }
+            return [];
+        }
+
+        public async Task<List<Template>> GetVariableTemplatesAsync()
+        {
+            if (!String.IsNullOrEmpty(_configuration.OrchestratorBaseUrl))
+            {
+                var url = _configuration.OrchestratorBaseUrl + $"/api/variable/templates";
+                var response = await Web.GetAsync(url);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    return Json.Deserialize<List<Template>>(json);
+                }
+            }
+            return [];
+        }
+
+        public async Task<object> GetVariableValueAsync(string variableId)
+        {
+            var v = new Variable { Id = variableId };
+
+            if (!String.IsNullOrEmpty(_configuration.OrchestratorBaseUrl))
+            {
+                var url = _configuration.OrchestratorBaseUrl + $"/api/variable/{variableId}/value";
+                var response = await Web.GetAsync(url);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    v = Json.Deserialize<Variable>(json);
+                }
+            }
+            return v.Value;
         }
     }
 }

@@ -40,7 +40,7 @@ namespace RIoT2.Elsa.Server.RIoT.Activities
 
             if (!String.IsNullOrEmpty(reportId)) 
             {
-                object data = _riot.GetReport(reportId);
+                object data = _riot.GetReportValueAsync(reportId).Result;
                 DataObject.Set(context, data);
             }
         }

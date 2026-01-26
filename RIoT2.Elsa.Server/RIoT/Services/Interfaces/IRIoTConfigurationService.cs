@@ -7,5 +7,6 @@
         string MQTT_Password { get;  }
         string MQTT_Username { get; }
         string MQTT_ServerUrl { get; }
+        public string? WorkflowBaseUrl { get; set; }
     }
 }

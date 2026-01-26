@@ -17,8 +17,16 @@ namespace RIoT2.Elsa.Server.RIoT.UIHints
             try
             {
                 var selectListItems = new List<SelectListItem>();
-                foreach (var template in _rIoT.GetReportTemplates())
-                    selectListItems.Add(new SelectListItem(template.Name ?? "-Unnamed-", template.Id ?? "-NoId-"));
+                var reportTemplates = _rIoT.GetReportTemplatesAsync();
+                var variableTemplates = _rIoT.GetVariableTemplatesAsync();
+                
+                Task.WaitAll(reportTemplates, variableTemplates);
+
+                foreach (var t in reportTemplates.Result)
+                    selectListItems.Add(new SelectListItem(t.Name ?? "-unknown report-", t.Id ?? "--"));
+
+                foreach (var t in variableTemplates.Result)
+                    selectListItems.Add(new SelectListItem(t.Name ?? "-unknown variable-", t.Id ?? "--"));
 
                 return new(selectListItems);
             }

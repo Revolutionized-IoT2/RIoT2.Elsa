@@ -40,7 +40,9 @@ namespace RIoT2.Elsa.Server.RIoT.Services
             _client.Publish(_nodeOnlineTopic, Json.SerializeIgnoreNulls(new NodeOnlineMessage()
             {
                 IsOnline = true,
-                Name = "Workflow"
+                Name = "Elsa3",
+                NodeType = NodeType.Workflow,
+                NodeBaseUrl = _configuration.WorkflowBaseUrl
             }));
 
         }
@@ -51,6 +53,7 @@ namespace RIoT2.Elsa.Server.RIoT.Services
             {
                 await _client.Start(_orchestratorOnlineTopic, _configureTopic); //We're only interested in orchestrator online messages. Reports will be handled by the API Callbacks
                 _client.MessageReceived += _client_MessageReceived;
+                sendWorkflowOnlineCommand();
             }
             catch (Exception x)
             {

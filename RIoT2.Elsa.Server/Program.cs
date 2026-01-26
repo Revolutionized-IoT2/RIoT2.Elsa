@@ -3,6 +3,7 @@ using Elsa.EntityFrameworkCore.Modules.Management;
 using Elsa.EntityFrameworkCore.Modules.Runtime;
 using Elsa.Extensions;
 using Microsoft.AspNetCore.Mvc;
+using RIoT2.Core.Interfaces.Services;
 using RIoT2.Elsa.Server.RIoT.Endpoints;
 using RIoT2.Elsa.Server.RIoT.Extensions;
 using RIoT2.Elsa.Server.RIoT.Services;
@@ -31,7 +32,7 @@ services
         .UseCSharp()
         .UseHttp(http => http.ConfigureHttpOptions = options => configuration.GetSection("Http").Bind(options))
         .UseWorkflowsApi()
-        .UseRIoT() // <-- Register the RIoT feature 
+        .UseRIoT() // <-- Register the RIoT feature
         .AddActivitiesFrom<Program>()
         .AddWorkflowsFrom<Program>()
     );
@@ -48,7 +49,6 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-/*
 // Register application shutdown logic to stop the RIoT MQTT service gracefully
 IHostApplicationLifetime lifetime = app.Lifetime;
 lifetime.ApplicationStopping.Register(onShutdown);
@@ -57,7 +57,7 @@ void onShutdown() //this code is called when the application stops
 {
     var mqttService = app.Services.GetRequiredService<MqttBackgroundService>();
     mqttService.StopAsync(default).Wait();
-}*/
+}
 // End of application shutdown logic
 
 //app.UseHttpsRedirection();
