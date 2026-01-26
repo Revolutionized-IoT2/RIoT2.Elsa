@@ -12,7 +12,7 @@
         "RIOT2_MQTT_IP": "192.168.0.30",
         "RIOT2_MQTT_USERNAME": "edge",
         "RIOT2_MQTT_PASSWORD": "password",
-        "RIOT2_WORKFLOW_BASEURL": "http://192.168.0.122:5001"
+        "RIOT2_WORKFLOW_URL": "http://192.168.0.122:5001"
       }
     },
     "https": {
@@ -26,7 +26,7 @@
         "RIOT2_MQTT_IP": "192.168.0.30",
         "RIOT2_MQTT_USERNAME": "edge",
         "RIOT2_MQTT_PASSWORD": "password",
-        "RIOT2_WORKFLOW_BASEURL": "http://192.1680.122:5001"
+        "RIOT2_WORKFLOW_URL": "http://192.1680.122:5001"
       }
     }
   }

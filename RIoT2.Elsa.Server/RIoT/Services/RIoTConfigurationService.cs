@@ -17,7 +17,7 @@ namespace RIoT2.Elsa.Server.RIoT.Services
             MQTT_Password = Environment.GetEnvironmentVariable("RIOT2_MQTT_PASSWORD") ?? "";
             MQTT_ServerUrl = Environment.GetEnvironmentVariable("RIOT2_MQTT_IP") ?? "";
             MQTT_Username = Environment.GetEnvironmentVariable("RIOT2_MQTT_USERNAME") ?? "";
-            WorkflowBaseUrl = Environment.GetEnvironmentVariable("RIOT2_WORKFLOW_BASEURL") ?? "";
+            WorkflowBaseUrl = Environment.GetEnvironmentVariable("RIOT2_WORKFLOW_URL") ?? "";
         }
     }
 }
