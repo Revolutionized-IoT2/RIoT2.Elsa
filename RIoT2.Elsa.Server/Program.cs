@@ -3,10 +3,8 @@ using Elsa.EntityFrameworkCore.Modules.Management;
 using Elsa.EntityFrameworkCore.Modules.Runtime;
 using Elsa.Extensions;
 using Microsoft.AspNetCore.Mvc;
-using RIoT2.Core.Interfaces.Services;
 using RIoT2.Elsa.Server.RIoT.Endpoints;
 using RIoT2.Elsa.Server.RIoT.Extensions;
-using RIoT2.Elsa.Server.RIoT.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.UseStaticWebAssets();
@@ -15,7 +13,7 @@ var services = builder.Services;
 var configuration = builder.Configuration;
 
 services.AddLogging(logging => logging.AddConsole());
-
+var sqLiteConnectionString = "Data Source=Data/elsa.sqlite.db;Cache=Shared;";
 services
     .AddElsa(elsa => elsa
         .UseIdentity(identity =>
@@ -24,8 +22,8 @@ services
             identity.UseAdminUserProvider();
         })
         .UseDefaultAuthentication()
-        .UseWorkflowManagement(management => management.UseEntityFrameworkCore(ef => ef.UseSqlite()))
-        .UseWorkflowRuntime(runtime => runtime.UseEntityFrameworkCore(ef => ef.UseSqlite()))
+        .UseWorkflowManagement(management => management.UseEntityFrameworkCore(ef => ef.UseSqlite(sqLiteConnectionString)))
+        .UseWorkflowRuntime(runtime => runtime.UseEntityFrameworkCore(ef => ef.UseSqlite(sqLiteConnectionString)))
         .UseScheduling()
         .UseJavaScript()
         .UseLiquid()
@@ -48,17 +46,6 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Error");
     app.UseHsts();
 }
-
-// Register application shutdown logic to stop the RIoT MQTT service gracefully
-IHostApplicationLifetime lifetime = app.Lifetime;
-lifetime.ApplicationStopping.Register(onShutdown);
-
-void onShutdown() //this code is called when the application stops
-{
-    var mqttService = app.Services.GetRequiredService<MqttBackgroundService>();
-    mqttService.StopAsync(default).Wait();
-}
-// End of application shutdown logic
 
 //app.UseHttpsRedirection();
 app.MapStaticAssets();
