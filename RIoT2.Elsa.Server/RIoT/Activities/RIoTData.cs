@@ -34,8 +34,8 @@ namespace RIoT2.Elsa.Server.RIoT.Activities
             if (!String.IsNullOrEmpty(reportId)) 
             {
                 //TODO get variables and CMD's also
-                var _riot = context.GetRequiredService<IRIoTDataService>();
-                object data = _riot.GetReportValueAsync(reportId).Result;
+                var riot = context.GetRequiredService<IRIoTDataService>();
+                object data = riot.GetReportValueAsync(reportId).Result;
                 DataObject.Set(context, data);
             }
         }
