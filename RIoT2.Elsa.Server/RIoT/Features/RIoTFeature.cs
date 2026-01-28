@@ -29,6 +29,7 @@ namespace RIoT2.Elsa.Server.RIoT.Features
             Services.AddSingleton<IRIoTConfigurationService, RIoTConfigurationService>();
             Services.AddSingleton<IWorkflowMqttService, WorkflowMqttService>();
             Services.AddScoped<IPropertyUIHandler, RIoTTriggerOptionsProvider>();
+            Services.AddScoped<IPropertyUIHandler, RIoTDataOptionsProvider>();
             Services.AddSingleton<IRIoTDataService, RIoTDataService>();
             Services.AddHostedService<MqttBackgroundService>();
 

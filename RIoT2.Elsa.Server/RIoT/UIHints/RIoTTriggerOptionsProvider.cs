@@ -3,13 +3,13 @@ using Elsa.Workflows;
 using Elsa.Workflows.UIHints;
 using Elsa.Workflows.UIHints.Dropdown;
 using RIoT2.Elsa.Server.RIoT.Services.Interfaces;
-using RIoT2.Elsa.Server.RIoT.UIHints;
 using System.Reflection;
 
 namespace RIoT2.Elsa.Server.RIoT.UIHints
 {
     public class RIoTTriggerOptionsProvider(IRIoTDataService rIoTData) : DropDownOptionsProviderBase
     {
+        //TODO create custom UI element to show more details about each template
         private readonly IRIoTDataService _rIoT = rIoTData;
         /// <inheritdoc />
         protected override ValueTask<ICollection<SelectListItem>> GetItemsAsync(PropertyInfo propertyInfo, object? context, CancellationToken cancellationToken)
@@ -22,11 +22,19 @@ namespace RIoT2.Elsa.Server.RIoT.UIHints
                 
                 Task.WaitAll(reportTemplates, variableTemplates);
 
-                foreach (var t in reportTemplates.Result)
-                    selectListItems.Add(new SelectListItem(t.Name ?? "-unknown report-", t.Id ?? "--"));
+                foreach (var t in reportTemplates.Result) 
+                {
+                    var name = $"{t.Name} [{t.Node}:{t.Device}] [{t.Type}]";
+                    selectListItems.Add(new SelectListItem(name, t.Id ?? "--"));
+                }
 
-                foreach (var t in variableTemplates.Result)
-                    selectListItems.Add(new SelectListItem(t.Name ?? "-unknown variable-", t.Id ?? "--"));
+
+                foreach (var t in variableTemplates.Result) 
+                {
+                    var name = $"{t.Name} [{t.Node}:{t.Device}] [{t.Type}]";
+                    selectListItems.Add(new SelectListItem(name, t.Id ?? "--"));
+                }
+                    
 
                 return new(selectListItems);
             }

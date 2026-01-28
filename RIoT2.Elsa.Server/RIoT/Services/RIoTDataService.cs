@@ -48,7 +48,7 @@ namespace RIoT2.Elsa.Server.RIoT.Services
         /// <returns></returns>
         public async Task<object> GetReportValueAsync(string reportId)
         {
-            var r = new Report
+            var r = new ElsaReport
             {
                 Id = reportId
             };
@@ -61,10 +61,10 @@ namespace RIoT2.Elsa.Server.RIoT.Services
                 if (response.IsSuccessStatusCode)
                 {
                     var json = await response.Content.ReadAsStringAsync();
-                    r = Json.Deserialize<Report>(json);
+                    r = Json.Deserialize<ElsaReport>(json);
                 }
             }
-            return r.Value.GetAsObject();
+            return r;
         }
 
         /// <summary>
@@ -87,7 +87,7 @@ namespace RIoT2.Elsa.Server.RIoT.Services
                     c = Json.Deserialize<Command>(json);
                 }
             }
-            return c.Value.GetAsObject();
+            return c;
         }
 
         public async Task<List<Template>> GetReportTemplatesAsync()
@@ -137,7 +137,7 @@ namespace RIoT2.Elsa.Server.RIoT.Services
                     v = Json.Deserialize<Variable>(json);
                 }
             }
-            return v.Value;
+            return v;
         }
     }
 }
