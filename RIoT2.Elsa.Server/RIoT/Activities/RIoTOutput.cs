@@ -20,7 +20,7 @@ namespace RIoT2.Elsa.Server.RIoT.Activities
     {
         [Input(
             Description = "Choose RIoT Command to Execute",
-            UIHint = InputUIHints.DropDown,
+            UIHint = "riot-output-selector",
             UIHandler = typeof(RIoTOutputOptionsProvider)
             )]
         public Input<SelectListItem> Command { get; set; } = null!;

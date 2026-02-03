@@ -45,6 +45,7 @@ builder.Services.UseElsaIdentity();
 //Not until 3.7
 //builder.Services.AddScoped<IActivityPickerComponentProvider, TreeviewActivityPickerComponentProvider>();
 builder.Services.AddScoped<IActivityDisplaySettingsProvider, AddRIoTActivityDisplaySettingsProvider>();
+builder.Services.AddScoped<IUIHintHandler, RIoTOutputSelectorUIHintHandler>(); 
 
 
 // Build the application.
