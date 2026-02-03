@@ -15,6 +15,11 @@
                     HelperTextOnFocus="_helperTextOnFocus"
                     Clearable="_clearable"
                     Modal="_modal" />
+<MudItem xs="12" md="12">
+    <MudText Class="mb-n3" Typo="Typo.body2">
+        <MudChip T="string" Label="true" Size="Size.Small">@(_value ?? "Not selected")</MudChip>
+    </MudText>
+</MudItem>
 
 @code {
     [Parameter]
