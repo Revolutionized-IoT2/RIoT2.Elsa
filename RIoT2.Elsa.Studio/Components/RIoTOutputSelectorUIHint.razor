@@ -1,31 +1,65 @@
 ﻿@inherits StudioComponentBase
 
+@using RIoT2.Elsa.Studio.Models
+@using RIoT2.Elsa.Studio.UIProviders
+@using System.Globalization
+@using global::Elsa.Api.Client.Resources.ActivityDescriptors.Models
+@using global::Elsa.Api.Client.Shared.UIHints.CodeEditor
 @using global::Elsa.Studio.Components
 @using global::Elsa.Studio.Models
+@using System.Text.Json;
 
-<MudAutocomplete @bind-Value="_value" 
-                    SearchFunc="@Search"
-                    Label="@_label"
-                    Margin="@_margin"
-                    Dense="@_dense"
-                    Disabled="@_disabled"
-                    ReadOnly="@_readonly"
-                    Placeholder="@(_placeholder ? "Placeholder" : null)"
-                    HelperText="@(_helperText ? "Helper Text" : null)"
-                    HelperTextOnFocus="_helperTextOnFocus"
-                    Clearable="_clearable"
-                    Modal="_modal" />
-<MudItem xs="12" md="12">
-    <MudText Class="mb-n3" Typo="Typo.body2">
-        <MudChip T="string" Label="true" Size="Size.Small">@(_value ?? "Not selected")</MudChip>
-    </MudText>
-</MudItem>
+<MudAutocomplete T="RIoTTemplateItem"
+                ValueChanged="OutputValueChanged"
+                Value="@_selectedTemplate"
+                ToStringFunc="@(e => string.IsNullOrEmpty(e.Name) ? "unknown" : e.Name)"
+                SearchFunc="@Search"
+                Label="@_label"
+                Margin="@_margin"
+                Dense="@_dense"
+                Disabled="@_disabled"
+                ReadOnly="@_readonly"
+                Placeholder="@(_placeholder ? "Placeholder" : null)"
+                HelperText="@(_helperText ? "Helper Text" : null)"
+                HelperTextOnFocus="_helperTextOnFocus"
+                Clearable="_clearable"
+                Modal="_modal" />
+
+@if (_selectedTemplate !=  default)
+{ 
+    <MudItem xs="12" md="12">
+        <MudChip T="string" Color="Color.Primary" Label="true" Size="Size.Small">@_selectedTemplate.Node</MudChip>
+        <MudChip T="string" Color="Color.Secondary" Label="true" Size="Size.Small">@_selectedTemplate.Device</MudChip>
+        <MudChip T="string" Color="Color.Tertiary" Label="true" Size="Size.Small">@_selectedTemplate.Type.ToString()</MudChip>
+    </MudItem>
+
+    @switch (_selectedTemplate?.Type)
+    {
+        case Core.ValueType.Boolean:
+            <p>TODO - bool</p>
+            break;
+        case Core.ValueType.Text:
+            <p>TODO - text</p>
+            break;
+        case Core.ValueType.Number:
+            <p>TODO - number</p>
+            break;
+        case Core.ValueType.Entity:
+            <RIoTEditor @ref="editor" EditorContext="@EditorContext" Value="@_editorValue" />
+            break;
+        case Core.ValueType.TextArray:
+            <p>TODO - text arr</p>
+            break;
+    }
+}
 
 @code {
     [Parameter]
     public DisplayInputEditorContext EditorContext { get; set; } = default!;
+    RIoTEditor editor = default!;
 
-
+    private RIoTTemplateItem _selectedTemplate = default!;
+    private string _editorValue = ""; //This contains the generated JS object string from the editor
     public required string _value;
     public Margin _margin = Margin.None;
     public bool _dense = false;
@@ -36,33 +70,45 @@
     public bool _helperTextOnFocus = false;
     public bool _clearable = false;
     public bool _modal = true;
-    public string _label = "Select a US State";
+    public string _label = "Select RIoT Output";
+    public List<RIoTTemplateItem> _items = new();
 
-    public string[] _states =
+    protected override void OnInitialized()
     {
-        "Alabama", "Alaska", "Arizona", "Arkansas", "California",
-        "Colorado", "Connecticut", "Delaware", "Florida", "Georgia",
-        "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas",
-        "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts",
-        "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana",
-        "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico",
-        "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma",
-        "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota",
-        "Tennessee", "Texas", "Utah", "Vermont", "Virginia",
-        "Washington", "West Virginia", "Wisconsin", "Wyoming"
-    };
-
-    public async Task<IEnumerable<string>> Search(string value, CancellationToken token)
-    {
-        // In real life use an asynchronous function for fetching data from an api.
-        await Task.Delay(5, token);
-
-        // if text is null or empty, show complete list
-        if (string.IsNullOrEmpty(value))
-        {
-            return _states;
-        }
-
-        return _states.Where(x => x.Contains(value, StringComparison.InvariantCultureIgnoreCase));
+        var selectList = EditorContext.InputDescriptor.GetRIoTTemplateList();
+        _items = selectList.Items.OrderBy(x => x.Device).ThenBy(x => x.Name).ToList();
     }
+
+    private string toCamelCase(string text)
+    {
+        TextInfo _textInfo = CultureInfo.InvariantCulture.TextInfo;
+        char[] _camelCase = _textInfo.ToTitleCase(text).Replace(" ", "").ToCharArray();
+
+        _camelCase[0] = char.ToLower(_camelCase[0]);
+        return new string(_camelCase);
+    }
+
+    private string convertToJSObjectString(string obj, string name)
+    {
+        var txt = "var " + toCamelCase(name) + " = " + obj + ";";
+        return txt;
+        //return JsonSerializer.Serialize(obj).Replace("\"", "'");
+    }
+
+    private void OutputValueChanged(RIoTTemplateItem value)
+    {
+        _selectedTemplate = value;
+        //TODO SWITCH by type
+        if (_selectedTemplate.Type == Core.ValueType.Entity) { }
+        editor.SetValue(convertToJSObjectString(value.Model ?? "", value.Name));
+    }
+
+    public async Task<IEnumerable<RIoTTemplateItem>> Search(string value, CancellationToken token) => 
+        await Task.Run(() =>
+        {
+            if (string.IsNullOrEmpty(value))
+                return _items;
+
+            return _items.Where(x => x.Name.Contains(value, StringComparison.InvariantCultureIgnoreCase));
+        });
 }

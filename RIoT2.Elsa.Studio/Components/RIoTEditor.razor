@@ -1,0 +1,149 @@
+﻿@using BlazorMonaco.Editor
+@using ThrottleDebounce
+@using global::Elsa.Api.Client.Resources.ActivityDescriptors.Models
+@using global::Elsa.Api.Client.Resources.Scripting.Models
+@using global::Elsa.Api.Client.Shared.UIHints.CodeEditor
+@using global::Elsa.Studio.Contracts
+@using global::Elsa.Studio.Extensions
+@using global::Elsa.Studio.Localization
+@using global::Elsa.Studio.Models
+@using global::Elsa.Studio.UIHints
+@using global::Elsa.Studio.UIHints.Extensions
+@inject ILocalizer Localizer
+
+
+
+<MudStack AlignItems=AlignItems.Start Row=true>
+    <div class="flex-1" style="min-width:0;">
+        <MudField Variant="Variant.Outlined" Label="@Localizer[InputDescriptor.DisplayName]" HelperText="@Localizer[InputDescriptor.Description]" Margin="Margin.Dense">
+            <StandaloneCodeEditor @ref="_monacoEditor"
+                                    Id="@_monacoEditorId"
+                                    ConstructionOptions="ConfigureMonacoEditor"
+                                    OnDidInit="OnMonacoInitializedAsync"
+                                    OnDidChangeModelContent="OnMonacoContentChanged"
+                                    CssClass="studio-expression-input-monaco-editor studio-monaco-editor-large" />
+
+        </MudField>
+    </div>
+</MudStack>
+
+
+@code {
+
+    private readonly string _monacoEditorId = $"monaco-editor-{Guid.NewGuid():N}";
+    private StandaloneCodeEditor? _monacoEditor;
+    private string _monacoLanguage = "";
+    private string? _lastMonacoEditorContent;
+    private readonly RateLimitedFunc<Task> _throttledValueChanged;
+    private CodeEditorOptions _codeEditorOptions = new();
+    private bool _isInternalContentChange;
+
+    [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
+    [Inject] private IEnumerable<IMonacoHandler> MonacoHandlers { get; set; } = default!;
+
+    /// <inheritdoc />
+    public RIoTEditor()
+    {
+        _throttledValueChanged = Debouncer.Debounce(InvokeValueChangedCallback, TimeSpan.FromMilliseconds(500));
+    }
+
+    /// <summary>
+    /// The context for the editor.
+    /// </summary>
+    [Parameter] public DisplayInputEditorContext EditorContext { get; set; } = default!;
+
+    [Parameter] public string Value { get; set; } = default!;
+
+    private InputDescriptor InputDescriptor => EditorContext.InputDescriptor;
+
+    /// <inheritdoc />
+    protected override void OnInitialized()
+    {
+        _codeEditorOptions = EditorContext.InputDescriptor.GetCodeEditorOptions();
+        _monacoLanguage = _codeEditorOptions.Language ?? "javascript";
+        ;
+    }
+
+    private StandaloneEditorConstructionOptions ConfigureMonacoEditor(StandaloneCodeEditor editor)
+    {
+        return new StandaloneEditorConstructionOptions
+        {
+            Language = _monacoLanguage,
+            Value = Value,
+            FontFamily = "Roboto Mono, monospace",
+            RenderLineHighlight = "none",
+            Minimap = new EditorMinimapOptions
+            {
+                Enabled = false
+            },
+            AutomaticLayout = true,
+            LineNumbers = "on",
+            Theme = "vs",
+            RoundedSelection = true,
+            ScrollBeyondLastLine = false,
+            OverviewRulerLanes = 0,
+            OverviewRulerBorder = false,
+            LineDecorationsWidth = 0,
+            HideCursorInOverviewRuler = true,
+            GlyphMargin = false,
+            ReadOnly = EditorContext.IsReadOnly,
+            DomReadOnly = EditorContext.IsReadOnly
+        };
+    }
+
+    private async Task OnMonacoInitializedAsync()
+    {
+        _isInternalContentChange = true;
+        var model = await _monacoEditor!.GetModel();
+        _lastMonacoEditorContent = Value;
+        await model.SetValue(Value);
+        _isInternalContentChange = false;
+        await Global.SetModelLanguage(JSRuntime, model, _monacoLanguage);
+        await RunMonacoHandlersAsync(_monacoEditor);
+    }
+
+    private async Task OnMonacoContentChanged(ModelContentChangedEvent e)
+    {
+        if (_isInternalContentChange)
+            return;
+
+        await _throttledValueChanged.InvokeAsync();
+    }
+
+    private async Task InvokeValueChangedCallback()
+    {
+        var value = await _monacoEditor!.GetValue();
+
+        // This event gets fired even when the content hasn't changed, but for example when the containing pane is resized.
+        // This happens from within the monaco editor itself (or the Blazor wrapper, not sure).
+        if (value == _lastMonacoEditorContent)
+            return;
+
+        _lastMonacoEditorContent = value;
+        Value = value;
+    }
+
+    public void SetValue(string value)
+    {
+        if (_monacoEditor is null)
+            return;
+
+        _monacoEditor.SetValue(value);
+    }
+
+    private async Task RunMonacoHandlersAsync(StandaloneCodeEditor editor)
+    {
+        var customProps = new Dictionary<string, object>
+        {
+            { nameof(ActivityDescriptor), EditorContext.ActivityDescriptor },
+            { nameof(InputDescriptor), EditorContext.InputDescriptor },
+            { "WorkflowDefinitionId", EditorContext.WorkflowDefinition.DefinitionId }
+        };
+
+        var expressionDescriptor = EditorContext.SelectedExpressionDescriptor ?? new ExpressionDescriptor("Default", "Default");
+        var context = new MonacoContext(editor, expressionDescriptor, customProps);
+
+        foreach (var handler in MonacoHandlers)
+            await handler.InitializeAsync(context);
+    }
+}
