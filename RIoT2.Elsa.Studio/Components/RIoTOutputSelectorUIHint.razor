@@ -1,4 +1,10 @@
 ﻿@inherits StudioComponentBase
+@{
+    var inputDescriptor = EditorContext.InputDescriptor;
+    var displayName = inputDescriptor.DisplayName;
+    var description = inputDescriptor.Description;
+    var selectedValue = GetSelectedValue();
+}
 
 @using RIoT2.Elsa.Studio.Models
 @using RIoT2.Elsa.Studio.UIProviders
@@ -14,7 +20,7 @@
                 Value="@_selectedTemplate"
                 ToStringFunc="@(e => string.IsNullOrEmpty(e.Name) ? "unknown" : e.Name)"
                 SearchFunc="@Search"
-                Label="@_label"
+                Label="@displayName"
                 Margin="@_margin"
                 Dense="@_dense"
                 Disabled="@_disabled"
@@ -70,7 +76,6 @@
     public bool _helperTextOnFocus = false;
     public bool _clearable = false;
     public bool _modal = true;
-    public string _label = "Select RIoT Output";
     public List<RIoTTemplateItem> _items = new();
 
     protected override void OnInitialized()
@@ -93,6 +98,21 @@
         var txt = "var " + toCamelCase(name) + " = " + obj + ";";
         return txt;
         //return JsonSerializer.Serialize(obj).Replace("\"", "'");
+    }
+
+    private RIoTTemplateItem GetSelectedValue()
+    {
+        if (_selectedTemplate==default)
+            return new RIoTTemplateItem();
+
+        switch (_selectedTemplate.Type) {
+            case Core.ValueType.Entity:
+                _selectedTemplate.Value = _editorValue;
+                break;
+            //TODO other types
+        }
+        
+        return _selectedTemplate!;
     }
 
     private void OutputValueChanged(RIoTTemplateItem value)
