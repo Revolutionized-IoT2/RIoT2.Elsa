@@ -1,4 +1,6 @@
 ﻿@using BlazorMonaco.Editor
+@using RIoT2.Elsa.Studio.Models
+@using System.Text.Json
 @using ThrottleDebounce
 @using global::Elsa.Api.Client.Resources.ActivityDescriptors.Models
 @using global::Elsa.Api.Client.Resources.Scripting.Models
@@ -52,7 +54,8 @@
     /// </summary>
     [Parameter] public DisplayInputEditorContext EditorContext { get; set; } = default!;
 
-    [Parameter] public string Value { get; set; } = default!;
+    [Parameter]
+    public EventCallback<string> OnChanged { get; set; }
 
     private InputDescriptor InputDescriptor => EditorContext.InputDescriptor;
 
@@ -61,7 +64,6 @@
     {
         _codeEditorOptions = EditorContext.InputDescriptor.GetCodeEditorOptions();
         _monacoLanguage = _codeEditorOptions.Language ?? "javascript";
-        ;
     }
 
     private StandaloneEditorConstructionOptions ConfigureMonacoEditor(StandaloneCodeEditor editor)
@@ -69,7 +71,7 @@
         return new StandaloneEditorConstructionOptions
         {
             Language = _monacoLanguage,
-            Value = Value,
+            Value = "",
             FontFamily = "Roboto Mono, monospace",
             RenderLineHighlight = "none",
             Minimap = new EditorMinimapOptions
@@ -95,8 +97,8 @@
     {
         _isInternalContentChange = true;
         var model = await _monacoEditor!.GetModel();
-        _lastMonacoEditorContent = Value;
-        await model.SetValue(Value);
+        _lastMonacoEditorContent = "";
+        await model.SetValue("");
         _isInternalContentChange = false;
         await Global.SetModelLanguage(JSRuntime, model, _monacoLanguage);
         await RunMonacoHandlersAsync(_monacoEditor);
@@ -120,7 +122,7 @@
             return;
 
         _lastMonacoEditorContent = value;
-        Value = value;
+        await OnChanged.InvokeAsync(value);
     }
 
     public void SetValue(string value)

@@ -3,13 +3,13 @@
     var inputDescriptor = EditorContext.InputDescriptor;
     var displayName = inputDescriptor.DisplayName;
     var description = inputDescriptor.Description;
-    var selectedValue = GetSelectedValue();
 }
 
 @using RIoT2.Elsa.Studio.Models
 @using RIoT2.Elsa.Studio.UIProviders
 @using System.Globalization
 @using global::Elsa.Api.Client.Resources.ActivityDescriptors.Models
+@using global::Elsa.Api.Client.Resources.Scripting.Models
 @using global::Elsa.Api.Client.Shared.UIHints.CodeEditor
 @using global::Elsa.Studio.Components
 @using global::Elsa.Studio.Models
@@ -29,16 +29,36 @@
                 HelperText="@(_helperText ? "Helper Text" : null)"
                 HelperTextOnFocus="_helperTextOnFocus"
                 Clearable="_clearable"
-                Modal="_modal" />
+                Modal="_modal" >
+            <NoItemsTemplate>
+                <MudText Align="Align.Center" Class="px-4 py-1">
+                    No items found
+                </MudText>
+            </NoItemsTemplate>
+            <ItemTemplate Context="e">
+                <MudText>
+                    @e.Name
+                </MudText>
+                <MudItem xs="12" md="12">
+                    <MudChip T="string" Color="Color.Primary" Label="true" Size="Size.Small">@e.Node</MudChip>
+                    <MudChip T="string" Color="Color.Secondary" Label="true" Size="Size.Small">@e.Device</MudChip>
+                    <MudChip T="string" Color="Color.Tertiary" Label="true" Size="Size.Small">@e.Type.ToString()</MudChip>
+                </MudItem>
+            </ItemTemplate>
+            <ItemSelectedTemplate Context="e">
+                <MudText>
+                    @e.Name
+                </MudText>
+                <MudItem xs="12" md="12">
+                    <MudChip T="string" Color="Color.Primary" Label="true" Size="Size.Small">@e.Node</MudChip>
+                    <MudChip T="string" Color="Color.Secondary" Label="true" Size="Size.Small">@e.Device</MudChip>
+                    <MudChip T="string" Color="Color.Tertiary" Label="true" Size="Size.Small">@e.Type.ToString()</MudChip>
+                </MudItem>
+            </ItemSelectedTemplate>
+</MudAutocomplete>
 
 @if (_selectedTemplate !=  default)
 { 
-    <MudItem xs="12" md="12">
-        <MudChip T="string" Color="Color.Primary" Label="true" Size="Size.Small">@_selectedTemplate.Node</MudChip>
-        <MudChip T="string" Color="Color.Secondary" Label="true" Size="Size.Small">@_selectedTemplate.Device</MudChip>
-        <MudChip T="string" Color="Color.Tertiary" Label="true" Size="Size.Small">@_selectedTemplate.Type.ToString()</MudChip>
-    </MudItem>
-
     @switch (_selectedTemplate?.Type)
     {
         case Core.ValueType.Boolean:
@@ -51,7 +71,7 @@
             <p>TODO - number</p>
             break;
         case Core.ValueType.Entity:
-            <RIoTEditor @ref="editor" EditorContext="@EditorContext" Value="@_editorValue" />
+            <RIoTEditor @ref="editor" EditorContext="@EditorContext" OnChanged=@editorValueChanged />
             break;
         case Core.ValueType.TextArray:
             <p>TODO - text arr</p>
@@ -65,8 +85,6 @@
     RIoTEditor editor = default!;
 
     private RIoTTemplateItem _selectedTemplate = default!;
-    private string _editorValue = ""; //This contains the generated JS object string from the editor
-    public required string _value;
     public Margin _margin = Margin.None;
     public bool _dense = false;
     public bool _disabled = false;
@@ -80,9 +98,26 @@
 
     protected override void OnInitialized()
     {
+
+        var currentValue = EditorContext.GetLiteralValueOrDefault();
+
+        if (currentValue != null)
+        {
+            try
+            {
+                _selectedTemplate = JsonSerializer.Deserialize<RIoTTemplateItem>(currentValue) ?? default!;
+            }
+            catch (Exception x)
+            {
+                Console.WriteLine("Failed to deserialize current value: " + x.Message);
+                Console.WriteLine("Value: " + currentValue);
+            }
+        }
+
         var selectList = EditorContext.InputDescriptor.GetRIoTTemplateList();
         if (selectList != null && selectList.Items != null)
             _items = selectList.Items.OrderBy(x => x.Device).ThenBy(x => x.Name).ToList();
+
     }
 
     private string toCamelCase(string text)
@@ -96,32 +131,50 @@
 
     private string convertToJSObjectString(object? obj, string name)
     {
-        var txt = "var " + toCamelCase(name) + " = " + obj + ";";
+        var exp = Expression.CreateObject(JsonSerializer.Serialize(obj).Replace("\"", "'"));
+        var txt = "var " + toCamelCase(name) + " = " + exp +";";
         return txt;
-        //return JsonSerializer.Serialize(obj).Replace("\"", "'");
+        //return 
     }
 
-    private RIoTTemplateItem GetSelectedValue()
+    private Task SaveChangesAsync()
     {
-        if (_selectedTemplate==default)
-            return new RIoTTemplateItem();
-
-        switch (_selectedTemplate.Type) {
-            case Core.ValueType.Entity:
-                _selectedTemplate.Value = _editorValue;
-                break;
-            //TODO other types
+        if (_selectedTemplate != default)
+        {
+            var value = JsonSerializer.Serialize(_selectedTemplate);
+            Console.WriteLine("Save: " + value);
+            var expression = Expression.CreateLiteral(value);
+            return EditorContext.UpdateExpressionAsync(expression);
         }
-        
-        return _selectedTemplate!;
+
+        return Task.CompletedTask;
     }
 
-    private void OutputValueChanged(RIoTTemplateItem value)
+    private async void OutputValueChanged(RIoTTemplateItem value)
     {
         _selectedTemplate = value;
-        //TODO SWITCH by type
-        if (_selectedTemplate.Type == Core.ValueType.Entity) { }
-        editor.SetValue(convertToJSObjectString(value.Model ?? "", value.Name));
+        await Task.Delay(20); //added small delay to make sure the editor is rendered before setting the value, otherwise it can cause issues with the editor not updating
+
+        switch (_selectedTemplate.Type)
+        {
+            case Core.ValueType.Entity:
+                try
+                {
+                    editor.SetValue(convertToJSObjectString(value.Model ?? "", value.Name));
+                }
+                catch (Exception x)
+                {
+                    Console.WriteLine("VIRHE: " + x.Message);
+                }
+            break;
+        }
+        await SaveChangesAsync();
+    }
+
+    private void editorValueChanged(string value)
+    {
+        _selectedTemplate.Value = value;
+       // await SaveChangesAsync();
     }
 
     public async Task<IEnumerable<RIoTTemplateItem>> Search(string value, CancellationToken token) => 
