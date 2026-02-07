@@ -1,7 +1,10 @@
-﻿using Elsa.Extensions;
+﻿using Elsa.Expressions.Models;
+using Elsa.Extensions;
+using Elsa.JavaScript.Contracts;
 using Elsa.Workflows;
 using Elsa.Workflows.Attributes;
 using Elsa.Workflows.Models;
+using Jint;
 using RIoT2.Elsa.Server.RIoT.Services.Interfaces;
 using RIoT2.Elsa.Server.RIoT.UIHints;
 using RIoT2.Elsa.Studio.Models;
@@ -24,14 +27,35 @@ namespace RIoT2.Elsa.Server.RIoT.Activities
             )]
         public Input<RIoTTemplateItem> Command { get; set; } = null!;
 
-        protected override void Execute(ActivityExecutionContext context)
+        protected override async void Execute(ActivityExecutionContext context)
         {
             var cmd = Command.Get(context) ?? null;
-            if (cmd != null && cmd.Id != null)
-            {
+            if (cmd == null || cmd.Id == null)
+                return;
+
+            var script = cmd.Value ?? string.Empty;
+            
+            if (string.IsNullOrWhiteSpace(script))
+                return;
+
+            var javaScriptEvaluator = context.GetRequiredService<IJavaScriptEvaluator>();
+
+            var result = await javaScriptEvaluator.EvaluateAsync(
+                script,
+                typeof(object),
+                context.ExpressionExecutionContext,
+                ExpressionEvaluatorOptions.Empty,
+                engine => ConfigureEngine(engine, context),
+                context.CancellationToken);
+
                 var riot = context.GetRequiredService<IRIoTDataService>();
-                riot.ExecuteCommandAsync(cmd.Id, cmd.Value);
-            }
+                await riot.ExecuteCommandAsync(cmd.Id, result);
+        }
+
+        private static void ConfigureEngine(Engine engine, ActivityExecutionContext context)
+        {
+            engine.SetValue("setOutcome", (Action<string>)(value => context.TransientProperties["Outcomes"] = new[] { value }));
+            engine.SetValue("setOutcomes", (Action<string[]>)(value => context.TransientProperties["Outcomes"] = value));
         }
     }
 }
