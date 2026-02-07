@@ -2,6 +2,9 @@
 using RIoT2.Core.Utils;
 using RIoT2.Elsa.Server.RIoT.Models;
 using RIoT2.Elsa.Server.RIoT.Services.Interfaces;
+using RIoT2.Elsa.Studio.UIProviders;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace RIoT2.Elsa.Server.RIoT.Services
 {
@@ -32,15 +35,19 @@ namespace RIoT2.Elsa.Server.RIoT.Services
                 var url = _configuration.OrchestratorBaseUrl + $"/api/command/templates";
                 var response = await Web.GetAsync(url);
 
+
+
                 if (response.IsSuccessStatusCode)
                 {
                     var json = await response.Content.ReadAsStringAsync();
-                    return Json.Deserialize<List<Template>>(json);
+                    if (!string.IsNullOrEmpty(json))
+                        return JsonSerializer.Deserialize<List<Template>>(json, serializerOptions) ?? [];
+
+                    return [];
                 }
             }
             return [];
         }
-
         /// <summary>
         /// This method retrieves the current value of a report by its ID.
         /// </summary>
@@ -100,7 +107,10 @@ namespace RIoT2.Elsa.Server.RIoT.Services
                 if (response.IsSuccessStatusCode)
                 {
                     var json = await response.Content.ReadAsStringAsync();
-                    return Json.Deserialize<List<Template>>(json);
+                    if (!string.IsNullOrEmpty(json))
+                        return JsonSerializer.Deserialize<List<Template>>(json, serializerOptions) ?? [];
+
+                    return [];
                 }
             }
             return [];
@@ -116,7 +126,10 @@ namespace RIoT2.Elsa.Server.RIoT.Services
                 if (response.IsSuccessStatusCode)
                 {
                     var json = await response.Content.ReadAsStringAsync();
-                    return Json.Deserialize<List<Template>>(json);
+                    if (!string.IsNullOrEmpty(json))
+                        return JsonSerializer.Deserialize<List<Template>>(json, serializerOptions) ?? [];
+
+                    return [];
                 }
             }
             return [];
@@ -139,5 +152,15 @@ namespace RIoT2.Elsa.Server.RIoT.Services
             }
             return v;
         }
-    }
+
+        private readonly JsonSerializerOptions serializerOptions = new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            Converters =
+            {
+                new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
+            }
+
+        };
+        }
 }

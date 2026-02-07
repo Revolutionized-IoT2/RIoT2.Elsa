@@ -8,6 +8,8 @@
 @using RIoT2.Elsa.Studio.Models
 @using RIoT2.Elsa.Studio.UIProviders
 @using System.Globalization
+@using System.Reflection
+@using System.Text.Json.Nodes
 @using global::Elsa.Api.Client.Resources.ActivityDescriptors.Models
 @using global::Elsa.Api.Client.Resources.Scripting.Models
 @using global::Elsa.Api.Client.Shared.UIHints.CodeEditor
@@ -132,10 +134,28 @@
 
     private string createDefaultValue(object? obj, string name)
     {
-        var exp = Expression.CreateObject(JsonSerializer.Serialize(obj).Replace("\"", "'"));
-        var txt = "var " + toCamelCase(name) + " = " + exp +";";
+        string propStr = "";
+        string json = "";
+        string camelName = toCamelCase(name);
+        if (obj != null)
+        {
+            json = JsonSerializer.Serialize(obj);
+            JsonObject jobj = JsonNode.Parse(json)!.AsObject();
+            string[] propertyNames = jobj.Select(p => p.Key).ToArray();
+            foreach (string prop in propertyNames)
+            {
+                string? valStr = jobj[prop]?.ToString();
+                if (jobj[prop]?.GetValueKind() == JsonValueKind.String)
+                    valStr = @""""+valStr+@"""";
+
+                propStr += "\n" + camelName + "." + prop + " = " + valStr + ";";
+            }
+        }
+
+        var txt = "var " + camelName + " = " + json + ";";
+        txt += propStr;
+        txt += "\nreturn " + toCamelCase(name) + ";";
         return txt;
-        //return 
     }
 
     private Task SaveChangesAsync()

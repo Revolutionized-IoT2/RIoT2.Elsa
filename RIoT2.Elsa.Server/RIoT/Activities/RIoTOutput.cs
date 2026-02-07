@@ -21,7 +21,7 @@ namespace RIoT2.Elsa.Server.RIoT.Activities
     public class RIoTOutput : CodeActivity, ITerminalNode
     {
         [Input(
-            Description = "Choose RIoT Command to Execute",
+            Description = "Define RIoT Command to Execute",
             UIHint = "riot-output-selector",
             UIHandler = typeof(RIoTOutputOptionsProvider)
             )]

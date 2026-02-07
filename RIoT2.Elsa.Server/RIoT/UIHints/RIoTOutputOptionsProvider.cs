@@ -3,6 +3,7 @@ using RIoT2.Elsa.Server.RIoT.Services.Interfaces;
 using RIoT2.Elsa.Studio.Models;
 using RIoT2.Elsa.Studio.UIProviders;
 using System.Reflection;
+using System.Text.Json;
 
 namespace RIoT2.Elsa.Server.RIoT.UIHints
 {

@@ -21,7 +21,7 @@ namespace RIoT2.Elsa.Studio.UIProviders
 
             if (props.ValueKind == JsonValueKind.Undefined)
                 return new([]);
-        
+
             var serializerOptions = new JsonSerializerOptions
             {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
