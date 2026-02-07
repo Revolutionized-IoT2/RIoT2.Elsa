@@ -130,7 +130,10 @@
         if (_monacoEditor is null)
             return;
 
+        _isInternalContentChange = true;
+        _lastMonacoEditorContent = value;
         _monacoEditor.SetValue(value);
+        _isInternalContentChange = false;
     }
 
     private async Task RunMonacoHandlersAsync(StandaloneCodeEditor editor)

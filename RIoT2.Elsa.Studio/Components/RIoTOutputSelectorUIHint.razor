@@ -16,7 +16,7 @@
 @using System.Text.Json;
 
 <MudAutocomplete T="RIoTTemplateItem"
-                ValueChanged="OutputValueChanged"
+                ValueChanged="autoCompleteValueChanged"
                 Value="@_selectedTemplate"
                 ToStringFunc="@(e => string.IsNullOrEmpty(e.Name) ? "unknown" : e.Name)"
                 SearchFunc="@Search"
@@ -32,7 +32,7 @@
                 Modal="_modal" >
             <NoItemsTemplate>
                 <MudText Align="Align.Center" Class="px-4 py-1">
-                    No items found
+                    No Outputs found
                 </MudText>
             </NoItemsTemplate>
             <ItemTemplate Context="e">
@@ -106,6 +106,8 @@
             try
             {
                 _selectedTemplate = JsonSerializer.Deserialize<RIoTTemplateItem>(currentValue) ?? default!;
+                Console.WriteLine("current value: " + currentValue);
+                selectedItemChanged(false);
             }
             catch (Exception x)
             {
@@ -117,7 +119,6 @@
         var selectList = EditorContext.InputDescriptor.GetRIoTTemplateList();
         if (selectList != null && selectList.Items != null)
             _items = selectList.Items.OrderBy(x => x.Device).ThenBy(x => x.Name).ToList();
-
     }
 
     private string toCamelCase(string text)
@@ -129,7 +130,7 @@
         return new string(_camelCase);
     }
 
-    private string convertToJSObjectString(object? obj, string name)
+    private string createDefaultValue(object? obj, string name)
     {
         var exp = Expression.CreateObject(JsonSerializer.Serialize(obj).Replace("\"", "'"));
         var txt = "var " + toCamelCase(name) + " = " + exp +";";
@@ -142,7 +143,7 @@
         if (_selectedTemplate != default)
         {
             var value = JsonSerializer.Serialize(_selectedTemplate);
-            Console.WriteLine("Save: " + value);
+            //Console.WriteLine("Save: " + value);
             var expression = Expression.CreateLiteral(value);
             return EditorContext.UpdateExpressionAsync(expression);
         }
@@ -150,31 +151,41 @@
         return Task.CompletedTask;
     }
 
-    private async void OutputValueChanged(RIoTTemplateItem value)
+    private async void selectedItemChanged(bool save = true)
     {
-        _selectedTemplate = value;
         await Task.Delay(20); //added small delay to make sure the editor is rendered before setting the value, otherwise it can cause issues with the editor not updating
-
         switch (_selectedTemplate.Type)
         {
             case Core.ValueType.Entity:
                 try
                 {
-                    editor.SetValue(convertToJSObjectString(value.Model ?? "", value.Name));
+                    editor.SetValue(_selectedTemplate.Value ?? "");
                 }
                 catch (Exception x)
                 {
                     Console.WriteLine("VIRHE: " + x.Message);
                 }
-            break;
+                break;
         }
-        await SaveChangesAsync();
+
+        if (save)
+            await SaveChangesAsync();
     }
 
-    private void editorValueChanged(string value)
+    private void autoCompleteValueChanged(RIoTTemplateItem value)
+    {
+        _selectedTemplate = value;
+        if (_selectedTemplate.Type == Core.ValueType.Entity && string.IsNullOrEmpty(_selectedTemplate.Value))
+            _selectedTemplate.Value = createDefaultValue(_selectedTemplate.Model ?? "", _selectedTemplate.Name);
+
+        selectedItemChanged();
+    }
+
+    private async void editorValueChanged(string value)
     {
         _selectedTemplate.Value = value;
-       // await SaveChangesAsync();
+        Console.WriteLine("VALUE: " + value);
+        await SaveChangesAsync();
     }
 
     public async Task<IEnumerable<RIoTTemplateItem>> Search(string value, CancellationToken token) => 
