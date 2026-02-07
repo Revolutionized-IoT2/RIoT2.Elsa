@@ -1,11 +1,10 @@
 ﻿using Elsa.Extensions;
-using Elsa.Studio.UIHints;
 using Elsa.Workflows;
 using Elsa.Workflows.Attributes;
 using Elsa.Workflows.Models;
-using Elsa.Workflows.UIHints.Dropdown;
 using RIoT2.Elsa.Server.RIoT.Services.Interfaces;
 using RIoT2.Elsa.Server.RIoT.UIHints;
+using RIoT2.Elsa.Studio.Models;
 
 namespace RIoT2.Elsa.Server.RIoT.Activities
 {
@@ -23,21 +22,15 @@ namespace RIoT2.Elsa.Server.RIoT.Activities
             UIHint = "riot-output-selector",
             UIHandler = typeof(RIoTOutputOptionsProvider)
             )]
-        public Input<SelectListItem> Command { get; set; } = null!;
-
-        [Input(
-           Description = "Data that will be sent to the Command"
-           )]
-        public Input<object> CommandData { get; set; } = null!;
+        public Input<RIoTTemplateItem> Command { get; set; } = null!;
 
         protected override void Execute(ActivityExecutionContext context)
         {
-            var commandId = Command.Expression?.Value?.ToString() ?? "";
-            if (!String.IsNullOrEmpty(commandId))
+            var cmd = Command.Get(context) ?? null;
+            if (cmd != null && cmd.Id != null)
             {
-                object data = CommandData.Get(context) ?? new { };
                 var riot = context.GetRequiredService<IRIoTDataService>();
-                riot.ExecuteCommandAsync(commandId, data);
+                riot.ExecuteCommandAsync(cmd.Id, cmd.Value);
             }
         }
     }

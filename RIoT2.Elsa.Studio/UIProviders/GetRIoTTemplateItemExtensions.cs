@@ -1,7 +1,10 @@
 ﻿using Elsa.Api.Client.Resources.ActivityDescriptors.Models;
 using Elsa.Api.Client.Shared.UIHints.DropDown;
+using Microsoft.Extensions.Logging;
 using RIoT2.Elsa.Studio.Models;
+using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace RIoT2.Elsa.Studio.UIProviders
 {
@@ -18,14 +21,26 @@ namespace RIoT2.Elsa.Studio.UIProviders
 
             if (props.ValueKind == JsonValueKind.Undefined)
                 return new([]);
-
+        
             var serializerOptions = new JsonSerializerOptions
             {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                Converters =
+                {
+                    new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
+                }
             };
 
-            var itemProps = props.Deserialize<RIoTTemplateList>(serializerOptions);
-            return itemProps ?? new RIoTTemplateList(new List<RIoTTemplateItem>());
+            try 
+            {
+                var itemProps = props.Deserialize<RIoTOutputProps>(serializerOptions);
+                return itemProps?.SelectList ?? new([]);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("Error deserializing props: " + ex.Message);
+                return new([]);
+            }
         }
     }
 }

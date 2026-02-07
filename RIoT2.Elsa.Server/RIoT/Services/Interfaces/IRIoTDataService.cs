@@ -10,6 +10,6 @@ namespace RIoT2.Elsa.Server.RIoT.Services.Interfaces
         Task<object> GetReportValueAsync(string reportId);
         Task<object> GetCommandValueAsync(string commandId);
         Task<object> GetVariableValueAsync(string variableId);
-        Task ExecuteCommandAsync(string id, object data);
+        Task ExecuteCommandAsync(string id, object? data);
     }
 }

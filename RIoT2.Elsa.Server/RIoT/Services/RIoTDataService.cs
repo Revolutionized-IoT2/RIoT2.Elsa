@@ -14,7 +14,7 @@ namespace RIoT2.Elsa.Server.RIoT.Services
             _configuration = configurationService;
         }
 
-        public async Task ExecuteCommandAsync(string id, object data)
+        public async Task ExecuteCommandAsync(string id, object? data)
         {
             Command c = new Command
             {

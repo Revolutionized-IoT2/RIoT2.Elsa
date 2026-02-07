@@ -81,7 +81,8 @@
     protected override void OnInitialized()
     {
         var selectList = EditorContext.InputDescriptor.GetRIoTTemplateList();
-        _items = selectList.Items.OrderBy(x => x.Device).ThenBy(x => x.Name).ToList();
+        if (selectList != null && selectList.Items != null)
+            _items = selectList.Items.OrderBy(x => x.Device).ThenBy(x => x.Name).ToList();
     }
 
     private string toCamelCase(string text)
@@ -93,7 +94,7 @@
         return new string(_camelCase);
     }
 
-    private string convertToJSObjectString(string obj, string name)
+    private string convertToJSObjectString(object? obj, string name)
     {
         var txt = "var " + toCamelCase(name) + " = " + obj + ";";
         return txt;

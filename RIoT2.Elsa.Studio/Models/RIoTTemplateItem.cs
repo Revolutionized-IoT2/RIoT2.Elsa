@@ -7,7 +7,7 @@
         public Core.ValueType Type { get; set; }
         public string? Node { get; set; }
         public string? Device { get; set; }
-        public string? Value { get; set; }
-        public string? Model { get; set; }
+        public object? Value { get; set; }
+        public object? Model { get; set; }
     }
 }
