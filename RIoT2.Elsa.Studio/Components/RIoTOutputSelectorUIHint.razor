@@ -61,24 +61,7 @@
 
 @if (_selectedTemplate !=  default)
 { 
-    @switch (_selectedTemplate?.Type)
-    {
-        case Core.ValueType.Boolean:
-            <p>TODO - bool</p>
-            break;
-        case Core.ValueType.Text:
-            <p>TODO - text</p>
-            break;
-        case Core.ValueType.Number:
-            <p>TODO - number</p>
-            break;
-        case Core.ValueType.Entity:
-            <RIoTEditor @ref="editor" EditorContext="@EditorContext" OnChanged=@editorValueChanged />
-            break;
-        case Core.ValueType.TextArray:
-            <p>TODO - text arr</p>
-            break;
-    }
+    <RIoTEditor @ref="editor" EditorContext="@EditorContext" OnChanged=@editorValueChanged Type="_selectedTemplate.Type" />
 }
 
 @code {
@@ -139,23 +122,20 @@
         string json = "";
         string camelName = toCamelCase(name);
         if (obj == null)
-        {
-            obj = createDefaultValueForType(valueType);
-        }
+            obj = Core.Models.ValueModel.GetDefaultValueForType(valueType);
 
-        
-        if (valueType == Core.ValueType.Entity)
+        if (valueType == Core.ValueType.Entity || valueType == Core.ValueType.TextArray)
         {
             json = JsonSerializer.Serialize(obj);
-            JsLiteral = camelName + " = " + RIoT2.Core.Utils.Json2.JsonToJsObjectLiteral(json) + ";";
+            JsLiteral = "let " + camelName + " = " + RIoT2.Core.Utils.Json2.JsonToJsObjectLiteral(json) + ";";
             JsLiteral += "\nreturn " + toCamelCase(name) + ";";
         }
-        else //TODO hadle Arrays...
+        else
         {
             if(valueType == Core.ValueType.Text)
-                JsLiteral = camelName + " = '" + obj.ToString()+ "';";
+                JsLiteral = "let " + camelName + " = '" + obj.ToString() + "';";
             else
-                JsLiteral = camelName + " = " + obj.ToString()+ ";";
+                JsLiteral = "let " + camelName + " = " + obj.ToString()?.ToLower() + ";";
 
             JsLiteral += "\nreturn " + toCamelCase(name) + ";";
         }
@@ -179,19 +159,8 @@
     private async void selectedItemChanged(bool save = true)
     {
         await Task.Delay(20); //added small delay to make sure the editor is rendered before setting the value, otherwise it can cause issues with the editor not updating
-        switch (_selectedTemplate.Type)
-        {
-            case Core.ValueType.Entity:
-                try
-                {
-                    editor.SetValue(_selectedTemplate.Value ?? "");
-                }
-                catch (Exception x)
-                {
-                    Console.WriteLine("VIRHE: " + x.Message);
-                }
-                break;
-        }
+        
+        editor.SetValue(_selectedTemplate.Value ?? "");
 
         if (save)
             await SaveChangesAsync();
@@ -200,7 +169,7 @@
     private void autoCompleteValueChanged(RIoTTemplateItem value)
     {
         _selectedTemplate = value;
-        if (_selectedTemplate.Type == Core.ValueType.Entity && string.IsNullOrEmpty(_selectedTemplate.Value))
+        if (string.IsNullOrEmpty(_selectedTemplate.Value))
             _selectedTemplate.Value = createDefaultValue(_selectedTemplate.Model ?? "", _selectedTemplate.Name, _selectedTemplate.Type);
 
         selectedItemChanged();
