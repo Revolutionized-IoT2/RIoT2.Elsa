@@ -132,29 +132,34 @@
         return new string(_camelCase);
     }
 
+
     private string createDefaultValue(object? obj, string name, Core.ValueType valueType)
     {
         string JsLiteral = "";
         string json = "";
         string camelName = toCamelCase(name);
-        if (obj != null)
+        if (obj == null)
         {
-            if (valueType == Core.ValueType.Entity)
-            {
-                json = JsonSerializer.Serialize(obj);
-                JsLiteral = camelName + " = " + RIoT2.Core.Utils.Json2.JsonToJsObjectLiteral(json) + ";";
-                JsLiteral += "\nreturn " + toCamelCase(name) + ";";
-            }
-            else //TODO hadle Arrays...
-            {
-                if(valueType == Core.ValueType.Text)
-                    JsLiteral = camelName + " = '" + obj.ToString()+ "';";
-                else
-                    JsLiteral = camelName + " = " + obj.ToString()+ ";";
-
-                JsLiteral += "\nreturn " + toCamelCase(name) + ";";
-            }
+            obj = createDefaultValueForType(valueType);
         }
+
+        
+        if (valueType == Core.ValueType.Entity)
+        {
+            json = JsonSerializer.Serialize(obj);
+            JsLiteral = camelName + " = " + RIoT2.Core.Utils.Json2.JsonToJsObjectLiteral(json) + ";";
+            JsLiteral += "\nreturn " + toCamelCase(name) + ";";
+        }
+        else //TODO hadle Arrays...
+        {
+            if(valueType == Core.ValueType.Text)
+                JsLiteral = camelName + " = '" + obj.ToString()+ "';";
+            else
+                JsLiteral = camelName + " = " + obj.ToString()+ ";";
+
+            JsLiteral += "\nreturn " + toCamelCase(name) + ";";
+        }
+        
         return JsLiteral;
     }
 

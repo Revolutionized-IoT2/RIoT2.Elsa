@@ -1,7 +1,11 @@
 ﻿using Elsa.Workflows;
+using RIoT2.Core.Interfaces;
+using RIoT2.Core.Models;
+using RIoT2.Elsa.Server.RIoT.Models;
 using RIoT2.Elsa.Server.RIoT.Services.Interfaces;
 using RIoT2.Elsa.Studio.Models;
 using RIoT2.Elsa.Studio.UIProviders;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Text.Json;
 
@@ -30,27 +34,35 @@ namespace RIoT2.Elsa.Server.RIoT.UIHints
             try
             {
                 var selectListItems = new List<RIoTTemplateItem>();
-                var commandTemplates = _rIoT.GetCommandTemplatesAsync().Result;
+                var commandTemplates = _rIoT.GetCommandTemplatesAsync();
+                var variableTemplates = _rIoT.GetVariableTemplatesAsync();
 
-                foreach (var t in commandTemplates) 
-                {
-                    //var name = $"{t.Name} [{t.Node}:{t.Device}] [{t.Type}]";
-                    selectListItems.Add(new RIoTTemplateItem
-                    {
-                        Id = t.Id,
-                        Name = t.Name,
-                        Type = t.Type,
-                        Node = t.Node,
-                        Device = t.Device,
-                        Model = t.Model
-                    });
-                }
+                Task.WaitAll(variableTemplates, commandTemplates);
+
+                addTemplatesTolist(selectListItems, commandTemplates.Result);
+                addTemplatesTolist(selectListItems, variableTemplates.Result);
 
                 return new(selectListItems);
             }
             catch (Exception ex)
             {
                 throw new Exception("Error fetching RIoT Templates: " + ex.Message, ex);
+            }
+        }
+
+        private void addTemplatesTolist(List<RIoTTemplateItem> list, List<Template> templates) 
+        {
+            foreach (var t in templates)
+            {
+                list.Add(new RIoTTemplateItem
+                {
+                    Id = t.Id,
+                    Name = t.Name,
+                    Type = t.Type,
+                    Node = t.Node,
+                    Device = t.Device,
+                    Model = t.Model
+                });
             }
         }
     }
