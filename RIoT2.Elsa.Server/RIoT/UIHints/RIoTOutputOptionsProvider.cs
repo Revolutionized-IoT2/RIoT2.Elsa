@@ -53,15 +53,7 @@ namespace RIoT2.Elsa.Server.RIoT.UIHints
         {
             foreach (var t in templates)
             {
-                list.Add(new RIoTTemplateItem
-                {
-                    Id = t.Id,
-                    Name = t.Name,
-                    Type = t.Type,
-                    Node = t.Node,
-                    Device = t.Device,
-                    Model = t.Model
-                });
+                list.Add(t.Create());
             }
         }
     }

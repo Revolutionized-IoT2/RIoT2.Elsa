@@ -1,12 +1,9 @@
-﻿using Acornima.Ast;
-using Elsa.Api.Client.Shared.UIHints.DropDown;
-using Elsa.Extensions;
+﻿using Elsa.Extensions;
 using Elsa.Workflows;
 using Elsa.Workflows.Attributes;
 using Elsa.Workflows.Models;
-using Elsa.Workflows.UIHints;
 using RIoT2.Elsa.Server.RIoT.UIHints;
-using System.Text;
+using RIoT2.Elsa.Studio.Models;
 
 namespace RIoT2.Elsa.Server.RIoT.Activities
 {
@@ -19,11 +16,12 @@ namespace RIoT2.Elsa.Server.RIoT.Activities
     public class RIoTTrigger : Trigger, IStartNode
     {
         [Input(
-        Description = "Choose RIoT trigger from the list",
-        UIHint = InputUIHints.DropDown,
-        UIHandler = typeof(RIoTTriggerOptionsProvider)
-        )]
-        public Input<SelectListItem> SelectedTrigger { get; set; } = null!;
+           Description = "Choose RIoT trigger from the list\"",
+           UIHint = "riot-output-selector",
+           DefaultSyntax = "JavaScript",
+           UIHandler = typeof(RIoTTriggerOptionsProvider)
+           )]
+        public Input<RIoTTemplateItem> SelectedTrigger { get; set; } = null!;
 
         [Output(Description = "Received trigger data")]
         public Output<object> EventData { get; set; } = default!;

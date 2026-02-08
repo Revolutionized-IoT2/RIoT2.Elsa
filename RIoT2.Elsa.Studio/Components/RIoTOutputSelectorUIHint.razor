@@ -129,7 +129,6 @@
         {
             json = JsonSerializer.Serialize(obj);
             JsLiteral = "let " + camelName + " = " + RIoT2.Core.Utils.Json2.JsonToJsObjectLiteral(json) + ";";
-            JsLiteral += "\nreturn " + toCamelCase(name) + ";";
         }
         else
         {
@@ -137,7 +136,14 @@
                 JsLiteral = "let " + camelName + " = '" + obj.ToString() + "';";
             else
                 JsLiteral = "let " + camelName + " = " + obj.ToString()?.ToLower() + ";";
+        }
 
+        if (isEditorHidden && valueType == Core.ValueType.Entity)
+        {
+            JsLiteral += "\nmodels." + toCamelCase(name) + "=toCamelCase(name);";
+        }
+        else
+        {
             JsLiteral += "\nreturn " + toCamelCase(name) + ";";
         }
         

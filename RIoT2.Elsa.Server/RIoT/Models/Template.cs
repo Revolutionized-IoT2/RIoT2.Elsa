@@ -13,5 +13,18 @@ namespace RIoT2.Elsa.Server.RIoT.Models
         public string Node { get; set; } = string.Empty;
         public string DeviceId { get; set; } = string.Empty;
         public string Device { get; set; } = string.Empty;
+
+        public RIoT2.Elsa.Studio.Models.RIoTTemplateItem Create()
+        {
+            return new Studio.Models.RIoTTemplateItem
+            {
+                Id = this.Id,
+                Name = this.Name,
+                Model = this.Model,
+                Type = this.Type,
+                Node = this.Node,
+                Device = this.Device
+            };
+        }
     }
 }
