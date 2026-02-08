@@ -132,30 +132,30 @@
         return new string(_camelCase);
     }
 
-    private string createDefaultValue(object? obj, string name)
+    private string createDefaultValue(object? obj, string name, Core.ValueType valueType)
     {
-        string propStr = "";
+        string JsLiteral = "";
         string json = "";
         string camelName = toCamelCase(name);
         if (obj != null)
         {
-            json = JsonSerializer.Serialize(obj);
-            JsonObject jobj = JsonNode.Parse(json)!.AsObject();
-            string[] propertyNames = jobj.Select(p => p.Key).ToArray();
-            foreach (string prop in propertyNames)
+            if (valueType == Core.ValueType.Entity)
             {
-                string? valStr = jobj[prop]?.ToString();
-                if (jobj[prop]?.GetValueKind() == JsonValueKind.String)
-                    valStr = @""""+valStr+@"""";
+                json = JsonSerializer.Serialize(obj);
+                JsLiteral = camelName + " = " + RIoT2.Core.Utils.Json2.JsonToJsObjectLiteral(json) + ";";
+                JsLiteral += "\nreturn " + toCamelCase(name) + ";";
+            }
+            else //TODO hadle Arrays...
+            {
+                if(valueType == Core.ValueType.Text)
+                    JsLiteral = camelName + " = '" + obj.ToString()+ "';";
+                else
+                    JsLiteral = camelName + " = " + obj.ToString()+ ";";
 
-                propStr += "\n" + camelName + "." + prop + " = " + valStr + ";";
+                JsLiteral += "\nreturn " + toCamelCase(name) + ";";
             }
         }
-
-        var txt = "var " + camelName + " = " + json + ";";
-        txt += propStr;
-        txt += "\nreturn " + toCamelCase(name) + ";";
-        return txt;
+        return JsLiteral;
     }
 
     private Task SaveChangesAsync()
@@ -196,7 +196,7 @@
     {
         _selectedTemplate = value;
         if (_selectedTemplate.Type == Core.ValueType.Entity && string.IsNullOrEmpty(_selectedTemplate.Value))
-            _selectedTemplate.Value = createDefaultValue(_selectedTemplate.Model ?? "", _selectedTemplate.Name);
+            _selectedTemplate.Value = createDefaultValue(_selectedTemplate.Model ?? "", _selectedTemplate.Name, _selectedTemplate.Type);
 
         selectedItemChanged();
     }
