@@ -21,6 +21,7 @@ namespace RIoT2.Elsa.Server.RIoT.Activities
         [Input(
             Description = "Choose RIoT Data",
             UIHint = "riot-output-selector",
+            DefaultSyntax = "JavaScript",
             UIHandler = typeof(RIoTDataOptionsProvider)
             )]
         public Input<RIoTTemplateItem> SelectedDataSource { get; set; } = null!;

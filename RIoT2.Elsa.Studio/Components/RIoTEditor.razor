@@ -144,12 +144,16 @@
     {
         var customProps = new Dictionary<string, object>
         {
-            { nameof(ActivityDescriptor), EditorContext.ActivityDescriptor },
-            { nameof(InputDescriptor), EditorContext.InputDescriptor },
+            { nameof(ActivityDescriptor), new ActivityDescriptor() {TypeName = "" } },
+            { nameof(PropertyDescriptor), EditorContext.InputDescriptor },
             { "WorkflowDefinitionId", EditorContext.WorkflowDefinition.DefinitionId }
         };
 
-        var expressionDescriptor = EditorContext.SelectedExpressionDescriptor ?? new ExpressionDescriptor("Default", "Default");
+        var expressionDescriptor = new ExpressionDescriptor
+        {
+            Type = "JavaScript",
+        };
+
         var context = new MonacoContext(editor, expressionDescriptor, customProps);
 
         foreach (var handler in MonacoHandlers)

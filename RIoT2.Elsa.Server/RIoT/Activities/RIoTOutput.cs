@@ -23,6 +23,7 @@ namespace RIoT2.Elsa.Server.RIoT.Activities
         [Input(
             Description = "Define RIoT Command to Execute",
             UIHint = "riot-output-selector",
+            DefaultSyntax = "JavaScript",
             UIHandler = typeof(RIoTOutputOptionsProvider)
             )]
         public Input<RIoTTemplateItem> Command { get; set; } = null!;
