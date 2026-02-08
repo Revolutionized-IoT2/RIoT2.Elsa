@@ -13,7 +13,7 @@
 @using global::Elsa.Studio.UIHints.Extensions
 @inject ILocalizer Localizer
 
-<MudStack AlignItems=AlignItems.Start Row=true>
+<MudStack AlignItems=AlignItems.Start Row=true hidden="@(Hidden)">
     <div class="flex-1" style="min-width:0;">
         <MudField Variant="Variant.Outlined" Label="@editorLabel" HelperText="@helperText" Margin="Margin.Dense">
             <StandaloneCodeEditor @ref="_monacoEditor"
@@ -53,6 +53,8 @@
     [Parameter] public DisplayInputEditorContext EditorContext { get; set; } = default!;
 
     [Parameter] public Core.ValueType Type { get; set; } = default!;
+
+    [Parameter] public bool Hidden { get; set; } = false;
 
     [Parameter]
     public EventCallback<string> OnChanged { get; set; }

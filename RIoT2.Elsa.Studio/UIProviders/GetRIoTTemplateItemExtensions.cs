@@ -42,5 +42,34 @@ namespace RIoT2.Elsa.Studio.UIProviders
                 return new([]);
             }
         }
+
+        public static bool GetRIoTOutputHideEditor(this InputDescriptor descriptor)
+        {
+            var specifications = descriptor.UISpecifications;
+            var props = specifications != null ? specifications.TryGetValue("riot-output-selector", out var propsValue) ? propsValue is JsonElement value ? value : default : default : default;
+
+            if (props.ValueKind == JsonValueKind.Undefined)
+                return false;
+
+            var serializerOptions = new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                Converters =
+                {
+                    new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
+                }
+            };
+
+            try
+            {
+                var itemProps = props.Deserialize<RIoTOutputProps>(serializerOptions);
+                return itemProps?.HideEditor ?? false;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error deserializing props: " + ex.Message);
+                return false;
+            }
+        }
     }
 }

@@ -6,5 +6,6 @@ namespace RIoT2.Elsa.Studio.UIProviders
     {
         public RIoTTemplateList? SelectList { get; set; }
         public string? ProviderName { get; set; }
-     }
+        public bool HideEditor { get; set; } = false;
+    }
 }

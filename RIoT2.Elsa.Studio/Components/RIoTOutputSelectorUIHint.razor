@@ -61,13 +61,14 @@
 
 @if (_selectedTemplate !=  default)
 { 
-    <RIoTEditor @ref="editor" EditorContext="@EditorContext" OnChanged=@editorValueChanged Type="_selectedTemplate.Type" />
+    <RIoTEditor Hidden="@isEditorHidden" @ref="editor" EditorContext="@EditorContext" OnChanged=@editorValueChanged Type="_selectedTemplate.Type" />
 }
 
 @code {
     [Parameter]
     public DisplayInputEditorContext EditorContext { get; set; } = default!;
     RIoTEditor editor = default!;
+    private bool isEditorHidden => EditorContext.InputDescriptor.GetRIoTOutputHideEditor();
 
     private RIoTTemplateItem _selectedTemplate = default!;
     public Margin _margin = Margin.None;
