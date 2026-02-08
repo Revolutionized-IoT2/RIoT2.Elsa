@@ -28,7 +28,6 @@ namespace RIoT2.Elsa.Server.RIoT.UIHints
             return new(obj);
         }
 
-        /// <inheritdoc />
         private ValueTask<ICollection<RIoTTemplateItem>> GetItemsAsync(PropertyInfo propertyInfo, object? context, CancellationToken cancellationToken)
         {
             try

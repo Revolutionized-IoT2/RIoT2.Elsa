@@ -6,6 +6,7 @@ using Elsa.Workflows.Models;
 using Elsa.Workflows.UIHints.Dropdown;
 using RIoT2.Elsa.Server.RIoT.Services.Interfaces;
 using RIoT2.Elsa.Server.RIoT.UIHints;
+using RIoT2.Elsa.Studio.Models;
 
 namespace RIoT2.Elsa.Server.RIoT.Activities
 {
@@ -18,11 +19,11 @@ namespace RIoT2.Elsa.Server.RIoT.Activities
     public class RIoTData : CodeActivity
     {
         [Input(
-        Description = "Choose RIoT Data",
-        UIHint = InputUIHints.DropDown,
-        UIHandler = typeof(RIoTDataOptionsProvider)
-        )]
-        public Input<SelectListItem> SelectedDataSource { get; set; } = null!;
+            Description = "Choose RIoT Data",
+            UIHint = "riot-output-selector",
+            UIHandler = typeof(RIoTDataOptionsProvider)
+            )]
+        public Input<RIoTTemplateItem> SelectedDataSource { get; set; } = null!;
 
         [Output(Description = "RIoT data")]
         public Output<object> DataObject { get; set; } = default!;
