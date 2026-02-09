@@ -9,5 +9,6 @@
         public string? Device { get; set; }
         public string? Value { get; set; }
         public object? Model { get; set; }
+        public TemplateType TemplateType { get; set; }
     }
 }

@@ -38,8 +38,8 @@ namespace RIoT2.Elsa.Server.RIoT.UIHints
 
                 Task.WaitAll(variableTemplates, commandTemplates);
 
-                addTemplatesTolist(selectListItems, commandTemplates.Result);
-                addTemplatesTolist(selectListItems, variableTemplates.Result);
+                addTemplatesTolist(selectListItems, commandTemplates.Result, TemplateType.Command);
+                addTemplatesTolist(selectListItems, variableTemplates.Result, TemplateType.Variable);
 
                 return new(selectListItems);
             }
@@ -49,11 +49,11 @@ namespace RIoT2.Elsa.Server.RIoT.UIHints
             }
         }
 
-        private void addTemplatesTolist(List<RIoTTemplateItem> list, List<Template> templates) 
+        private void addTemplatesTolist(List<RIoTTemplateItem> list, List<Template> templates, TemplateType type) 
         {
             foreach (var t in templates)
             {
-                list.Add(t.Create());
+                list.Add(t.Create(type));
             }
         }
     }

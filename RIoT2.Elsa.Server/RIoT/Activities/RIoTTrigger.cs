@@ -16,7 +16,7 @@ namespace RIoT2.Elsa.Server.RIoT.Activities
     public class RIoTTrigger : Trigger, IStartNode
     {
         [Input(
-           Description = "Choose RIoT trigger from the list\"",
+           Description = "Choose RIoT trigger from the list",
            UIHint = "riot-output-selector",
            DefaultSyntax = "JavaScript",
            UIHandler = typeof(RIoTTriggerOptionsProvider)
@@ -36,15 +36,17 @@ namespace RIoT2.Elsa.Server.RIoT.Activities
                 await context.CompleteActivityAsync();
                 return; 
             }
-
-            //string optionValue = SelectedTrigger.Expression?.Value?.ToString() ?? "DefaultOption";
+            return;
         }
 
         protected override object GetTriggerPayload(TriggerIndexingContext context)
         {
-            // Return payload used to match incoming events to workflows
-            var eventName = SelectedTrigger.Expression?.Value?.ToString() ?? "DefaultOption";
-            return eventName ?? "DefaultEvent";
+            var eventname = "";
+            var selection = SelectedTrigger.Get(context.ExpressionExecutionContext) ?? null;
+            if (selection != null)
+                eventname = selection.Id ?? "DefaultEvent";
+
+            return eventname;
         }
     }
 }

@@ -31,15 +31,28 @@ namespace RIoT2.Elsa.Server.RIoT.Activities
 
         protected override void Execute(ActivityExecutionContext context)
         {
-            var reportId = SelectedDataSource.Expression?.Value?.ToString() ?? "";
+            var selection = SelectedDataSource.Get(context) ?? null;
+            if (selection == null || selection.Id == null)
+                return;
 
-            if (!String.IsNullOrEmpty(reportId)) 
+            var riot = context.GetRequiredService<IRIoTDataService>();
+            object? data = null;
+
+            switch (selection.TemplateType) 
             {
-                //TODO get variables and CMD's also
-                var riot = context.GetRequiredService<IRIoTDataService>();
-                object data = riot.GetReportValueAsync(reportId).Result;
-                DataObject.Set(context, data);
+                case TemplateType.Report:
+                    data = riot.GetReportValueAsync(selection.Id).Result;
+                    break;
+                case TemplateType.Variable:
+                    data = riot.GetVariableValueAsync(selection.Id).Result;
+                    break;
+                case TemplateType.Command:
+                    data = riot.GetCommandValueAsync(selection.Id).Result;
+                    break;
+                default:
+                    break;
             }
+            DataObject.Set(context, data);
         }
     }
 }

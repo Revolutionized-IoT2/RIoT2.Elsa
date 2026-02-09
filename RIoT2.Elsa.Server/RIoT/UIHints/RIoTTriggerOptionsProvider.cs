@@ -1,5 +1,4 @@
 ﻿using Elsa.Workflows;
-using Elsa.Workflows.UIHints.Dropdown;
 using RIoT2.Elsa.Server.RIoT.Models;
 using RIoT2.Elsa.Server.RIoT.Services.Interfaces;
 using RIoT2.Elsa.Studio.Models;
@@ -36,8 +35,8 @@ namespace RIoT2.Elsa.Server.RIoT.UIHints
 
                 Task.WaitAll(variableTemplates, reportTemplates);
 
-                addTemplatesTolist(selectListItems, reportTemplates.Result);
-                addTemplatesTolist(selectListItems, variableTemplates.Result);
+                addTemplatesTolist(selectListItems, reportTemplates.Result, TemplateType.Report);
+                addTemplatesTolist(selectListItems, variableTemplates.Result, TemplateType.Variable);
 
                 return new(selectListItems);
             }
@@ -47,11 +46,11 @@ namespace RIoT2.Elsa.Server.RIoT.UIHints
             }
         }
 
-        private void addTemplatesTolist(List<RIoTTemplateItem> list, List<Template> templates)
+        private void addTemplatesTolist(List<RIoTTemplateItem> list, List<Template> templates, TemplateType type)
         {
             foreach (var t in templates)
             {
-                list.Add(t.Create());
+                list.Add(t.Create(type));
             }
         }
     }

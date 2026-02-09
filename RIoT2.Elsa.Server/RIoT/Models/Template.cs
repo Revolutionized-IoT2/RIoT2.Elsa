@@ -1,4 +1,5 @@
 ﻿using RIoT2.Core.Interfaces;
+using RIoT2.Elsa.Studio.Models;
 
 namespace RIoT2.Elsa.Server.RIoT.Models
 {
@@ -14,7 +15,7 @@ namespace RIoT2.Elsa.Server.RIoT.Models
         public string DeviceId { get; set; } = string.Empty;
         public string Device { get; set; } = string.Empty;
 
-        public RIoT2.Elsa.Studio.Models.RIoTTemplateItem Create()
+        public Studio.Models.RIoTTemplateItem Create(TemplateType type)
         {
             return new Studio.Models.RIoTTemplateItem
             {
@@ -23,7 +24,8 @@ namespace RIoT2.Elsa.Server.RIoT.Models
                 Model = this.Model,
                 Type = this.Type,
                 Node = this.Node,
-                Device = this.Device
+                Device = this.Device,
+                TemplateType = type
             };
         }
     }
