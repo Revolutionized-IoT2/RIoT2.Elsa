@@ -5,6 +5,7 @@ using Elsa.EntityFrameworkCore.Modules.Runtime;
 using Elsa.Extensions;
 using Elsa.Retention.Extensions;
 using Elsa.Retention.Models;
+using Elsa.Studio.Branding;
 using Elsa.Workflows;
 using Elsa.Workflows.Management.Entities;
 using Elsa.Workflows.Management.Enums;
@@ -18,6 +19,7 @@ builder.WebHost.UseStaticWebAssets();
 
 var services = builder.Services;
 var configuration = builder.Configuration;
+
 
 services.AddLogging(logging => logging.AddConsole());
 var sqLiteConnectionString = "Data Source=Data/elsa.sqlite.db;Cache=Shared;";

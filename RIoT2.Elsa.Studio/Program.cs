@@ -1,3 +1,4 @@
+using Elsa.Studio.Branding;
 using Elsa.Studio.Contracts;
 using Elsa.Studio.Core.BlazorWasm.Extensions;
 using Elsa.Studio.Dashboard.Extensions;
@@ -45,7 +46,8 @@ builder.Services.UseElsaIdentity();
 //Not until 3.7
 //builder.Services.AddScoped<IActivityPickerComponentProvider, TreeviewActivityPickerComponentProvider>();
 builder.Services.AddScoped<IActivityDisplaySettingsProvider, AddRIoTActivityDisplaySettingsProvider>();
-builder.Services.AddScoped<IUIHintHandler, RIoTOutputSelectorUIHintHandler>(); 
+builder.Services.AddScoped<IUIHintHandler, RIoTOutputSelectorUIHintHandler>();
+builder.Services.AddScoped<IBrandingProvider, RIoTBrandingProvider>();
 
 
 // Build the application.
