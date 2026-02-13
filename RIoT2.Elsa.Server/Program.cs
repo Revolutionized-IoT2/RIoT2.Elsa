@@ -1,7 +1,14 @@
+using Elsa.Common;
 using Elsa.EntityFrameworkCore.Extensions;
 using Elsa.EntityFrameworkCore.Modules.Management;
 using Elsa.EntityFrameworkCore.Modules.Runtime;
 using Elsa.Extensions;
+using Elsa.Retention.Extensions;
+using Elsa.Retention.Models;
+using Elsa.Workflows;
+using Elsa.Workflows.Management.Entities;
+using Elsa.Workflows.Management.Enums;
+using Elsa.Workflows.Management.Models;
 using Microsoft.AspNetCore.Mvc;
 using RIoT2.Elsa.Server.RIoT.Endpoints;
 using RIoT2.Elsa.Server.RIoT.Extensions;
@@ -33,8 +40,28 @@ services
         .UseRIoT() // <-- Register the RIoT feature
         .AddActivitiesFrom<Program>()
         .AddWorkflowsFrom<Program>()
-    );
+        .UseRetention(r => {
+            r.SweepInterval = TimeSpan.FromMinutes(60); //check retention policies every hour
+            r.AddDeletePolicy("Delete all finished workflows", sp =>
+            {
+                ISystemClock clock = sp.GetRequiredService<ISystemClock>();
+                DateTimeOffset threshold = clock.UtcNow.Subtract(TimeSpan.FromHours(24));
 
+                return new RetentionWorkflowInstanceFilter()
+                {
+                    TimestampFilters =
+                    [
+                        new TimestampFilter() {
+                            Column = nameof(WorkflowInstance.FinishedAt),
+                            Operator = TimestampFilterOperator.LessThanOrEqual,
+                            Timestamp = threshold
+                        }
+                    ],
+                    WorkflowStatus = WorkflowStatus.Finished
+                };
+            });
+        })
+    );
 
 services.AddCors(cors => cors.AddDefaultPolicy(policy => policy.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin().WithExposedHeaders("*")));
 services.AddRazorPages(options => options.Conventions.ConfigureFilter(new IgnoreAntiforgeryTokenAttribute()));

@@ -13,6 +13,7 @@
     <PackageReference Include="Elsa.Identity" Version="3.5.3" />
     <PackageReference Include="Elsa.JavaScript" Version="3.5.3" />
     <PackageReference Include="Elsa.Liquid" Version="3.5.3" />
+    <PackageReference Include="Elsa.Retention" Version="3.5.3" />
     <PackageReference Include="Elsa.Scheduling" Version="3.5.3" />
     <PackageReference Include="Elsa.Workflows.Api" Version="3.5.3" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="10.0.3" />
