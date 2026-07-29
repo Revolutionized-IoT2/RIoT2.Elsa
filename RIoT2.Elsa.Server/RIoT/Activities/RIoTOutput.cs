@@ -1,6 +1,6 @@
-﻿using Elsa.Expressions.Models;
+﻿using Elsa.Expressions.JavaScript.Contracts;
+using Elsa.Expressions.Models;
 using Elsa.Extensions;
-using Elsa.JavaScript.Contracts;
 using Elsa.Workflows;
 using Elsa.Workflows.Attributes;
 using Elsa.Workflows.Models;
