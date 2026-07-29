@@ -17,11 +17,12 @@ The `RIoT` folder adds a custom Elsa feature (`RIoTFeature`) that connects Elsa 
   - `RIoTTrigger` – starts/resumes a workflow when a selected RIoT event occurs.
   - `RIoTData` – reads a RIoT report, variable, or command value into the workflow.
   - `RIoTOutput` – sends a command back out to RIoT2 (evaluated as JavaScript).
-- **Endpoints** – `RIoTEndpoints.MapRIoTEndpoints` exposes `POST /riot/trigger/{id}` to trigger/resume workflows externally.
+- **Endpoints** – `RIoTEndpoints.MapRIoTEndpoints` exposes `POST /riot/trigger/{id}` to trigger/resume workflows externally. The same operation is also available over gRPC via `RIoTTriggerService.Trigger` (see [gRPC](#grpc) below).
 - **Services**
   - `RIoTConfigurationService` – reads RIoT/MQTT configuration from environment variables.
   - `WorkflowMqttService` / `MqttBackgroundService` – connects to the MQTT broker and relays messages to/from workflows.
   - `RIoTDataService` – fetches report/variable/command values from the RIoT2 orchestrator.
+  - `RIoTTriggerGrpcService` – gRPC implementation of the trigger operation, sharing the same logic as the REST endpoint.
 - **UI Hints** – dropdown providers used by the Elsa Studio designer so users can pick RIoT triggers, data sources, and commands from the RIoT2 orchestrator's templates.
 
 ## Prerequisites
@@ -60,6 +61,28 @@ By default the server listens on `http://localhost:5001` (see `launchSettings.js
 - Elsa Studio (workflow designer) is served from the root of the site.
 - The Elsa Workflows API is available under `/api/workflows` (base path configurable via the `Http:BasePath` setting).
 - The RIoT trigger endpoint is available at `POST /riot/trigger/{id}`.
+- The same trigger operation is available over gRPC (see [gRPC](#grpc) below).
+
+## gRPC
+
+In addition to the REST endpoint, RIoT events can be triggered over gRPC using the contract defined in [RIoT2.Elsa.Server/RIoT/Protos/riot.proto](RIoT2.Elsa.Server/RIoT/Protos/riot.proto):
+
+```protobuf
+service RIoTTriggerService {
+  rpc Trigger (TriggerRequest) returns (TriggerResponse);
+}
+
+message TriggerRequest {
+  string id = 1;   // matches the {id} route parameter / RIoT event id
+  string data = 2; // JSON-encoded event payload
+}
+
+message TriggerResponse {
+  bool success = 1;
+}
+```
+
+The gRPC service (`RIoTTriggerGrpcService`) is mapped on the same Kestrel endpoint as the REST API and Elsa Studio. Kestrel is configured for `Http1AndHttp2` so gRPC (HTTP/2) works over the same plaintext port used for HTTP/1.1 traffic, without requiring TLS.
 
 ## Running with Docker
 

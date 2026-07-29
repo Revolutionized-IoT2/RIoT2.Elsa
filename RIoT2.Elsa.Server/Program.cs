@@ -11,11 +11,19 @@ using Elsa.Workflows.Management.Entities;
 using Elsa.Workflows.Management.Enums;
 using Elsa.Workflows.Management.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using RIoT2.Elsa.Server.RIoT.Endpoints;
 using RIoT2.Elsa.Server.RIoT.Extensions;
+using RIoT2.Elsa.Server.RIoT.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.UseStaticWebAssets();
+
+// Allow HTTP/2 (required by gRPC) alongside HTTP/1.1 on the same, non-TLS endpoint.
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.ConfigureEndpointDefaults(listenOptions => listenOptions.Protocols = HttpProtocols.Http1AndHttp2);
+});
 
 var services = builder.Services;
 var configuration = builder.Configuration;
@@ -67,6 +75,7 @@ services
 
 services.AddCors(cors => cors.AddDefaultPolicy(policy => policy.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin().WithExposedHeaders("*")));
 services.AddRazorPages(options => options.Conventions.ConfigureFilter(new IgnoreAntiforgeryTokenAttribute()));
+services.AddGrpc();
 
 var app = builder.Build();
 
@@ -80,6 +89,7 @@ if (!app.Environment.IsDevelopment())
 app.MapStaticAssets();
 app.UseRouting();
 app.MapRIoTEndpoints(); // <-- Map the RIoT endpoints
+app.MapGrpcService<RIoTTriggerGrpcService>(); // <-- Optional gRPC transport for the same trigger endpoint
 app.UseCors();
 app.UseStaticFiles();
 app.UseAuthentication();
