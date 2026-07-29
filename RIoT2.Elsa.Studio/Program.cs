@@ -9,6 +9,7 @@ using Elsa.Studio.Login.HttpMessageHandlers;
 using Elsa.Studio.Options;
 using Elsa.Studio.Shell;
 using Elsa.Studio.Shell.Extensions;
+using Elsa.Studio.Workflows.ActivityPickers.Treeview;
 using Elsa.Studio.Workflows.Designer.Extensions;
 using Elsa.Studio.Workflows.Extensions;
 using Elsa.Studio.Workflows.UI.Contracts;
@@ -43,8 +44,7 @@ builder.Services.AddDashboardModule();
 builder.Services.AddWorkflowsModule();
 builder.Services.UseElsaIdentity();
 
-//Not until 3.7
-//builder.Services.AddScoped<IActivityPickerComponentProvider, TreeviewActivityPickerComponentProvider>();
+builder.Services.AddScoped<IActivityPickerComponentProvider, TreeviewActivityPickerComponentProvider>();
 builder.Services.AddScoped<IActivityDisplaySettingsProvider, AddRIoTActivityDisplaySettingsProvider>();
 builder.Services.AddScoped<IUIHintHandler, RIoTOutputSelectorUIHintHandler>();
 builder.Services.AddScoped<IBrandingProvider, RIoTBrandingProvider>();

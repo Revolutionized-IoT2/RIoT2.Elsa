@@ -128,7 +128,7 @@
         if (valueType == Core.ValueType.Entity || valueType == Core.ValueType.TextArray)
         {
             json = JsonSerializer.Serialize(obj);
-            JsLiteral = "let " + camelName + " = " + RIoT2.Core.Utils.Json2.JsonToJsObjectLiteral(json) + ";";
+            JsLiteral = "let " + camelName + " = " + RIoT2.Core.Utils.Json.JsonToJsObjectLiteral(json) + ";";
         }
         else
         {
