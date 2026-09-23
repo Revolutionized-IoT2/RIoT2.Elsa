@@ -32,7 +32,7 @@ namespace RIoT2.Elsa.Server.RIoT.Features
             Services.AddScoped<IPropertyUIHandler, RIoTDataOptionsProvider>();
             Services.AddScoped<IPropertyUIHandler, RIoTOutputOptionsProvider>();
             //Services.AddScoped<IUIHintHandler, RIoTOutputSelectorUIHintHandler>();
-            Services.AddSingleton<IRIoTDataService, RIoTDataService>();
+            Services.AddHttpClient<IRIoTDataService, RIoTDataService>(client => client.Timeout = TimeSpan.FromSeconds(60));
             Services.AddHostedService<MqttBackgroundService>();
         }
 

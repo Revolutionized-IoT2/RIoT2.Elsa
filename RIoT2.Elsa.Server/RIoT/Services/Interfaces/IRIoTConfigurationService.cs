@@ -8,5 +8,6 @@
         string MQTT_Username { get; }
         string MQTT_ServerUrl { get; }
         public string? WorkflowBaseUrl { get; set; }
+        string? WorkflowGrpcBaseUrl { get; }
     }
 }

@@ -10,6 +10,7 @@ RUN apk add --upgrade --no-cache tzdata
 ENV DOTNET_RUNNING_IN_CONTAINER=true
 ENV ASPNETCORE_HTTP_PORTS=80
 EXPOSE 80
+EXPOSE 5003
 
 # This stage is used to build the service project
 FROM mcr.microsoft.com/dotnet/sdk:10.0-alpine AS build

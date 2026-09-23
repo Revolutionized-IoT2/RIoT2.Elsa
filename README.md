@@ -37,7 +37,9 @@ The server is configured primarily through environment variables (see [RIoT2.Els
 | Variable | Description |
 |---|---|
 | `RIOT2_WORKFLOW_ID` | Identifier for this workflow host instance. |
-| `RIOT2_WORKFLOW_URL` | Base URL of this workflow host, used by RIoT2 to call back. |
+| `RIOT2_WORKFLOW_URL` | Externally reachable web/Studio base URL. |
+| `RIOT2_WORKFLOW_GRPC_URL` | Required externally reachable HTTP/2 URL advertised to the orchestrator, e.g. `http://host:5003`. |
+| `RIOT2_WORKFLOW_GRPC_PORT` | Local plaintext HTTP/2 listener port; defaults to `5003`. |
 | `RIOT2_MQTT_IP` | Hostname/IP of the MQTT broker. |
 | `RIOT2_MQTT_USERNAME` | MQTT username. |
 | `RIOT2_MQTT_PASSWORD` | MQTT password. |
@@ -82,7 +84,19 @@ message TriggerResponse {
 }
 ```
 
-The gRPC service (`RIoTTriggerGrpcService`) is mapped on the same Kestrel endpoint as the REST API and Elsa Studio. Kestrel is configured for `Http1AndHttp2` so gRPC (HTTP/2) works over the same plaintext port used for HTTP/1.1 traffic, without requiring TLS.
+The gRPC service uses a dedicated plaintext HTTP/2 listener, defaulting to port `5003`.
+Existing web bindings from `ASPNETCORE_URLS`, launch settings, or `ASPNETCORE_HTTP_PORTS`
+remain available for Studio and REST. Explicit `Kestrel:Endpoints` web settings are preserved;
+`Kestrel:Endpoints:WorkflowGrpc:Url` can override the gRPC binding.
+
+Plaintext `Http1AndHttp2` on one port cannot negotiate HTTP/2 reliably. Expose the dedicated
+gRPC port and set `RIOT2_WORKFLOW_GRPC_URL` to its externally reachable address, including any
+container port mapping. MQTT announcements keep the web URL in `NodeBaseUrl` and publish the
+gRPC URL separately in `GrpcBaseUrl`. Deploy Core `0.1.40` and the updated orchestrator first.
+Plaintext listeners are intended for trusted networks; do not expose them publicly.
+
+`RIoTOutput` awaits expression evaluation and command submission. Missing command configuration,
+HTTP rejection, transport failure, and cancellation are no longer treated as successful completion.
 
 ## Running with Docker
 
@@ -90,16 +104,24 @@ A multi-stage [Dockerfile](Dockerfile) is provided to build and run the server:
 
 ```powershell
 docker build -t riot2-elsa .
-docker run -p 8080:80 `
+docker run -p 8080:80 -p 5003:5003 `
   -e RIOT2_MQTT_IP=192.168.0.30 `
   -e RIOT2_MQTT_USERNAME=user `
   -e RIOT2_MQTT_PASSWORD=password `
   -e RIOT2_WORKFLOW_ID=<workflow-id> `
   -e RIOT2_WORKFLOW_URL=http://<host>:8080 `
+  -e RIOT2_WORKFLOW_GRPC_URL=http://<host>:5003 `
   riot2-elsa
 ```
 
 Mount a volume to `/app/Data` to persist the SQLite database across container restarts.
+
+## Regression tests
+
+Run `dotnet test RIoT2.Elsa.Tests\RIoT2.Elsa.Tests.csproj`. Tests use loopback HTTP endpoints and
+an in-process Elsa runner, without MQTT, hardware, or a production workflow database. They cover
+split-port protocol negotiation, preserved web bindings, rejected/cancelled commands, and awaited
+activity completion/failure.
 
 ## License
 

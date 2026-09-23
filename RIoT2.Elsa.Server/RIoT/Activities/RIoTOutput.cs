@@ -28,16 +28,16 @@ namespace RIoT2.Elsa.Server.RIoT.Activities
             )]
         public Input<RIoTTemplateItem> Command { get; set; } = null!;
 
-        protected override async void Execute(ActivityExecutionContext context)
+        protected override async ValueTask ExecuteAsync(ActivityExecutionContext context)
         {
             var cmd = Command.Get(context) ?? null;
-            if (cmd == null || cmd.Id == null)
-                return;
+            if (cmd == null || string.IsNullOrWhiteSpace(cmd.Id))
+                throw new InvalidOperationException("RIoT Output requires a command identifier.");
 
             var script = cmd.Value ?? string.Empty;
             
             if (string.IsNullOrWhiteSpace(script))
-                return;
+                throw new InvalidOperationException("RIoT Output requires a command value expression.");
 
             var javaScriptEvaluator = context.GetRequiredService<IJavaScriptEvaluator>();
 
@@ -49,8 +49,8 @@ namespace RIoT2.Elsa.Server.RIoT.Activities
                 engine => ConfigureEngine(engine, context),
                 context.CancellationToken);
 
-                var riot = context.GetRequiredService<IRIoTDataService>();
-                await riot.ExecuteCommandAsync(cmd.Id, result);
+            var riot = context.GetRequiredService<IRIoTDataService>();
+            await riot.ExecuteCommandAsync(cmd.Id, result, context.CancellationToken);
         }
 
         private static void ConfigureEngine(Engine engine, ActivityExecutionContext context)

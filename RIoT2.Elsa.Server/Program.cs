@@ -11,7 +11,6 @@ using Elsa.Workflows.Management.Entities;
 using Elsa.Workflows.Management.Enums;
 using Elsa.Workflows.Management.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
 using RIoT2.Elsa.Server.RIoT.Endpoints;
 using RIoT2.Elsa.Server.RIoT.Extensions;
 using RIoT2.Elsa.Server.RIoT.Services;
@@ -19,11 +18,7 @@ using RIoT2.Elsa.Server.RIoT.Services;
 var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.UseStaticWebAssets();
 
-// Allow HTTP/2 (required by gRPC) alongside HTTP/1.1 on the same, non-TLS endpoint.
-builder.WebHost.ConfigureKestrel(options =>
-{
-    options.ConfigureEndpointDefaults(listenOptions => listenOptions.Protocols = HttpProtocols.Http1AndHttp2);
-});
+WorkflowEndpointConfiguration.Configure(builder.Configuration);
 
 var services = builder.Services;
 var configuration = builder.Configuration;

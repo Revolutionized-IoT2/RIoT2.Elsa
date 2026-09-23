@@ -42,7 +42,8 @@ namespace RIoT2.Elsa.Server.RIoT.Services
                 IsOnline = true,
                 Name = "Elsa3",
                 NodeType = NodeType.Workflow,
-                NodeBaseUrl = _configuration.WorkflowBaseUrl
+                NodeBaseUrl = _configuration.WorkflowBaseUrl,
+                GrpcBaseUrl = _configuration.WorkflowGrpcBaseUrl
             }));
 
         }

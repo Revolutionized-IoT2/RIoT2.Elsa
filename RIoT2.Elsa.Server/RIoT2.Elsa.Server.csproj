@@ -18,7 +18,7 @@
     <PackageReference Include="Grpc.AspNetCore" Version="2.80.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="10.0.10" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.10" />
-    <PackageReference Include="RIoT2.Core" Version="0.1.37" />
+    <PackageReference Include="RIoT2.Core" Version="0.1.40" />
   </ItemGroup>
 
   <ItemGroup>

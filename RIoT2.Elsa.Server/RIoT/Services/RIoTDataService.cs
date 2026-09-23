@@ -11,21 +11,31 @@ namespace RIoT2.Elsa.Server.RIoT.Services
     public class RIoTDataService : IRIoTDataService
     {
         private readonly IRIoTConfigurationService _configuration;
+        private readonly HttpClient _httpClient;
 
-        public RIoTDataService(IRIoTConfigurationService configurationService)
+        public RIoTDataService(IRIoTConfigurationService configurationService, HttpClient httpClient)
         {
             _configuration = configurationService;
+            _httpClient = httpClient;
         }
 
-        public async Task ExecuteCommandAsync(string id, object? data)
+        public async Task ExecuteCommandAsync(string id, object? data, CancellationToken cancellationToken = default)
         {
+            if (string.IsNullOrWhiteSpace(id))
+                throw new ArgumentException("A command identifier is required.", nameof(id));
+            if (string.IsNullOrWhiteSpace(_configuration.OrchestratorBaseUrl))
+                throw new InvalidOperationException("The orchestrator URL has not been configured.");
+
             Command c = new Command
             {
                 Id = id,
                 Value = new ValueModel(data)
             };
 
-            await Web.PostAsync(_configuration.OrchestratorBaseUrl + $"/api/command/execute", Json.Serialize(c));
+            using var body = new StringContent(Json.Serialize(c), System.Text.Encoding.UTF8, "application/json");
+            using var response = await _httpClient.PostAsync(
+                _configuration.OrchestratorBaseUrl.TrimEnd('/') + "/api/command/execute", body, cancellationToken);
+            response.EnsureSuccessStatusCode();
         }
 
         public async Task<List<Template>> GetCommandTemplatesAsync()
