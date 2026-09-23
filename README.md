@@ -92,7 +92,9 @@ remain available for Studio and REST. Explicit `Kestrel:Endpoints` web settings 
 Plaintext `Http1AndHttp2` on one port cannot negotiate HTTP/2 reliably. Expose the dedicated
 gRPC port and set `RIOT2_WORKFLOW_GRPC_URL` to its externally reachable address, including any
 container port mapping. MQTT announcements keep the web URL in `NodeBaseUrl` and publish the
-gRPC URL separately in `GrpcBaseUrl`. Deploy Core `0.1.40` and the updated orchestrator first.
+gRPC URL separately in `GrpcBaseUrl`. Deploy Core `0.1.41` and the updated orchestrator first.
+Workflow nodes announce both endpoints after every MQTT connection, including reconnects; handlers
+are installed before subscribing so retained orchestrator announcements are not lost during startup.
 Plaintext listeners are intended for trusted networks; do not expose them publicly.
 
 `RIoTOutput` awaits expression evaluation and command submission. Missing command configuration,

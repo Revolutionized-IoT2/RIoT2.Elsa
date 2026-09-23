@@ -35,9 +35,9 @@ namespace RIoT2.Elsa.Server.RIoT.Services
         }
 
 
-        private void sendWorkflowOnlineCommand() 
+        private Task sendWorkflowOnlineCommand()
         {
-            _client.Publish(_nodeOnlineTopic, Json.SerializeIgnoreNulls(new NodeOnlineMessage()
+            return _client.Publish(_nodeOnlineTopic, Json.SerializeIgnoreNulls(new NodeOnlineMessage()
             {
                 IsOnline = true,
                 Name = "Elsa3",
@@ -52,9 +52,9 @@ namespace RIoT2.Elsa.Server.RIoT.Services
         {
             try
             {
-                await _client.Start(_orchestratorOnlineTopic, _configureTopic); //We're only interested in orchestrator online messages. Reports will be handled by the API Callbacks
                 _client.MessageReceived += _client_MessageReceived;
-                sendWorkflowOnlineCommand();
+                _client.ConnectedAsync += sendWorkflowOnlineCommand;
+                await _client.Start(_orchestratorOnlineTopic, _configureTopic);
             }
             catch (Exception x)
             {
@@ -64,16 +64,18 @@ namespace RIoT2.Elsa.Server.RIoT.Services
 
         public async Task Stop()
         {
+            _client.MessageReceived -= _client_MessageReceived;
+            _client.ConnectedAsync -= sendWorkflowOnlineCommand;
             await _client.Stop();
         }
 
-        private void _client_MessageReceived(MqttEventArgs mqttEventArgs)
+        private async void _client_MessageReceived(MqttEventArgs mqttEventArgs)
         {
             try
             {
                 if (MqttClient.IsMatch(mqttEventArgs.Topic, _orchestratorOnlineTopic) )
                 {
-                    sendWorkflowOnlineCommand();
+                    await sendWorkflowOnlineCommand();
                 }
                 if (MqttClient.IsMatch(mqttEventArgs.Topic, _configureTopic))
                 {
