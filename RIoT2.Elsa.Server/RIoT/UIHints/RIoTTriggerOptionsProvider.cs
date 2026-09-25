@@ -13,19 +13,19 @@ namespace RIoT2.Elsa.Server.RIoT.UIHints
 
         public float Priority { get; }
 
-        public ValueTask<IDictionary<string, object>> GetUIPropertiesAsync(PropertyInfo propertyInfo, object? context, CancellationToken cancellationToken = default)
+        public async ValueTask<IDictionary<string, object>> GetUIPropertiesAsync(PropertyInfo propertyInfo, object? context, CancellationToken cancellationToken = default)
         {
-            ICollection<RIoTTemplateItem> items = GetItemsAsync(propertyInfo, context, cancellationToken).Result;
+            ICollection<RIoTTemplateItem> items = await GetItemsAsync(propertyInfo, context, cancellationToken);
             RIoTOutputProps value = new RIoTOutputProps
             {
                 SelectList = new RIoTTemplateList(items),
                 HideEditor = true
             };
             Dictionary<string, object> obj = new Dictionary<string, object> { ["riot-output-selector"] = value };
-            return new(obj);
+            return obj;
         }
 
-        private ValueTask<ICollection<RIoTTemplateItem>> GetItemsAsync(PropertyInfo propertyInfo, object? context, CancellationToken cancellationToken)
+        private async ValueTask<ICollection<RIoTTemplateItem>> GetItemsAsync(PropertyInfo propertyInfo, object? context, CancellationToken cancellationToken)
         {
             try
             {
@@ -33,12 +33,12 @@ namespace RIoT2.Elsa.Server.RIoT.UIHints
                 var reportTemplates = _rIoT.GetReportTemplatesAsync();
                 var variableTemplates = _rIoT.GetVariableTemplatesAsync();
 
-                Task.WaitAll(variableTemplates, reportTemplates);
+                await Task.WhenAll(variableTemplates, reportTemplates).WaitAsync(cancellationToken);
 
-                addTemplatesTolist(selectListItems, reportTemplates.Result, TemplateType.Report);
-                addTemplatesTolist(selectListItems, variableTemplates.Result, TemplateType.Variable);
+                addTemplatesTolist(selectListItems, await reportTemplates, TemplateType.Report);
+                addTemplatesTolist(selectListItems, await variableTemplates, TemplateType.Variable);
 
-                return new(selectListItems);
+                return selectListItems;
             }
             catch (Exception ex)
             {

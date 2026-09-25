@@ -8,8 +8,8 @@ FROM mcr.microsoft.com/dotnet/aspnet:10.0-alpine AS base
 WORKDIR /app
 RUN apk add --upgrade --no-cache tzdata
 ENV DOTNET_RUNNING_IN_CONTAINER=true
-ENV ASPNETCORE_HTTP_PORTS=80
-EXPOSE 80
+ENV ASPNETCORE_HTTP_PORTS=8080
+EXPOSE 8080
 EXPOSE 5003
 
 # This stage is used to build the service project
@@ -35,13 +35,10 @@ RUN dotnet publish "RIoT2.Elsa.Server.csproj" -c $BUILD_CONFIGURATION -o /app/pu
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+RUN mkdir -p /app/Data && chown -R app:app /app
+USER app
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 CMD wget -q -O- http://127.0.0.1:8080/health || exit 1
 ENTRYPOINT ["dotnet", "RIoT2.Elsa.Server.dll"]
 
-#Set default environment variables
 ENV ASPNETCORE_ENVIRONMENT=Production
-ENV RIOT2_MQTT_IP=192.168.0.30
-ENV RIOT2_MQTT_PASSWORD=password
-ENV RIOT2_MQTT_USERNAME=user
-ENV RIOT2_WORKFLOW_ID=E27E898E-82DB-42C9-AC58-E93413CE7266
-ENV RIOT2_WORKFLOW_URL=http://192.168.0.32
 ENV TZ=Europe/Helsinki

@@ -24,7 +24,16 @@ namespace RIoT2.Elsa.Server.RIoT.Services
             object? data = null;
 
             if (!string.IsNullOrWhiteSpace(request.Data))
-                data = JsonSerializer.Deserialize<JsonElement>(request.Data);
+            {
+                try
+                {
+                    data = JsonSerializer.Deserialize<JsonElement>(request.Data);
+                }
+                catch (JsonException error)
+                {
+                    throw new RpcException(new Status(StatusCode.InvalidArgument, "Trigger data must be valid JSON."), error.Message);
+                }
+            }
 
             await RIoTEndpoints.TriggerAsync(request.Id, data, _stimulusSender);
 

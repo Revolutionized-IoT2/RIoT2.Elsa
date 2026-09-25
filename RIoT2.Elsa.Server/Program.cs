@@ -23,6 +23,14 @@ WorkflowEndpointConfiguration.Configure(builder.Configuration);
 var services = builder.Services;
 var configuration = builder.Configuration;
 
+var identitySigningKey = configuration["ELSA_IDENTITY_SIGNING_KEY"];
+if (string.IsNullOrWhiteSpace(identitySigningKey))
+{
+    if (!builder.Environment.IsDevelopment())
+        throw new InvalidOperationException("ELSA_IDENTITY_SIGNING_KEY must be configured in non-development environments.");
+
+    identitySigningKey = Convert.ToBase64String(System.Security.Cryptography.RandomNumberGenerator.GetBytes(64));
+}
 
 services.AddLogging(logging => logging.AddConsole());
 var sqLiteConnectionString = "Data Source=Data/elsa.sqlite.db;Cache=Shared;";
@@ -30,7 +38,7 @@ services
     .AddElsa(elsa => elsa
         .UseIdentity(identity =>
         {
-            identity.TokenOptions = options => options.SigningKey = "large-signing-key-for-signing-JWT-tokens";
+            identity.TokenOptions = options => options.SigningKey = identitySigningKey;
             identity.UseAdminUserProvider();
         })
         .UseDefaultAuthentication()
@@ -85,6 +93,9 @@ app.MapStaticAssets();
 app.UseRouting();
 app.MapRIoTEndpoints(); // <-- Map the RIoT endpoints
 app.MapGrpcService<RIoTTriggerGrpcService>(); // <-- Optional gRPC transport for the same trigger endpoint
+var health = () => Results.Ok(new { status = "ok" });
+app.MapGet("/health", health).AllowAnonymous();
+app.MapGet("/healthz", health).AllowAnonymous();
 app.UseCors();
 app.UseStaticFiles();
 app.UseAuthentication();

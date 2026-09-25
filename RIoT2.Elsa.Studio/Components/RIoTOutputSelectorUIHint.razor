@@ -15,10 +15,12 @@
 @using global::Elsa.Api.Client.Shared.UIHints.CodeEditor
 @using global::Elsa.Studio.Components
 @using global::Elsa.Studio.Models
+@using Microsoft.Extensions.Logging
 @using System.Text.Json;
+@inject ILogger<RIoTOutputSelectorUIHint> Logger
 
 <MudAutocomplete T="RIoTTemplateItem"
-                ValueChanged="autoCompleteValueChanged"
+                ValueChanged="AutoCompleteValueChangedAsync"
                 Value="@_selectedTemplate"
                 ToStringFunc="@(e => string.IsNullOrEmpty(e.Name) ? "unknown" : e.Name)"
                 SearchFunc="@Search"
@@ -61,13 +63,13 @@
 
 @if (_selectedTemplate !=  default)
 { 
-    <RIoTEditor Hidden="@isEditorHidden" @ref="editor" EditorContext="@EditorContext" OnChanged=@editorValueChanged Type="_selectedTemplate.Type" />
+    <RIoTEditor Hidden="@isEditorHidden" @ref="editor" EditorContext="@EditorContext" OnChanged="EditorValueChangedAsync" Type="_selectedTemplate.Type" />
 }
 
 @code {
     [Parameter]
     public DisplayInputEditorContext EditorContext { get; set; } = default!;
-    RIoTEditor editor = default!;
+    private RIoTEditor? editor;
     private bool isEditorHidden => EditorContext.InputDescriptor.GetRIoTOutputHideEditor();
 
     private RIoTTemplateItem _selectedTemplate = default!;
@@ -81,6 +83,7 @@
     public bool _clearable = false;
     public bool _modal = true;
     public List<RIoTTemplateItem> _items = new();
+    private bool _syncEditorAfterRender;
 
     protected override void OnInitialized()
     {
@@ -92,19 +95,27 @@
             try
             {
                 _selectedTemplate = JsonSerializer.Deserialize<RIoTTemplateItem>(currentValue) ?? default!;
-                Console.WriteLine("current value: " + currentValue);
-                selectedItemChanged(false);
+                Logger.LogDebug("Loaded current RIoT template selector value.");
+                _syncEditorAfterRender = true;
             }
             catch (Exception x)
             {
-                Console.WriteLine("Failed to deserialize current value: " + x.Message);
-                Console.WriteLine("Value: " + currentValue);
+                Logger.LogWarning(x, "Failed to deserialize current RIoT template selector value.");
             }
         }
 
         var selectList = EditorContext.InputDescriptor.GetRIoTTemplateList();
         if (selectList != null && selectList.Items != null)
             _items = selectList.Items.OrderBy(x => x.Device).ThenBy(x => x.Name).ToList();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!_syncEditorAfterRender)
+            return;
+
+        _syncEditorAfterRender = false;
+        await SelectedItemChangedAsync(false);
     }
 
     private string toCamelCase(string text)
@@ -155,7 +166,6 @@
         if (_selectedTemplate != default)
         {
             var value = JsonSerializer.Serialize(_selectedTemplate);
-            //Console.WriteLine("Save: " + value);
             var expression = Expression.CreateLiteral(value);
             return EditorContext.UpdateExpressionAsync(expression);
         }
@@ -163,29 +173,28 @@
         return Task.CompletedTask;
     }
 
-    private async void selectedItemChanged(bool save = true)
+    private async Task SelectedItemChangedAsync(bool save = true)
     {
         await Task.Delay(20); //added small delay to make sure the editor is rendered before setting the value, otherwise it can cause issues with the editor not updating
         
-        editor.SetValue(_selectedTemplate.Value ?? "");
+        editor?.SetValue(_selectedTemplate.Value ?? "");
 
         if (save)
             await SaveChangesAsync();
     }
 
-    private void autoCompleteValueChanged(RIoTTemplateItem value)
+    private async Task AutoCompleteValueChangedAsync(RIoTTemplateItem value)
     {
         _selectedTemplate = value;
         if (string.IsNullOrEmpty(_selectedTemplate.Value))
             _selectedTemplate.Value = createDefaultValue(_selectedTemplate.Model ?? "", _selectedTemplate.Name, _selectedTemplate.Type);
 
-        selectedItemChanged();
+        await SelectedItemChangedAsync();
     }
 
-    private async void editorValueChanged(string value)
+    private async Task EditorValueChangedAsync(string value)
     {
         _selectedTemplate.Value = value;
-        Console.WriteLine("VALUE: " + value);
         await SaveChangesAsync();
     }
 

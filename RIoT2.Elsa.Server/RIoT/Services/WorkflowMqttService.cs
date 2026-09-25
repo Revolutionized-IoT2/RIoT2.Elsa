@@ -69,7 +69,12 @@ namespace RIoT2.Elsa.Server.RIoT.Services
             await _client.Stop();
         }
 
-        private async void _client_MessageReceived(MqttEventArgs mqttEventArgs)
+        private void _client_MessageReceived(MqttEventArgs mqttEventArgs)
+        {
+            _ = HandleMessageReceivedAsync(mqttEventArgs);
+        }
+
+        private async Task HandleMessageReceivedAsync(MqttEventArgs mqttEventArgs)
         {
             try
             {

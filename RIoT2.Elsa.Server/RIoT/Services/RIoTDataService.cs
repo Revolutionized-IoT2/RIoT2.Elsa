@@ -1,8 +1,7 @@
-﻿using RIoT2.Core.Models;
+using RIoT2.Core.Models;
 using RIoT2.Core.Utils;
 using RIoT2.Elsa.Server.RIoT.Models;
 using RIoT2.Elsa.Server.RIoT.Services.Interfaces;
-using RIoT2.Elsa.Studio.UIProviders;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -40,23 +39,7 @@ namespace RIoT2.Elsa.Server.RIoT.Services
 
         public async Task<List<Template>> GetCommandTemplatesAsync()
         {
-            if (!String.IsNullOrEmpty(_configuration.OrchestratorBaseUrl))
-            {
-                var url = _configuration.OrchestratorBaseUrl + $"/api/command/templates";
-                var response = await Web.GetAsync(url);
-
-
-
-                if (response.IsSuccessStatusCode)
-                {
-                    var json = await response.Content.ReadAsStringAsync();
-                    if (!string.IsNullOrEmpty(json))
-                        return JsonSerializer.Deserialize<List<Template>>(json, serializerOptions) ?? [];
-
-                    return [];
-                }
-            }
-            return [];
+            return await GetTemplateListAsync("/api/command/templates");
         }
         /// <summary>
         /// This method retrieves the current value of a report by its ID.
@@ -72,13 +55,13 @@ namespace RIoT2.Elsa.Server.RIoT.Services
 
             if (!String.IsNullOrEmpty(_configuration.OrchestratorBaseUrl))
             {
-                var url = _configuration.OrchestratorBaseUrl + $"/api/report/{reportId}/value";
-                var response = await Web.GetAsync(url);
+                var url = BuildUrl($"/api/report/{Uri.EscapeDataString(reportId)}/value");
+                using var response = await _httpClient.GetAsync(url);
 
                 if (response.IsSuccessStatusCode)
                 {
                     var json = await response.Content.ReadAsStringAsync();
-                    r = Json.Deserialize<ElsaReport>(json);
+                    r = Json.Deserialize<ElsaReport>(json) ?? r;
                 }
             }
             return r;
@@ -95,13 +78,13 @@ namespace RIoT2.Elsa.Server.RIoT.Services
 
             if (!String.IsNullOrEmpty(_configuration.OrchestratorBaseUrl))
             {
-                var url = _configuration.OrchestratorBaseUrl + $"/api/command/{commandId}/value";
-                var response = await Web.GetAsync(url);
+                var url = BuildUrl($"/api/command/{Uri.EscapeDataString(commandId)}/value");
+                using var response = await _httpClient.GetAsync(url);
 
                 if (response.IsSuccessStatusCode)
                 {
                     var json = await response.Content.ReadAsStringAsync();
-                    c = Json.Deserialize<Command>(json);
+                    c = Json.Deserialize<Command>(json) ?? c;
                 }
             }
             return c;
@@ -109,40 +92,12 @@ namespace RIoT2.Elsa.Server.RIoT.Services
 
         public async Task<List<Template>> GetReportTemplatesAsync()
         {
-            if (!String.IsNullOrEmpty(_configuration.OrchestratorBaseUrl))
-            {
-                var url = _configuration.OrchestratorBaseUrl + $"/api/report/templates";
-                var response = await Web.GetAsync(url);
-
-                if (response.IsSuccessStatusCode)
-                {
-                    var json = await response.Content.ReadAsStringAsync();
-                    if (!string.IsNullOrEmpty(json))
-                        return JsonSerializer.Deserialize<List<Template>>(json, serializerOptions) ?? [];
-
-                    return [];
-                }
-            }
-            return [];
+            return await GetTemplateListAsync("/api/report/templates");
         }
 
         public async Task<List<Template>> GetVariableTemplatesAsync()
         {
-            if (!String.IsNullOrEmpty(_configuration.OrchestratorBaseUrl))
-            {
-                var url = _configuration.OrchestratorBaseUrl + $"/api/variable/templates";
-                var response = await Web.GetAsync(url);
-
-                if (response.IsSuccessStatusCode)
-                {
-                    var json = await response.Content.ReadAsStringAsync();
-                    if (!string.IsNullOrEmpty(json))
-                        return JsonSerializer.Deserialize<List<Template>>(json, serializerOptions) ?? [];
-
-                    return [];
-                }
-            }
-            return [];
+            return await GetTemplateListAsync("/api/variable/templates");
         }
 
         public async Task<object> GetVariableValueAsync(string variableId)
@@ -151,16 +106,40 @@ namespace RIoT2.Elsa.Server.RIoT.Services
 
             if (!String.IsNullOrEmpty(_configuration.OrchestratorBaseUrl))
             {
-                var url = _configuration.OrchestratorBaseUrl + $"/api/variable/{variableId}/value";
-                var response = await Web.GetAsync(url);
+                var url = BuildUrl($"/api/variable/{Uri.EscapeDataString(variableId)}/value");
+                using var response = await _httpClient.GetAsync(url);
 
                 if (response.IsSuccessStatusCode)
                 {
                     var json = await response.Content.ReadAsStringAsync();
-                    v = Json.Deserialize<Variable>(json);
+                    v = Json.Deserialize<Variable>(json) ?? v;
                 }
             }
             return v;
+        }
+
+        private async Task<List<Template>> GetTemplateListAsync(string path)
+        {
+            if (string.IsNullOrEmpty(_configuration.OrchestratorBaseUrl))
+                return [];
+
+            using var response = await _httpClient.GetAsync(BuildUrl(path));
+            if (!response.IsSuccessStatusCode)
+                return [];
+
+            var json = await response.Content.ReadAsStringAsync();
+            if (string.IsNullOrEmpty(json))
+                return [];
+
+            return JsonSerializer.Deserialize<List<Template>>(json, serializerOptions) ?? [];
+        }
+
+        private string BuildUrl(string path)
+        {
+            if (string.IsNullOrWhiteSpace(_configuration.OrchestratorBaseUrl))
+                throw new InvalidOperationException("The orchestrator URL has not been configured.");
+
+            return _configuration.OrchestratorBaseUrl.TrimEnd('/') + path;
         }
 
         private readonly JsonSerializerOptions serializerOptions = new JsonSerializerOptions
@@ -172,5 +151,5 @@ namespace RIoT2.Elsa.Server.RIoT.Services
             }
 
         };
-        }
+    }
 }

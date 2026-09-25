@@ -17,18 +17,18 @@ namespace RIoT2.Elsa.Server.RIoT.UIHints
 
         public float Priority { get; }
 
-        public ValueTask<IDictionary<string, object>> GetUIPropertiesAsync(PropertyInfo propertyInfo, object? context, CancellationToken cancellationToken = default)
+        public async ValueTask<IDictionary<string, object>> GetUIPropertiesAsync(PropertyInfo propertyInfo, object? context, CancellationToken cancellationToken = default)
         {
-            ICollection<RIoTTemplateItem> items = GetItemsAsync(propertyInfo, context, cancellationToken).Result;
+            ICollection<RIoTTemplateItem> items = await GetItemsAsync(propertyInfo, context, cancellationToken);
             RIoTOutputProps value = new RIoTOutputProps
             {
                 SelectList = new RIoTTemplateList(items)
             };
             Dictionary<string, object> obj = new Dictionary<string, object> { ["riot-output-selector"] = value };
-            return new(obj);
+            return obj;
         }
 
-        private ValueTask<ICollection<RIoTTemplateItem>> GetItemsAsync(PropertyInfo propertyInfo, object? context, CancellationToken cancellationToken)
+        private async ValueTask<ICollection<RIoTTemplateItem>> GetItemsAsync(PropertyInfo propertyInfo, object? context, CancellationToken cancellationToken)
         {
             try
             {
@@ -36,12 +36,12 @@ namespace RIoT2.Elsa.Server.RIoT.UIHints
                 var commandTemplates = _rIoT.GetCommandTemplatesAsync();
                 var variableTemplates = _rIoT.GetVariableTemplatesAsync();
 
-                Task.WaitAll(variableTemplates, commandTemplates);
+                await Task.WhenAll(variableTemplates, commandTemplates).WaitAsync(cancellationToken);
 
-                addTemplatesTolist(selectListItems, commandTemplates.Result, TemplateType.Command);
-                addTemplatesTolist(selectListItems, variableTemplates.Result, TemplateType.Variable);
+                addTemplatesTolist(selectListItems, await commandTemplates, TemplateType.Command);
+                addTemplatesTolist(selectListItems, await variableTemplates, TemplateType.Variable);
 
-                return new(selectListItems);
+                return selectListItems;
             }
             catch (Exception ex)
             {

@@ -43,10 +43,12 @@ The server is configured primarily through environment variables (see [RIoT2.Els
 | `RIOT2_MQTT_IP` | Hostname/IP of the MQTT broker. |
 | `RIOT2_MQTT_USERNAME` | MQTT username. |
 | `RIOT2_MQTT_PASSWORD` | MQTT password. |
+| `ELSA_IDENTITY_SIGNING_KEY` | Required in non-development environments. Use a strong secret for Elsa identity JWT signing, for example `openssl rand -base64 48`. Development generates an ephemeral key if omitted. |
 
 Additional settings (Elsa HTTP options, logging) are configured in [RIoT2.Elsa.Server/appsettings.json](RIoT2.Elsa.Server/appsettings.json).
 
 Workflow and identity data is persisted to a local SQLite database at `Data/elsa.sqlite.db`.
+The app validates required RIoT/MQTT settings and URLs on startup and fails fast when they are missing. `RIOT2_MQTT_USERNAME`/`RIOT2_MQTT_PASSWORD` are optional (for brokers that allow anonymous clients).
 
 ## Getting started
 
@@ -64,6 +66,7 @@ By default the server listens on `http://localhost:5001` (see `launchSettings.js
 - The Elsa Workflows API is available under `/api/workflows` (base path configurable via the `Http:BasePath` setting).
 - The RIoT trigger endpoint is available at `POST /riot/trigger/{id}`.
 - The same trigger operation is available over gRPC (see [gRPC](#grpc) below).
+- Health is available at `GET /health` and `GET /healthz`.
 
 ## gRPC
 
@@ -97,8 +100,9 @@ Workflow nodes announce both endpoints after every MQTT connection, including re
 are installed before subscribing so retained orchestrator announcements are not lost during startup.
 Plaintext listeners are intended for trusted networks; do not expose them publicly.
 
-`RIoTOutput` awaits expression evaluation and command submission. Missing command configuration,
-HTTP rejection, transport failure, and cancellation are no longer treated as successful completion.
+`RIoTData` awaits report/variable/command lookups asynchronously. `RIoTOutput` awaits expression
+evaluation and command submission. Missing command configuration, HTTP rejection, transport failure,
+and cancellation are not treated as successful completion.
 
 ## Running with Docker
 
@@ -106,17 +110,31 @@ A multi-stage [Dockerfile](Dockerfile) is provided to build and run the server:
 
 ```powershell
 docker build -t riot2-elsa .
-docker run -p 8080:80 -p 5003:5003 `
+docker run -p 8080:8080 -p 5003:5003 `
   -e RIOT2_MQTT_IP=192.168.0.30 `
   -e RIOT2_MQTT_USERNAME=user `
-  -e RIOT2_MQTT_PASSWORD=password `
+  -e RIOT2_MQTT_PASSWORD=<mqtt-password> `
   -e RIOT2_WORKFLOW_ID=<workflow-id> `
   -e RIOT2_WORKFLOW_URL=http://<host>:8080 `
   -e RIOT2_WORKFLOW_GRPC_URL=http://<host>:5003 `
+  -e ELSA_IDENTITY_SIGNING_KEY=<strong-signing-key-from-openssl-rand-base64-48> `
   riot2-elsa
 ```
 
+The image runs as the non-root `app` user and includes a `/health` Docker health check. It does
+not bake in MQTT or identity secrets; provide them as environment variables or orchestrator secrets.
 Mount a volume to `/app/Data` to persist the SQLite database across container restarts.
+
+## Upgrading / breaking changes
+
+- The Docker web listener is now `8080` instead of `80` so the non-root `app` user can bind it.
+  The gRPC listener remains `5003`.
+- Existing bind-mounted SQLite data must be writable by the container user (UID/GID `1654` in the
+  Microsoft .NET images), for example `sudo chown -R 1654:1654 <host-data-directory>`.
+- Production containers no longer include default MQTT/workflow values; set all required `RIOT2_*`
+  variables explicitly.
+- `ELSA_IDENTITY_SIGNING_KEY` is required in Production. Generate one with
+  `openssl rand -base64 48` and provide it through your secret store/environment.
 
 ## Regression tests
 

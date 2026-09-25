@@ -29,7 +29,7 @@ namespace RIoT2.Elsa.Server.RIoT.Activities
         [Output(Description = "RIoT data")]
         public Output<object> DataObject { get; set; } = default!;
 
-        protected override void Execute(ActivityExecutionContext context)
+        protected override async ValueTask ExecuteAsync(ActivityExecutionContext context)
         {
             var selection = SelectedDataSource.Get(context) ?? null;
             if (selection == null || selection.Id == null)
@@ -41,13 +41,13 @@ namespace RIoT2.Elsa.Server.RIoT.Activities
             switch (selection.TemplateType) 
             {
                 case TemplateType.Report:
-                    data = riot.GetReportValueAsync(selection.Id).Result;
+                    data = await riot.GetReportValueAsync(selection.Id);
                     break;
                 case TemplateType.Variable:
-                    data = riot.GetVariableValueAsync(selection.Id).Result;
+                    data = await riot.GetVariableValueAsync(selection.Id);
                     break;
                 case TemplateType.Command:
-                    data = riot.GetCommandValueAsync(selection.Id).Result;
+                    data = await riot.GetCommandValueAsync(selection.Id);
                     break;
                 default:
                     break;
