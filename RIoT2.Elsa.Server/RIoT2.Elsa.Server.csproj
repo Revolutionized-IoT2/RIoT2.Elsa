@@ -5,21 +5,21 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Elsa" Version="3.7.1" />
-    <PackageReference Include="Elsa.Expressions.CSharp" Version="3.7.1" />
-    <PackageReference Include="Elsa.Expressions.JavaScript" Version="3.7.1" />
-    <PackageReference Include="Elsa.Expressions.Liquid" Version="3.7.1" />
-    <PackageReference Include="Elsa.Http" Version="3.7.1" />
-    <PackageReference Include="Elsa.Identity" Version="3.7.1" />
-    <PackageReference Include="Elsa.Persistence.EFCore.Sqlite" Version="3.7.1" />
-    <PackageReference Include="Elsa.Retention" Version="3.7.1" />
-    <PackageReference Include="Elsa.Scheduling" Version="3.7.1" />
-    <PackageReference Include="Elsa.Workflows.Api" Version="3.7.1" />
-    <PackageReference Include="Grpc.AspNetCore" Version="2.80.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="10.0.10" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.10" />
-    <PackageReference Include="RIoT2.Core" Version="0.1.41" />
-    <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3" Version="2.1.12" />
+    <PackageReference Include="Elsa" />
+    <PackageReference Include="Elsa.Expressions.CSharp" />
+    <PackageReference Include="Elsa.Expressions.JavaScript" />
+    <PackageReference Include="Elsa.Expressions.Liquid" />
+    <PackageReference Include="Elsa.Http" />
+    <PackageReference Include="Elsa.Identity" />
+    <PackageReference Include="Elsa.Persistence.EFCore.Sqlite" />
+    <PackageReference Include="Elsa.Retention" />
+    <PackageReference Include="Elsa.Scheduling" />
+    <PackageReference Include="Elsa.Workflows.Api" />
+    <PackageReference Include="Grpc.AspNetCore" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
+    <PackageReference Include="RIoT2.Core" />
+    <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3" />
   </ItemGroup>
 
   <ItemGroup>

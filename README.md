@@ -97,8 +97,8 @@ by UID 1654.
 - Release notes are in [CHANGELOG.md](CHANGELOG.md).
 - To release, push a tag `x.y.z` on `master`. CI publishes the Docker image to GitHub Container
   Registry.
-- This repository currently references `RIoT2.Core` package `0.1.41`; see maintainer action
-  [MA2](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/backlog/README.md#ma2-cut-a-core-release-and-align-all-consumers).
+- This repository references `RIoT2.Core` package `0.1.45`. Until that Core package is published,
+  restore with `C:\Src\RIoT2\.localfeed` as an extra source.
 
 ## Contributing
 

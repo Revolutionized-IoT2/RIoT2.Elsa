@@ -18,6 +18,7 @@ ARG BUILD_CONFIGURATION=Release
 ARG NUGET_AUTH_TOKEN=token
 ARG NUGET_URL=https://nuget.pkg.github.com/Revolutionized-IoT2/index.json
 WORKDIR /src
+COPY ["Directory.Build.props", "Directory.Packages.props", "./"]
 COPY ["RIoT2.Elsa.Server/RIoT2.Elsa.Server.csproj", "RIoT2.Elsa.Server/"]
 COPY ["RIoT2.Elsa.Studio/RIoT2.Elsa.Studio.csproj", "RIoT2.Elsa.Studio/"]
 RUN dotnet nuget add source -n github -u AZ -p $NUGET_AUTH_TOKEN --store-password-in-clear-text $NUGET_URL

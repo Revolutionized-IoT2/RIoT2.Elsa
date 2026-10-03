@@ -5,6 +5,11 @@ pushes the Docker image to GitHub Container Registry.
 
 ## [Unreleased]
 
+- Changed package management to central `Directory.Packages.props`, with `RIoT2.Core` 0.1.45,
+  `Grpc.AspNetCore` 2.84.0 and ASP.NET Core / Entity Framework package versions at 10.0.12.
+- Changed `RIoT2.Elsa.Tests` to `MSTest.Sdk` 4.4.1.
+- Updated the Dockerfile restore layer to copy `Directory.Build.props` and
+  `Directory.Packages.props`.
 - Documentation: `AGENTS.md` is the AI instruction file, `CLAUDE.md` imports it, and README
   upgrade notes moved into this file.
 

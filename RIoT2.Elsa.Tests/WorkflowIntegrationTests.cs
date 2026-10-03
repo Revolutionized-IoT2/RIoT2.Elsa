@@ -93,7 +93,7 @@ public class WorkflowIntegrationTests
             ["RIOT2_WORKFLOW_GRPC_PORT"] = port.ToString()
         }).Build();
 
-        Assert.ThrowsException<InvalidOperationException>(() => WorkflowEndpointConfiguration.Configure(configuration));
+        Assert.ThrowsExactly<InvalidOperationException>(() => WorkflowEndpointConfiguration.Configure(configuration));
     }
 
     [TestMethod]
@@ -123,7 +123,7 @@ public class WorkflowIntegrationTests
             Task.FromResult(new HttpResponseMessage((HttpStatusCode)status))));
         var service = new RIoTDataService(new TestConfiguration(), client);
 
-        await Assert.ThrowsExceptionAsync<HttpRequestException>(() => service.ExecuteCommandAsync("lamp", true));
+        await Assert.ThrowsExactlyAsync<HttpRequestException>(() => service.ExecuteCommandAsync("lamp", true));
     }
 
     [TestMethod]

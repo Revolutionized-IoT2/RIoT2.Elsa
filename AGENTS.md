@@ -76,7 +76,8 @@ repositories.
 - Keep `/health` and `/healthz` anonymous and lightweight.
 - Do not copy hub contract tables into this repository. Link to the hub and update the hub only
   when a contract changes.
-- Keep `RIoT2.Core` as a package reference. This repository currently pins `RIoT2.Core` `0.1.41`.
+- Keep `RIoT2.Core` as a package reference. This repository currently pins `RIoT2.Core` `0.1.45`.
+- Keep `PackageReference` items versionless; package versions belong in `Directory.Packages.props`.
 
 ## Pitfalls
 
@@ -91,9 +92,8 @@ repositories.
 - `Program.cs` still uses Elsa `UseAdminUserProvider`, permissive CORS and disabled antiforgery.
   That is intentional until optional security mode work lands; do not silently tighten it in an
   unrelated change.
-- `RIoT2.Core` `0.1.41` has no tag in `RIoT2.Core`; only `0.1.39`, `0.1.43` and `0.1.44` are
-  tagged around it. Treat this as maintainer action
-  [MA2](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/backlog/README.md#ma2-cut-a-core-release-and-align-all-consumers).
+- `RIoT2.Core` `0.1.45` is not published yet. Use `C:\Src\RIoT2\.localfeed` as an extra NuGet
+  source while validating the migration.
 
 ## Related work
 
@@ -110,6 +110,6 @@ repositories.
 - [M7](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/plans/m07-contract-integration-tests.md):
   contract and integration test plan.
 - [M8](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/plans/m08-dotnet10-migration.md):
-  .NET 10 alignment; Elsa already targets `net10.0`.
+  .NET 10 alignment and central package management; Elsa already targets `net10.0`.
 - [Design 7.1](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/design/reliable-delivery.md):
   workflow outbox and trigger `message_id` deduplication.

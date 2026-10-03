@@ -1,4 +1,4 @@
-<Project Sdk="MSTest.Sdk/3.6.1">
+<Project Sdk="MSTest.Sdk/4.4.1">
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>

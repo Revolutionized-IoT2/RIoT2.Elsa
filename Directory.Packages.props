@@ -1,0 +1,33 @@
+<Project>
+  <!-- Central package versions (plan M8 step 2). Shared versions come from
+       Revolutionized-IoT2/.github build/Directory.Packages.props.template. -->
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+  <ItemGroup Label="Elsa">
+    <PackageVersion Include="Elsa" Version="3.7.1" />
+    <PackageVersion Include="Elsa.Api.Client" Version="3.7.1" />
+    <PackageVersion Include="Elsa.Expressions.CSharp" Version="3.7.1" />
+    <PackageVersion Include="Elsa.Expressions.JavaScript" Version="3.7.1" />
+    <PackageVersion Include="Elsa.Expressions.Liquid" Version="3.7.1" />
+    <PackageVersion Include="Elsa.Http" Version="3.7.1" />
+    <PackageVersion Include="Elsa.Identity" Version="3.7.1" />
+    <PackageVersion Include="Elsa.Persistence.EFCore.Sqlite" Version="3.7.1" />
+    <PackageVersion Include="Elsa.Retention" Version="3.7.1" />
+    <PackageVersion Include="Elsa.Scheduling" Version="3.7.1" />
+    <PackageVersion Include="Elsa.Studio" Version="3.7.1" />
+    <PackageVersion Include="Elsa.Studio.Core.BlazorWasm" Version="3.7.1" />
+    <PackageVersion Include="Elsa.Studio.Login.BlazorWasm" Version="3.7.1" />
+    <PackageVersion Include="Elsa.Studio.Shared" Version="3.7.1" />
+    <PackageVersion Include="Elsa.Workflows.Api" Version="3.7.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageVersion Include="Grpc.AspNetCore" Version="2.84.0" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.12" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.12" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="10.0.12" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.12" />
+    <PackageVersion Include="RIoT2.Core" Version="0.1.45" />
+    <PackageVersion Include="SQLitePCLRaw.lib.e_sqlite3" Version="2.1.12" />
+  </ItemGroup>
+</Project>
