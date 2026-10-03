@@ -76,7 +76,7 @@ repositories.
 - Keep `/health` and `/healthz` anonymous and lightweight.
 - Do not copy hub contract tables into this repository. Link to the hub and update the hub only
   when a contract changes.
-- Keep `RIoT2.Core` as a package reference. This repository currently pins `RIoT2.Core` `0.1.45`.
+- Keep `RIoT2.Core` as a package reference. This repository currently pins `RIoT2.Core` `1.0.1`.
 - Keep `PackageReference` items versionless; package versions belong in `Directory.Packages.props`.
 
 ## Pitfalls
@@ -92,8 +92,8 @@ repositories.
 - `Program.cs` still uses Elsa `UseAdminUserProvider`, permissive CORS and disabled antiforgery.
   That is intentional until optional security mode work lands; do not silently tighten it in an
   unrelated change.
-- `RIoT2.Core` `0.1.45` is not published yet. Use `C:\Src\RIoT2\.localfeed` as an extra NuGet
-  source while validating the migration.
+- `RIoT2.Core` `1.0.1` is published. Use `C:\Src\RIoT2\.localfeed` as an extra NuGet source only
+  to try an unreleased Core version.
 
 ## Related work
 
