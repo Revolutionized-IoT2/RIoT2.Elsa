@@ -18,22 +18,26 @@ EXPOSE 5003
 # UseAppHost=false), so it still runs on the Alpine runtime image used by the final stage.
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG BUILD_CONFIGURATION=Release
-ARG NUGET_AUTH_TOKEN=token
 ARG NUGET_URL=https://nuget.pkg.github.com/Revolutionized-IoT2/index.json
 WORKDIR /src
 COPY ["Directory.Build.props", "Directory.Packages.props", "./"]
 COPY ["RIoT2.Elsa.Server/RIoT2.Elsa.Server.csproj", "RIoT2.Elsa.Server/"]
 COPY ["RIoT2.Elsa.Studio/RIoT2.Elsa.Studio.csproj", "RIoT2.Elsa.Studio/"]
-RUN dotnet nuget add source -n github -u AZ -p $NUGET_AUTH_TOKEN --store-password-in-clear-text $NUGET_URL
-RUN dotnet restore "RIoT2.Elsa.Server/RIoT2.Elsa.Server.csproj"
+# The feed token is the BuildKit secret "nuget_token" and reaches NuGet only through an environment
+# variable of this RUN, so no layer stores it:
+#   docker build --secret id=nuget_token,env=NUGET_AUTH_TOKEN .
+RUN --mount=type=secret,id=nuget_token,required=true \
+    dotnet nuget add source "$NUGET_URL" -n riot2 \
+    && NuGetPackageSourceCredentials_riot2="Username=riot2;Password=$(cat /run/secrets/nuget_token)" \
+       dotnet restore "RIoT2.Elsa.Server/RIoT2.Elsa.Server.csproj"
 COPY . .
 WORKDIR "/src/RIoT2.Elsa.Server"
-RUN dotnet build "RIoT2.Elsa.Server.csproj" -c $BUILD_CONFIGURATION -o /app/build
+RUN dotnet build "RIoT2.Elsa.Server.csproj" -c $BUILD_CONFIGURATION --no-restore -o /app/build
 
 # This stage is used to publish the service project to be copied to the final stage
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "RIoT2.Elsa.Server.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "RIoT2.Elsa.Server.csproj" -c $BUILD_CONFIGURATION --no-restore -o /app/publish /p:UseAppHost=false
 
 # This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)
 FROM base AS final
