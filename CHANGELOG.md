@@ -5,6 +5,11 @@ pushes the Docker image to GitHub Container Registry.
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-10-12
+
+Built on `RIoT2.Core` 1.0.1 and .NET 10. Tag `1.0.0` failed the Docker build and was never
+published.
+
 - Changed package management to central `Directory.Packages.props`, with `RIoT2.Core` 1.0.1,
   `Grpc.AspNetCore` 2.84.0 and ASP.NET Core / Entity Framework package versions at 10.0.12.
 - Changed `RIoT2.Elsa.Tests` to `MSTest.Sdk` 4.4.1.
