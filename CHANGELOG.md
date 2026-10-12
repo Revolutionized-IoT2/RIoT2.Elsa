@@ -10,6 +10,9 @@ pushes the Docker image to GitHub Container Registry.
 - Changed `RIoT2.Elsa.Tests` to `MSTest.Sdk` 4.4.1.
 - Updated the Dockerfile restore layer to copy `Directory.Build.props` and
   `Directory.Packages.props`.
+- Fixed the Docker build: the build stage uses the Debian SDK image, because the glibc-linked
+  `protoc` from `Grpc.Tools` cannot run on Alpine. The runtime image is still Alpine. Added a
+  `.dockerignore`, so local `bin`/`obj` and SQLite files are not copied into the image.
 - Documentation: `AGENTS.md` is the AI instruction file, `CLAUDE.md` imports it, and README
   upgrade notes moved into this file.
 
