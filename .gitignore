@@ -364,4 +364,6 @@ FodyWeavers.xsd
 /RIoT2.Elsa.Server/Data/elsa.sqlite.db
 /RIoT2.Elsa.Server/Data/elsa.sqlite.db-shm
 /RIoT2.Elsa.Server/Data/elsa.sqlite.db-wal
-/.github
+# Local AI files under .github stay untracked; the workflows are versioned.
+/.github/*
+!/.github/workflows/
