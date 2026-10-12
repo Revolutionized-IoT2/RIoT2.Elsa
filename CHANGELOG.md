@@ -5,6 +5,11 @@ pushes the Docker image to GitHub Container Registry.
 
 ## [Unreleased]
 
+- Changed the Dockerfile: the GitHub Packages token is the BuildKit secret `nuget_token` and is no
+  longer stored in an image layer. The `NUGET_AUTH_TOKEN` build argument is gone.
+- CI: every push runs the tests, the image build and a secret scan; a tag validates before it
+  pushes the image. `.gitignore` no longer hides `.github/workflows`.
+
 ## [1.0.1] - 2026-10-12
 
 Built on `RIoT2.Core` 1.0.1 and .NET 10. Tag `1.0.0` failed the Docker build and was never

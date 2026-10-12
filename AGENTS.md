@@ -26,10 +26,12 @@ dotnet run --project .\RIoT2.Elsa\RIoT2.Elsa.Server\RIoT2.Elsa.Server.csproj
 - The run command starts the server and Studio. It requires the environment variables in
   [env-vars.md](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/contracts/env-vars.md)
   when used outside a local Development profile. Do not copy values from `launchSettings.json`.
-- To build the container locally:
-  `docker build -t riot2-elsa .\RIoT2.Elsa --build-arg NUGET_AUTH_TOKEN=<github-packages-token>`.
-- To release, push a tag `x.y.z` on `master`. CI (`.github/workflows/docker.yml`) builds and
-  pushes `ghcr.io/revolutionized-iot2/riot2-elsa:latest` and `:<tag>`.
+- To build the container locally, put a GitHub Packages token in `$env:NUGET_AUTH_TOKEN`, then:
+  `docker build --secret id=nuget_token,env=NUGET_AUTH_TOKEN -t riot2-elsa .\RIoT2.Elsa`.
+  The token is a BuildKit secret; never pass it as a build argument.
+- Every push runs `.github/workflows/ci.yml` (build, tests, image build, secret scan). To release,
+  push a tag `x.y.z` on `master`: `release.yml` validates, then pushes
+  `ghcr.io/revolutionized-iot2/riot2-elsa:latest` and `:<tag>` ([CI guide](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/guides/ci.md)).
 
 ## Layout
 

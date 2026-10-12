@@ -73,10 +73,12 @@ The server hosts Studio at `/`, the RIoT HTTP trigger at `POST /riot/trigger/{id
 
 ## Docker
 
-Build and run a local image:
+Build and run a local image. The GitHub Packages token is passed as a BuildKit secret, so it
+never lands in an image layer:
 
 ```powershell
-docker build -t riot2-elsa .\RIoT2.Elsa --build-arg NUGET_AUTH_TOKEN=<github-packages-token>
+$env:NUGET_AUTH_TOKEN = '<github-packages-token>'
+docker build --secret id=nuget_token,env=NUGET_AUTH_TOKEN -t riot2-elsa .\RIoT2.Elsa
 docker run -p 8080:8080 -p 5003:5003 `
   -e RIOT2_MQTT_IP=192.168.0.30 `
   -e RIOT2_MQTT_USERNAME=user `
@@ -95,8 +97,8 @@ by UID 1654.
 ## Versions and releases
 
 - Release notes are in [CHANGELOG.md](CHANGELOG.md).
-- To release, push a tag `x.y.z` on `master`. CI publishes the Docker image to GitHub Container
-  Registry.
+- To release, push a tag `x.y.z` on `master`. The release workflow runs the tests, then publishes
+  the Docker image to GitHub Container Registry ([CI guide](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/guides/ci.md)).
 - This repository references the `RIoT2.Core` package `1.0.1` from GitHub Packages.
 
 ## Contributing
