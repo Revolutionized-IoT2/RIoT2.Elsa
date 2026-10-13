@@ -5,6 +5,10 @@ pushes the Docker image to GitHub Container Registry.
 
 ## [Unreleased]
 
+- Removed the unused `SetRIoTAppLifetime` extension, which blocked on the MQTT stop with `.Wait()`
+  ([I09](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/increments/phase-0-1.md#i09-async-cleanup-part-1-s)). The hosted `MqttBackgroundService` already stops MQTT in `StopAsync`. No behaviour
+  change.
+
 ## [1.2.0] - 2026-10-13
 
 MQTT client robustness ([I08](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/increments/phase-0-1.md#i08-mqtt-client-robustness-m)). Built on `RIoT2.Core` 1.3.0. No deployment change is needed.
