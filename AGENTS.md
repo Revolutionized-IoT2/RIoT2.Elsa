@@ -59,8 +59,8 @@ dotnet run --project .\RIoT2.Elsa\RIoT2.Elsa.Server\RIoT2.Elsa.Server.csproj
   `WorkflowMqttService` subscribes to orchestrator online/configuration messages and announces
   `NodeType.Workflow` on `riot2/node/{id}/online`.
 - [env-vars.md](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/contracts/env-vars.md):
-  `RIoTConfigurationService`, `WorkflowEndpointConfiguration`, `Program.cs` and `Dockerfile`
-  define the Elsa variables, web port 8080, gRPC port 5003 and `/app/Data` persistence path.
+  `WorkflowOptions` (every setting, validated at startup), `WorkflowEndpointConfiguration`,
+  `Program.cs` and `Dockerfile` define the Elsa variables, web port 8080, gRPC port 5003 and `/app/Data` persistence path.
 
 The proto file `RIoT2.Elsa.Server/RIoT/Protos/riot.proto` must keep the same package, service,
 messages and field numbers as `RIoT2.Net.Orchestrator/Protos/riot_trigger.proto`. Only
@@ -104,15 +104,14 @@ repositories.
 
 - [Backlog item 2](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/backlog/open-issues.md):
   report triggers to Elsa are not durably delivered today.
-- [Backlog item 14](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/backlog/open-issues.md):
-  service configuration is still hand-read from environment variables.
+- Backlog item 14 (configuration read by hand from environment variables) is done (I07).
 - Backlog item 17 (cross-repository contract and integration tests) is done (I05, I06). The
   end-to-end tests use a stub of `riot.RIoTTriggerService` in place of Elsa; Elsa's golden tests
   pin the messages it reads.
 - [S7](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/backlog/optional-hardening.md):
   optional Elsa hardening for identity, CORS and antiforgery.
 - [M4](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/plans/m04-typed-configuration.md):
-  typed validated configuration.
+  typed validated configuration (steps 1–5 done in I07).
 - [M7](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/plans/m07-contract-integration-tests.md):
   contract and integration test plan.
 - [M8](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/plans/m08-dotnet10-migration.md):

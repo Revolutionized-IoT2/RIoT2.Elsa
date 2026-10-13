@@ -5,6 +5,19 @@ pushes the Docker image to GitHub Container Registry.
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-10-13
+
+Typed configuration ([I07](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/increments/phase-0-1.md#i07-typed-configuration-s)). Built on `RIoT2.Core` 1.2.0. No deployment change: the variable names
+are the same.
+
+- Changed: `WorkflowOptions` reads and validates every setting at startup, including
+  `RIOT2_WORKFLOW_GRPC_PORT` and `ELSA_IDENTITY_SIGNING_KEY`. A start with missing or invalid
+  settings fails with one message that lists them all, for example `Invalid workflow configuration:
+  RIOT2_WORKFLOW_ID is required; ELSA_IDENTITY_SIGNING_KEY is required outside Development.`
+  `RIoTConfigurationService` receives `IOptions<WorkflowOptions>`.
+- Changed: with `RIOT2_MQTT_USERNAME` unset, Elsa now connects without a user name, like the
+  orchestrator and the node; it used to send an empty one. Brokers that allow anonymous clients
+  accept both.
 - Added `GoldenMessageTests` ([I05](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/increments/phase-0-1.md#i05-golden-files-and-route-contract-m)): Elsa reads the golden report, command and variable
   responses, and posts commands in the golden format. CI clones RIoT2.Core for the files.
 

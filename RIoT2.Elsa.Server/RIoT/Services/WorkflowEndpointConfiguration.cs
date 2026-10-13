@@ -2,11 +2,14 @@ namespace RIoT2.Elsa.Server.RIoT.Services;
 
 public static class WorkflowEndpointConfiguration
 {
-    public static void Configure(IConfiguration configuration)
+    /// <summary>
+    /// Adds the plaintext HTTP/2 gRPC endpoint on <paramref name="grpcPort"/>
+    /// (<see cref="WorkflowOptions.GrpcPort"/>, validated there) and keeps the web bindings.
+    /// </summary>
+    public static void Configure(IConfiguration configuration, int grpcPort = WorkflowOptions.DefaultGrpcPort)
     {
-        var grpcPort = configuration.GetValue("RIOT2_WORKFLOW_GRPC_PORT", 5003);
-        if (grpcPort is < 1 or > 65535)
-            throw new InvalidOperationException("RIOT2_WORKFLOW_GRPC_PORT must be between 1 and 65535.");
+        ArgumentOutOfRangeException.ThrowIfLessThan(grpcPort, 1);
+        ArgumentOutOfRangeException.ThrowIfGreaterThan(grpcPort, 65535);
 
         // Explicit Kestrel endpoints override URL bindings, so carry existing web bindings forward.
         var endpoints = configuration.GetSection("Kestrel:Endpoints").GetChildren().ToArray();

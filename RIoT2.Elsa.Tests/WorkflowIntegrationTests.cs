@@ -71,29 +71,15 @@ public class WorkflowIntegrationTests
     {
         var configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
         {
-            ["http_ports"] = "80;8080",
-            ["RIOT2_WORKFLOW_GRPC_PORT"] = "5004"
+            ["http_ports"] = "80;8080"
         }).Build();
-        WorkflowEndpointConfiguration.Configure(configuration);
+        WorkflowEndpointConfiguration.Configure(configuration, 5004);
         Assert.AreEqual("http://*:80", configuration["Kestrel:Endpoints:Web0:Url"]);
         Assert.AreEqual("http://*:8080", configuration["Kestrel:Endpoints:Web1:Url"]);
         Assert.AreEqual("http://0.0.0.0:5004", configuration["Kestrel:Endpoints:WorkflowGrpc:Url"]);
         Assert.AreEqual("Http2", configuration["Kestrel:Endpoints:WorkflowGrpc:Protocols"]);
-        WorkflowEndpointConfiguration.Configure(configuration);
+        WorkflowEndpointConfiguration.Configure(configuration, 5004);
         Assert.AreEqual(3, configuration.GetSection("Kestrel:Endpoints").GetChildren().Count());
-    }
-
-    [TestMethod]
-    [DataRow(0)]
-    [DataRow(65536)]
-    public void InvalidGrpcPortFailsConfiguration(int port)
-    {
-        var configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
-        {
-            ["RIOT2_WORKFLOW_GRPC_PORT"] = port.ToString()
-        }).Build();
-
-        Assert.ThrowsExactly<InvalidOperationException>(() => WorkflowEndpointConfiguration.Configure(configuration));
     }
 
     [TestMethod]

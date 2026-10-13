@@ -18,19 +18,20 @@ using RIoT2.Elsa.Server.RIoT.Services;
 var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.UseStaticWebAssets();
 
-WorkflowEndpointConfiguration.Configure(builder.Configuration);
+// Every RIOT2_* and ELSA_* setting is read and validated here, before anything uses it; an invalid
+// setting stops the start with one message that lists every problem.
+var workflowOptions = WorkflowOptions.Load(builder.Configuration, builder.Environment.IsDevelopment());
+builder.Services.AddSingleton(Microsoft.Extensions.Options.Options.Create(workflowOptions));
+
+WorkflowEndpointConfiguration.Configure(builder.Configuration, workflowOptions.GrpcPort);
 
 var services = builder.Services;
 var configuration = builder.Configuration;
 
-var identitySigningKey = configuration["ELSA_IDENTITY_SIGNING_KEY"];
-if (string.IsNullOrWhiteSpace(identitySigningKey))
-{
-    if (!builder.Environment.IsDevelopment())
-        throw new InvalidOperationException("ELSA_IDENTITY_SIGNING_KEY must be configured in non-development environments.");
-
-    identitySigningKey = Convert.ToBase64String(System.Security.Cryptography.RandomNumberGenerator.GetBytes(64));
-}
+// Development may run without a key; a random one is generated on each start.
+var identitySigningKey = string.IsNullOrWhiteSpace(workflowOptions.IdentitySigningKey)
+    ? Convert.ToBase64String(System.Security.Cryptography.RandomNumberGenerator.GetBytes(64))
+    : workflowOptions.IdentitySigningKey;
 
 services.AddLogging(logging => logging.AddConsole());
 var sqLiteConnectionString = "Data Source=Data/elsa.sqlite.db;Cache=Shared;";
