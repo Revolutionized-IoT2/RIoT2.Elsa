@@ -20,6 +20,8 @@ jobs:
     with:
       build: RIoT2.Elsa.sln
       test: RIoT2.Elsa.sln
+      # The tests read the golden files in RIoT2.Core/contracts/golden.
+      siblings: RIoT2.Core
     secrets: inherit
 
   image:

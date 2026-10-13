@@ -5,6 +5,9 @@ pushes the Docker image to GitHub Container Registry.
 
 ## [Unreleased]
 
+- Added `GoldenMessageTests` ([I05](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/increments/phase-0-1.md#i05-golden-files-and-route-contract-m)): Elsa reads the golden report, command and variable
+  responses, and posts commands in the golden format. CI clones RIoT2.Core for the files.
+
 ## [1.0.2] - 2026-10-12
 
 No deployment change.

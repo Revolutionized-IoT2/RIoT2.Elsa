@@ -29,6 +29,9 @@ dotnet run --project .\RIoT2.Elsa\RIoT2.Elsa.Server\RIoT2.Elsa.Server.csproj
 - To build the container locally, put a GitHub Packages token in `$env:NUGET_AUTH_TOKEN`, then:
   `docker build --secret id=nuget_token,env=NUGET_AUTH_TOKEN -t riot2-elsa .\RIoT2.Elsa`.
   The token is a BuildKit secret; never pass it as a build argument.
+- `GoldenMessageTests` read the [golden files](https://github.com/Revolutionized-IoT2/RIoT2.Core/blob/main/contracts/golden/README.md) in `RIoT2.Core/contracts/golden`; RIoT2.Core must be
+  checked out next to this repository (CI clones it with `siblings: RIoT2.Core`). A failure means
+  the orchestrator's response or command format no longer matches what Elsa reads or writes.
 - Every push runs `.github/workflows/ci.yml` (build, tests, image build, secret scan). To release,
   push a tag `x.y.z` on `master`: `release.yml` validates, then pushes
   `ghcr.io/revolutionized-iot2/riot2-elsa:latest` and `:<tag>` ([CI guide](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/guides/ci.md)).

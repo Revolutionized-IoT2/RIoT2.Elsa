@@ -67,6 +67,9 @@ dotnet test .\RIoT2.Elsa\RIoT2.Elsa.Tests\RIoT2.Elsa.Tests.csproj
 dotnet run --project .\RIoT2.Elsa\RIoT2.Elsa.Server\RIoT2.Elsa.Server.csproj
 ```
 
+`GoldenMessageTests` read the [golden files](https://github.com/Revolutionized-IoT2/RIoT2.Core/blob/main/contracts/golden/README.md) from RIoT2.Core, which must be checked out next to this
+repository (CI clones it).
+
 The server hosts Studio at `/`, the RIoT HTTP trigger at `POST /riot/trigger/{id}`, the gRPC
 `riot.RIoTTriggerService/Trigger` service on the dedicated HTTP/2 port, and health endpoints at
 `GET /health` and `GET /healthz`.
