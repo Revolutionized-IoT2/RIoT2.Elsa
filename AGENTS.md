@@ -106,8 +106,9 @@ repositories.
   report triggers to Elsa are not durably delivered today.
 - [Backlog item 14](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/backlog/open-issues.md):
   service configuration is still hand-read from environment variables.
-- [Backlog item 17](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/backlog/open-issues.md):
-  cross-repository contract and integration tests.
+- Backlog item 17 (cross-repository contract and integration tests) is done (I05, I06). The
+  end-to-end tests use a stub of `riot.RIoTTriggerService` in place of Elsa; Elsa's golden tests
+  pin the messages it reads.
 - [S7](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/backlog/optional-hardening.md):
   optional Elsa hardening for identity, CORS and antiforgery.
 - [M4](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/plans/m04-typed-configuration.md):
