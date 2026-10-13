@@ -114,8 +114,6 @@ public class GoldenMessageTests
         public string? OrchestratorBaseUrl { get; set; } = "http://localhost";
         public string? WorkflowBaseUrl { get; set; }
         public string? WorkflowGrpcBaseUrl => "http://localhost:5003";
-        public string MQTT_Password => "";
-        public string MQTT_Username => "";
-        public string MQTT_ServerUrl => "";
+        public RIoT2.Core.Models.MqttConfiguration Mqtt { get; } = new();
     }
 }

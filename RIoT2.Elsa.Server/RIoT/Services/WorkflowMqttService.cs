@@ -23,10 +23,7 @@ namespace RIoT2.Elsa.Server.RIoT.Services
             _nodeOnlineTopic = Constants.Get(configuration.Id, MqttTopic.NodeOnline);
             _configureTopic = Constants.Get(configuration.Id, MqttTopic.Configuration);
 
-            _client = new MqttClient(_configuration.Id,
-                _configuration.MQTT_ServerUrl,
-                _configuration.MQTT_Username,
-                _configuration.MQTT_Password);
+            _client = new MqttClient(_configuration.Mqtt, logger);
         }
 
         public void Dispose()
@@ -37,7 +34,7 @@ namespace RIoT2.Elsa.Server.RIoT.Services
 
         private Task sendWorkflowOnlineCommand()
         {
-            return _client.Publish(_nodeOnlineTopic, Json.SerializeIgnoreNulls(new NodeOnlineMessage()
+            return _client.PublishAsync(_nodeOnlineTopic, Json.SerializeIgnoreNulls(new NodeOnlineMessage()
             {
                 IsOnline = true,
                 Name = "Elsa3",
@@ -52,7 +49,7 @@ namespace RIoT2.Elsa.Server.RIoT.Services
         {
             try
             {
-                _client.MessageReceived += _client_MessageReceived;
+                _client.MessageReceivedAsync += HandleMessageReceivedAsync;
                 _client.ConnectedAsync += sendWorkflowOnlineCommand;
                 await _client.Start(_orchestratorOnlineTopic, _configureTopic);
             }
@@ -64,14 +61,9 @@ namespace RIoT2.Elsa.Server.RIoT.Services
 
         public async Task Stop()
         {
-            _client.MessageReceived -= _client_MessageReceived;
+            _client.MessageReceivedAsync -= HandleMessageReceivedAsync;
             _client.ConnectedAsync -= sendWorkflowOnlineCommand;
             await _client.Stop();
-        }
-
-        private void _client_MessageReceived(MqttEventArgs mqttEventArgs)
-        {
-            _ = HandleMessageReceivedAsync(mqttEventArgs);
         }
 
         private async Task HandleMessageReceivedAsync(MqttEventArgs mqttEventArgs)

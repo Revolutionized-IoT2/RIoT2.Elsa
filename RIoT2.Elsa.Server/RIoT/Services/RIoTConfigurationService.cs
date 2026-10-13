@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Options;
+using RIoT2.Core.Models;
 using RIoT2.Elsa.Server.RIoT.Services.Interfaces;
 
 namespace RIoT2.Elsa.Server.RIoT.Services
@@ -9,9 +10,7 @@ namespace RIoT2.Elsa.Server.RIoT.Services
         public string? OrchestratorBaseUrl { get; set; }
         public string? WorkflowBaseUrl { get; set; }
         public string? WorkflowGrpcBaseUrl { get; }
-        public string? MQTT_Password { get; }
-        public string? MQTT_Username { get; }
-        public string MQTT_ServerUrl { get; }
+        public MqttConfiguration Mqtt { get; }
 
         public RIoTConfigurationService(IOptions<WorkflowOptions> options)
         {
@@ -20,10 +19,7 @@ namespace RIoT2.Elsa.Server.RIoT.Services
             Id = settings.Id;
             WorkflowBaseUrl = settings.Url;
             WorkflowGrpcBaseUrl = settings.GrpcUrl;
-            MQTT_ServerUrl = settings.Mqtt.Host;
-            // No user means an anonymous MQTT connection.
-            MQTT_Username = settings.Mqtt.Username;
-            MQTT_Password = settings.Mqtt.Password;
+            Mqtt = settings.Mqtt.ToConfiguration(settings.Id);
         }
     }
 }

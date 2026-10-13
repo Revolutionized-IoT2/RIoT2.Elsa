@@ -16,8 +16,10 @@ public class WorkflowOptionsTests
         Assert.AreEqual("workflow", configuration.Id);
         Assert.AreEqual("http://elsa:8080", configuration.WorkflowBaseUrl);
         Assert.AreEqual("http://elsa:5003", configuration.WorkflowGrpcBaseUrl);
-        Assert.AreEqual("mqtt.local", configuration.MQTT_ServerUrl);
-        Assert.IsNull(configuration.MQTT_Username, "No user means an anonymous MQTT connection.");
+        Assert.AreEqual("workflow", configuration.Mqtt.ClientId);
+        Assert.AreEqual("mqtt.local", configuration.Mqtt.ServerUrl);
+        Assert.AreEqual(1883, configuration.Mqtt.Port);
+        Assert.IsNull(configuration.Mqtt.Username, "No user means an anonymous MQTT connection.");
         Assert.AreEqual(WorkflowOptions.DefaultGrpcPort, options.GrpcPort);
         Assert.AreEqual("key", options.IdentitySigningKey);
     }

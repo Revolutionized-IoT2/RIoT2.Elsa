@@ -183,9 +183,7 @@ public class WorkflowIntegrationTests
         public string? OrchestratorBaseUrl { get; set; } = "http://localhost";
         public string? WorkflowBaseUrl { get; set; }
         public string? WorkflowGrpcBaseUrl => "http://localhost:5003";
-        public string MQTT_Password => "";
-        public string MQTT_Username => "";
-        public string MQTT_ServerUrl => "";
+        public MqttConfiguration Mqtt { get; } = new();
     }
 
     private sealed class BlockingDataService : IRIoTDataService
