@@ -20,7 +20,7 @@ Elsa is the only RIoT2 automation engine: [ADR 0003](https://github.com/Revoluti
 | `RIoT2.Elsa.Server/RIoT/Activities/` | `RIoTTrigger`, `RIoTData` and `RIoTOutput` |
 | `RIoT2.Elsa.Server/RIoT/Protos/riot.proto` | gRPC trigger contract used by the orchestrator |
 | `RIoT2.Elsa.Studio/` | Blazor WebAssembly Elsa Studio client and RIoT picker UI |
-| `RIoT2.Elsa.Tests/` | MSTest coverage for activities, split ports, command failures and gRPC behaviour |
+| `RIoT2.Elsa.Tests/` | MSTest coverage for activities, split ports, command failures, gRPC behaviour and trigger deduplication |
 | `Dockerfile` | Production image, web/Studio port 8080 and gRPC port 5003 |
 
 ## RIoT integration
@@ -74,6 +74,14 @@ The server hosts Studio at `/`, the RIoT HTTP trigger at `POST /riot/trigger/{id
 `riot.RIoTTriggerService/Trigger` service on the dedicated HTTP/2 port, and health endpoints at
 `GET /health` and `GET /healthz`.
 
+The orchestrator delivers triggers over gRPC through its durable outbox, at least once
+([design 7.1](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/design/reliable-delivery.md)).
+Each trigger carries its outbox id as `message_id`. `TriggerDeduplicator` remembers the ids of the
+last ten minutes in memory: a repeated id is answered with success and not run again, a repeat that
+arrives during the first run waits for it, and a failed run is forgotten so that its redelivery
+runs. Requests without an id, such as `POST /riot/trigger/{id}`, always run. A request whose gRPC
+deadline (at most the trigger's expiry) has passed on arrival is rejected with `DeadlineExceeded`.
+
 ## Docker
 
 Build and run a local image. The GitHub Packages token is passed as a BuildKit secret, so it
@@ -102,7 +110,7 @@ by UID 1654.
 - Release notes are in [CHANGELOG.md](CHANGELOG.md).
 - To release, push a tag `x.y.z` on `master`. The release workflow runs the tests, then publishes
   the Docker image to GitHub Container Registry ([CI guide](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/guides/ci.md)).
-- This repository references the `RIoT2.Core` package `1.0.1` from GitHub Packages.
+- This repository references the `RIoT2.Core` package `1.5.0` from GitHub Packages.
 
 ## Contributing
 

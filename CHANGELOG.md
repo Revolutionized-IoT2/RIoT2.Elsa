@@ -5,6 +5,19 @@ pushes the Docker image to GitHub Container Registry.
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-10-14
+
+Deduplicated workflow triggers ([I11](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/increments/phase-0-1.md#i11-durable-workflow-delivery-m),
+[design 7.1](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/design/reliable-delivery.md) phase 1).
+Built on `RIoT2.Core` 1.5.0. No deployment change is needed; release it before RIoT2.Net.Orchestrator
+1.3.0, which redelivers triggers.
+
+- Added `message_id` (field 3) to the gRPC `TriggerRequest`. A trigger whose id was seen in the
+  last ten minutes is answered with success and not run again. A duplicate that arrives while the
+  first run is in progress waits for it, and a failed run is forgotten so its redelivery runs.
+  Requests without an id (older orchestrators, `POST /riot/trigger/{id}`) always run.
+- Changed: a gRPC trigger whose deadline has already passed when it arrives is rejected with
+  `DeadlineExceeded` and not run. The orchestrator sets the deadline to the trigger's expiry.
 - Removed the unused `SetRIoTAppLifetime` extension, which blocked on the MQTT stop with `.Wait()`
   ([I09](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/increments/phase-0-1.md#i09-async-cleanup-part-1-s)). The hosted `MqttBackgroundService` already stops MQTT in `StopAsync`. No behaviour
   change.

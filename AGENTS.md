@@ -43,10 +43,10 @@ dotnet run --project .\RIoT2.Elsa\RIoT2.Elsa.Server\RIoT2.Elsa.Server.csproj
 | `RIoT2.Elsa.Server/Program.cs` | Elsa, identity, CORS, health, RIoT HTTP and gRPC wiring |
 | `RIoT2.Elsa.Server/RIoT/Activities/` | `RIoTTrigger`, `RIoTData`, `RIoTOutput` workflow activities |
 | `RIoT2.Elsa.Server/RIoT/Endpoints/RIoTEndpoints.cs` | `POST /riot/trigger/{id}` trigger endpoint |
-| `RIoT2.Elsa.Server/RIoT/Services/` | MQTT, configuration, gRPC trigger, data and command services |
+| `RIoT2.Elsa.Server/RIoT/Services/` | MQTT, configuration, gRPC trigger (with `TriggerDeduplicator`), data and command services |
 | `RIoT2.Elsa.Server/RIoT/Protos/riot.proto` | Elsa copy of the workflow trigger gRPC contract |
 | `RIoT2.Elsa.Studio/` | Blazor WebAssembly Elsa Studio and RIoT picker UI |
-| `RIoT2.Elsa.Tests/` | MSTest coverage for endpoint, activity and gRPC behaviours |
+| `RIoT2.Elsa.Tests/` | MSTest coverage for endpoint, activity, gRPC and trigger deduplication behaviours |
 | `Dockerfile` | `net10.0` multi-stage image, web port 8080 and gRPC port 5003 |
 
 ## Contracts implemented here
@@ -81,7 +81,9 @@ repositories.
 - Keep `/health` and `/healthz` anonymous and lightweight.
 - Do not copy hub contract tables into this repository. Link to the hub and update the hub only
   when a contract changes.
-- Keep `RIoT2.Core` as a package reference. This repository currently pins `RIoT2.Core` `1.0.1`.
+- Keep `RIoT2.Core` as a package reference. This repository currently pins `RIoT2.Core` `1.5.0`.
+- Every gRPC trigger runs through the singleton `TriggerDeduplicator`. Keep `message_id` (field 3)
+  in `riot.proto` and in the orchestrator's `riot_trigger.proto`; never reuse a field number.
 - Keep `PackageReference` items versionless; package versions belong in `Directory.Packages.props`.
 
 ## Pitfalls
@@ -97,13 +99,14 @@ repositories.
 - `Program.cs` still uses Elsa `UseAdminUserProvider`, permissive CORS and disabled antiforgery.
   That is intentional until optional security mode work lands; do not silently tighten it in an
   unrelated change.
-- `RIoT2.Core` `1.0.1` is published. Use `C:\Src\RIoT2\.localfeed` as an extra NuGet source only
+- `RIoT2.Core` `1.5.0` is published. Use `C:\Src\RIoT2\.localfeed` as an extra NuGet source only
   to try an unreleased Core version.
+- The trigger deduplication window lives in memory: after an Elsa restart, a redelivery of a
+  trigger that already ran runs again. The gRPC service doesn't pass the call's cancellation to
+  the workflow, so a run whose caller timed out still completes and is remembered.
 
 ## Related work
 
-- [Backlog item 2](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/backlog/open-issues.md):
-  report triggers to Elsa are not durably delivered today.
 - Backlog item 14 (configuration read by hand from environment variables) is done (I07).
 - Backlog item 17 (cross-repository contract and integration tests) is done (I05, I06). The
   end-to-end tests use a stub of `riot.RIoTTriggerService` in place of Elsa; Elsa's golden tests
@@ -117,4 +120,5 @@ repositories.
 - [M8](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/plans/m08-dotnet10-migration.md):
   .NET 10 alignment and central package management; Elsa already targets `net10.0`.
 - [Design 7.1](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/design/reliable-delivery.md):
-  workflow outbox and trigger `message_id` deduplication.
+  workflow outbox and trigger `message_id` deduplication (phase 1 done in I11); phase 4 adds a
+  "command with confirmation" activity.

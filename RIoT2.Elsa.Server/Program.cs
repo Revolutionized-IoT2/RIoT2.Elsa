@@ -80,6 +80,8 @@ services
 services.AddCors(cors => cors.AddDefaultPolicy(policy => policy.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin().WithExposedHeaders("*")));
 services.AddRazorPages(options => options.Conventions.ConfigureFilter(new IgnoreAntiforgeryTokenAttribute()));
 services.AddGrpc();
+// One per process: it remembers the trigger message ids of the last ten minutes.
+services.AddSingleton<TriggerDeduplicator>();
 
 var app = builder.Build();
 
