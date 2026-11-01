@@ -5,6 +5,14 @@ pushes the Docker image to GitHub Container Registry.
 
 ## [Unreleased]
 
+## [1.6.0] - 2026-11-01
+
+System.Text.Json on the wire ([I25](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/increments/phase-2.md#i25-systemtextjson-on-the-wire-m)), with RIoT2.Core 1.11.0. No port, user or volume
+changes; the orchestrator responses and MQTT messages Elsa reads are the same.
+
+- Changed: the report value an `RIoTData` activity returns holds a `JsonElement` for an entity
+  (it was a Newtonsoft `JObject`), the same as the trigger data of `RIoTTrigger`; numbers, text and
+  booleans are unchanged.
 - Tests: `GoldenMessageTests` reads the orchestrator's template listings from the new golden files
   `http/templates-*.json` ([I23](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/increments/phase-2.md#i23-orchestrator-restructure-m)). No code change.
 
