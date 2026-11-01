@@ -5,6 +5,14 @@ pushes the Docker image to GitHub Container Registry.
 
 ## [Unreleased]
 
+## [1.7.0] - 2026-11-01
+
+Narrow Core references ([I28](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/increments/phase-2.md#i28-narrow-references-and-generated-models-m), plan M1 step 4), with RIoT2.Core 1.14.0. No port, user, volume,
+variable or JSON changes.
+
+- Changed: references `RIoT2.Core.Contracts`, `RIoT2.Core.Mqtt` and `RIoT2.Core.Hosting` instead of
+  the `RIoT2.Core` facade, so the image no longer carries the device SDK, the node runtime or Quartz.
+
 ## [1.6.0] - 2026-11-01
 
 System.Text.Json on the wire ([I25](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/increments/phase-2.md#i25-systemtextjson-on-the-wire-m)), with RIoT2.Core 1.11.0. No port, user or volume

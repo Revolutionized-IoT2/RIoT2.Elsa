@@ -15,7 +15,7 @@
     <PackageReference Include="Elsa.Studio.Shared" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" PrivateAssets="all" />
-    <PackageReference Include="RIoT2.Core" />
+    <PackageReference Include="RIoT2.Core.Contracts" />
   </ItemGroup>
 
 </Project>
