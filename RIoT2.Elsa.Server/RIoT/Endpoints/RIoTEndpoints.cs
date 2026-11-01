@@ -2,6 +2,7 @@
 using Elsa.Workflows.Runtime;
 using Microsoft.AspNetCore.Mvc;
 using RIoT2.Elsa.Server.RIoT.Activities;
+using RIoT2.Elsa.Server.RIoT.Services;
 
 namespace RIoT2.Elsa.Server.RIoT.Endpoints
 {
@@ -17,8 +18,9 @@ namespace RIoT2.Elsa.Server.RIoT.Endpoints
                 IStimulusSender stimulusSender) =>
             {
                 await TriggerAsync(id, data, stimulusSender);
+                ElsaMetrics.Trigger(ElsaMetrics.Received, "http");
 
-                return Results.Ok(); 
+                return Results.Ok();
             })
             .WithName("RunTrigger")
             .WithTags("RIoT");

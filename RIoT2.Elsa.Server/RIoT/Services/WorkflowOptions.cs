@@ -35,6 +35,9 @@ public sealed class WorkflowOptions
     /// <summary><c>RIOT2_LOG_FORMAT</c> and <c>RIOT2_LOG_LEVEL</c>, applied by <c>AddRIoT2Logging()</c> (design 7.4).</summary>
     public LoggingOptions Logging { get; set; } = new();
 
+    /// <summary><c>OTEL_EXPORTER_OTLP_ENDPOINT</c> and <c>RIOT2_TRACING</c>, applied by <c>AddRIoT2Telemetry()</c> (design 7.4).</summary>
+    public TelemetryOptions Telemetry { get; set; } = new();
+
     /// <summary>
     /// Reads and validates the settings, and throws <see cref="ConfigurationValidationException"/>
     /// listing every problem (logged as critical) when any is missing or invalid.
@@ -53,7 +56,8 @@ public sealed class WorkflowOptions
             GrpcPort = settings.Integer(GrpcPortVariable, DefaultGrpcPort, 1, 65535),
             IdentitySigningKey = settings.Optional(IdentitySigningKeyVariable),
             Mqtt = MqttOptions.Read(settings),
-            Logging = LoggingOptions.Read(settings)
+            Logging = LoggingOptions.Read(settings),
+            Telemetry = TelemetryOptions.Read(settings)
         };
         if (!isDevelopment && string.IsNullOrWhiteSpace(options.IdentitySigningKey))
             settings.AddError($"{IdentitySigningKeyVariable} is required outside Development");

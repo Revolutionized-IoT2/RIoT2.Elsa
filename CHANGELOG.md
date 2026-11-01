@@ -5,6 +5,16 @@ pushes the Docker image to GitHub Container Registry.
 
 ## [Unreleased]
 
+## [1.5.0] - 2026-11-01
+
+Metrics ([I22](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/increments/phase-2.md#i22-metrics-m), design 7.4 phase 4), with RIoT2.Core 1.10.0.
+No port, user or volume changes.
+
+- Added: the meter `RIoT2.Elsa`: `riot2.workflow.triggers` (by result, `received` or `duplicate`, and
+  transport) and `riot2.workflow.faults` (faulted workflow executions, by definition id).
+- Added: `OTEL_EXPORTER_OTLP_ENDPOINT` exports them, with `riot2.mqtt.*`, ASP.NET Core and runtime
+  metrics, over OTLP; `RIOT2_TRACING=true` adds traces. Unset, nothing is exported.
+
 ## [1.4.0] - 2026-11-01
 
 Consistent logging ([I20](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/increments/phase-2.md#i20-consistent-logging-s), design 7.4 phase 2), with RIoT2.Core 1.9.0.

@@ -50,6 +50,7 @@ namespace RIoT2.Elsa.Server.RIoT.Services
             using var scope = _logger.BeginIdScope(LogScope.MessageId, request.MessageId);
             var ran = await _deduplicator.RunOnceAsync(request.MessageId,
                 () => RIoTEndpoints.TriggerAsync(request.Id, data, _stimulusSender));
+            ElsaMetrics.Trigger(ran ? ElsaMetrics.Received : ElsaMetrics.Duplicate, "grpc");
             if (!ran)
                 _logger.LogInformation("Trigger {MessageId} for {Id} was already run; not run again", request.MessageId, request.Id);
 

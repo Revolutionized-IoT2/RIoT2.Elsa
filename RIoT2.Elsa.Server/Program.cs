@@ -29,6 +29,10 @@ var workflowOptions = WorkflowOptions.Load(builder.Configuration, builder.Enviro
     loggerFactory.CreateLogger("RIoT2.Elsa.Server"));
 builder.Services.AddSingleton(Microsoft.Extensions.Options.Options.Create(workflowOptions));
 
+// Metrics (riot2.workflow.*, riot2.mqtt.*) and, with RIOT2_TRACING=true, traces over OTLP, only when
+// OTEL_EXPORTER_OTLP_ENDPOINT is set (design 7.4).
+builder.AddRIoT2Telemetry("elsa", workflowOptions.Id, RIoT2.Core.Diagnostics.MeterNames.Elsa);
+
 WorkflowEndpointConfiguration.Configure(builder.Configuration, workflowOptions.GrpcPort);
 
 var services = builder.Services;
@@ -87,6 +91,8 @@ services.AddRazorPages(options => options.Conventions.ConfigureFilter(new Ignore
 services.AddGrpc();
 // One per process: it remembers the trigger message ids of the last ten minutes.
 services.AddSingleton<TriggerDeduplicator>();
+// Counts faulted workflow executions (riot2.workflow.faults).
+services.AddNotificationHandler<WorkflowFaultMetrics>();
 
 var app = builder.Build();
 
