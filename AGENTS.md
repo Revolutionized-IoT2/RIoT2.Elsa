@@ -82,7 +82,7 @@ repositories.
 - Do not copy hub contract tables into this repository. Link to the hub and update the hub only
   when a contract changes.
 - Keep the Core packages as package references, and only the narrow ones (plan M1 step 4): this
-  repository pins `RIoT2.Core.Contracts`, `RIoT2.Core.Mqtt` and `RIoT2.Core.Hosting` `1.14.0`. Don't
+  repository pins `RIoT2.Core.Contracts`, `RIoT2.Core.Mqtt` and `RIoT2.Core.Hosting` `1.14.1`. Don't
   add the `RIoT2.Core` facade or `RIoT2.Core.Node`.
 - Every gRPC trigger runs through the singleton `TriggerDeduplicator`. Keep `message_id` (field 3)
   in `riot.proto` and in the orchestrator's `riot_trigger.proto`; never reuse a field number.
@@ -107,7 +107,7 @@ repositories.
 - `Program.cs` still uses Elsa `UseAdminUserProvider`, permissive CORS and disabled antiforgery.
   That is intentional until optional security mode work lands; do not silently tighten it in an
   unrelated change.
-- The Core packages `1.14.0` are published. Use `C:\Src\RIoT2\.localfeed` as an extra NuGet source only
+- The Core packages `1.14.1` are published. Use `C:\Src\RIoT2\.localfeed` as an extra NuGet source only
   to try an unreleased Core version.
 - The trigger deduplication window lives in memory: after an Elsa restart, a redelivery of a
   trigger that already ran runs again. The gRPC service doesn't pass the call's cancellation to
