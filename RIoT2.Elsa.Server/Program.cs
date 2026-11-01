@@ -11,6 +11,7 @@ using Elsa.Workflows.Management.Entities;
 using Elsa.Workflows.Management.Enums;
 using Elsa.Workflows.Management.Models;
 using Microsoft.AspNetCore.Mvc;
+using RIoT2.Core.Hosting;
 using RIoT2.Elsa.Server.RIoT.Endpoints;
 using RIoT2.Elsa.Server.RIoT.Extensions;
 using RIoT2.Elsa.Server.RIoT.Services;
@@ -18,9 +19,14 @@ using RIoT2.Elsa.Server.RIoT.Services;
 var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.UseStaticWebAssets();
 
+// Console and Logs/RIoT2.log, text or JSON (RIOT2_LOG_FORMAT, RIOT2_LOG_LEVEL; design 7.4), the same
+// way as the other RIoT2 services.
+var loggerFactory = builder.AddRIoT2Logging("elsa");
+
 // Every RIOT2_* and ELSA_* setting is read and validated here, before anything uses it; an invalid
 // setting stops the start with one message that lists every problem.
-var workflowOptions = WorkflowOptions.Load(builder.Configuration, builder.Environment.IsDevelopment());
+var workflowOptions = WorkflowOptions.Load(builder.Configuration, builder.Environment.IsDevelopment(),
+    loggerFactory.CreateLogger("RIoT2.Elsa.Server"));
 builder.Services.AddSingleton(Microsoft.Extensions.Options.Options.Create(workflowOptions));
 
 WorkflowEndpointConfiguration.Configure(builder.Configuration, workflowOptions.GrpcPort);
@@ -33,7 +39,6 @@ var identitySigningKey = string.IsNullOrWhiteSpace(workflowOptions.IdentitySigni
     ? Convert.ToBase64String(System.Security.Cryptography.RandomNumberGenerator.GetBytes(64))
     : workflowOptions.IdentitySigningKey;
 
-services.AddLogging(logging => logging.AddConsole());
 var sqLiteConnectionString = "Data Source=Data/elsa.sqlite.db;Cache=Shared;";
 services
     .AddElsa(elsa => elsa

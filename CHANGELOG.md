@@ -5,6 +5,17 @@ pushes the Docker image to GitHub Container Registry.
 
 ## [Unreleased]
 
+## [1.4.0] - 2026-11-01
+
+Consistent logging ([I20](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/increments/phase-2.md#i20-consistent-logging-s), design 7.4 phase 2), with RIoT2.Core 1.9.0.
+
+- Changed: Elsa logs through `AddRIoT2Logging()` (RIoT2.Core.Hosting) like the other services:
+  Serilog to the console and to `Logs/RIoT2.log` (`/app/Logs`; the image creates it), rolled
+  daily and at 50 MB, 14 files kept, text or JSON (`RIOT2_LOG_FORMAT`), at `RIOT2_LOG_LEVEL`.
+  Before, it logged to the console only. An invalid setting is now also logged as critical.
+- Added: a gRPC trigger starts its workflow in a `MessageId` log scope.
+- Removed: the `Logging` sections of `appsettings.json`.
+
 ## [1.3.0] - 2026-10-14
 
 Deduplicated workflow triggers ([I11](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/increments/phase-0-1.md#i11-durable-workflow-delivery-m),

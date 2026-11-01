@@ -85,6 +85,10 @@ repositories.
 - Every gRPC trigger runs through the singleton `TriggerDeduplicator`. Keep `message_id` (field 3)
   in `riot.proto` and in the orchestrator's `riot_trigger.proto`; never reuse a field number.
 - Keep `PackageReference` items versionless; package versions belong in `Directory.Packages.props`.
+- Logging comes from `builder.AddRIoT2Logging()` (RIoT2.Core.Hosting): don't add Serilog sinks,
+  logging providers or `Logging` sections to `appsettings.json`; `RIOT2_LOG_FORMAT` and
+  `RIOT2_LOG_LEVEL` are the settings. Log through `ILogger`, and wrap work for one command or
+  trigger in `logger.BeginIdScope(LogScope.CorrelationId | LogScope.MessageId, id)`.
 
 ## Pitfalls
 

@@ -49,6 +49,13 @@ Set these variables when running the server outside a local Development profile:
 - `RIOT2_MQTT_IP`
 - `RIOT2_MQTT_USERNAME` and `RIOT2_MQTT_PASSWORD` (optional for anonymous brokers)
 - `ELSA_IDENTITY_SIGNING_KEY` (required outside Development)
+- `RIOT2_LOG_FORMAT` (optional, `text` or `json`) and `RIOT2_LOG_LEVEL` (optional, default
+  `Information`)
+
+Logs go to the console and to `Logs/RIoT2.log` (`/app/Logs` in the container), rolled daily and at
+50 MB, 14 files kept, through `AddRIoT2Logging()` from `RIoT2.Core.Hosting`, the same way as the
+other RIoT2 services. Lines logged while a gRPC trigger starts its workflow end with
+`[MessageId=…]`, the id the orchestrator logs for that trigger.
 
 Use an externally reachable URL for `RIOT2_WORKFLOW_URL` and `RIOT2_WORKFLOW_GRPC_URL`. Do not use
 `localhost` when the orchestrator runs in another container or on another machine.

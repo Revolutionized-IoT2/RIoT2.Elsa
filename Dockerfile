@@ -43,7 +43,7 @@ RUN dotnet publish "RIoT2.Elsa.Server.csproj" -c $BUILD_CONFIGURATION --no-resto
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-RUN mkdir -p /app/Data && chown -R app:app /app
+RUN mkdir -p /app/Data /app/Logs && chown -R app:app /app
 USER app
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 CMD wget -q -O- http://127.0.0.1:8080/health || exit 1
 ENTRYPOINT ["dotnet", "RIoT2.Elsa.Server.dll"]

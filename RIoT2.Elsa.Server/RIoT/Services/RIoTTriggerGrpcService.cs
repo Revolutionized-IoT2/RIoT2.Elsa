@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Elsa.Workflows.Runtime;
 using Grpc.Core;
+using RIoT2.Core.Utils;
 using RIoT2.Elsa.Server.RIoT.Endpoints;
 using RIoT2.Elsa.Server.RIoT.Grpc;
 
@@ -45,6 +46,8 @@ namespace RIoT2.Elsa.Server.RIoT.Services
             if (context != null && context.Deadline <= DateTime.UtcNow)
                 throw new RpcException(new Status(StatusCode.DeadlineExceeded, "The trigger arrived after its deadline."));
 
+            // Everything logged while the workflow starts, Elsa's own lines included, carries the id.
+            using var scope = _logger.BeginIdScope(LogScope.MessageId, request.MessageId);
             var ran = await _deduplicator.RunOnceAsync(request.MessageId,
                 () => RIoTEndpoints.TriggerAsync(request.Id, data, _stimulusSender));
             if (!ran)
