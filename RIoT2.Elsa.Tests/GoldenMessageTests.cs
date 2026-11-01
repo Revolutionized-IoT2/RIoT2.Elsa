@@ -68,6 +68,36 @@ public class GoldenMessageTests
         Assert.IsTrue(JsonNode.DeepEquals(expected, JsonNode.Parse(posted.Body!)), $"Posted {posted.Body}");
     }
 
+    [TestMethod]
+    [DataRow("/api/report/templates", "http/templates-report.json")]
+    [DataRow("/api/command/templates", "http/templates-command.json")]
+    [DataRow("/api/variable/templates", "http/templates-variable.json")]
+    public async Task ReadsTheGoldenTemplateListings(string path, string goldenFile)
+    {
+        var service = Serve(path, goldenFile, out _);
+
+        var templates = path switch
+        {
+            "/api/report/templates" => await service.GetReportTemplatesAsync(),
+            "/api/command/templates" => await service.GetCommandTemplatesAsync(),
+            _ => await service.GetVariableTemplatesAsync()
+        };
+
+        var expected = JsonNode.Parse(File.ReadAllText(Path.Combine(_golden, goldenFile)))!.AsArray();
+        Assert.AreEqual(expected.Count, templates.Count);
+        Assert.IsTrue(templates.Count > 0);
+        for (var i = 0; i < templates.Count; i++)
+        {
+            var item = expected[i]!;
+            Assert.AreEqual((string?)item["id"], templates[i].Id);
+            Assert.AreEqual((string?)item["name"], templates[i].Name);
+            Assert.AreEqual((string?)item["nodeId"], templates[i].NodeId);
+            Assert.AreEqual((string?)item["node"], templates[i].Node);
+            Assert.AreEqual((string?)item["device"], templates[i].Device);
+            Assert.AreEqual((int)item["type"]!, (int)templates[i].Type);
+        }
+    }
+
     private static RIoTDataService Serve(string path, string? goldenFile, out Request request)
     {
         var captured = new Request();

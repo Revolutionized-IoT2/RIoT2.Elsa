@@ -5,6 +5,9 @@ pushes the Docker image to GitHub Container Registry.
 
 ## [Unreleased]
 
+- Tests: `GoldenMessageTests` reads the orchestrator's template listings from the new golden files
+  `http/templates-*.json` ([I23](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/increments/phase-2.md#i23-orchestrator-restructure-m)). No code change.
+
 ## [1.5.0] - 2026-11-01
 
 Metrics ([I22](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/increments/phase-2.md#i22-metrics-m), design 7.4 phase 4), with RIoT2.Core 1.10.0.
