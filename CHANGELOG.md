@@ -5,6 +5,10 @@ pushes the Docker image to GitHub Container Registry.
 
 ## [Unreleased]
 
+- Build: the threading analyzers ([I31](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/increments/phase-2.md#i31-async-cleanup-part-2-and-threading-analyzers-m)) run in every project from the shared
+  `Directory.Build.props` and `.editorconfig`: a blocking wait, `async void` or an unobserved task
+  fails the CI build. No change to the shipped binaries.
+
 ## [1.7.1] - 2026-11-01
 
 - Fixed: the image starts again (1.7.0 failed with `FileNotFoundException` for
