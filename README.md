@@ -17,7 +17,7 @@ Elsa is the only RIoT2 automation engine: [ADR 0003](https://github.com/Revoluti
 | Path | Contents |
 | --- | --- |
 | `RIoT2.Elsa.Server/` | ASP.NET Core host for Elsa Workflows, Studio assets, RIoT endpoints and services |
-| `RIoT2.Elsa.Server/RIoT/Activities/` | `RIoTTrigger`, `RIoTData` and `RIoTOutput` |
+| `RIoT2.Elsa.Server/RIoT/Activities/` | `RIoTTrigger`, `RIoTData`, `RIoTOutput` and `RIoTConfirmedCommand` |
 | `RIoT2.Elsa.Server/RIoT/Protos/riot.proto` | gRPC trigger contract used by the orchestrator |
 | `RIoT2.Elsa.Studio/` | Blazor WebAssembly Elsa Studio client and RIoT picker UI |
 | `RIoT2.Elsa.Tests/` | MSTest coverage for activities, split ports, command failures, gRPC behaviour and trigger deduplication |
@@ -31,6 +31,9 @@ Elsa stores the orchestrator base URL and uses it for workflow activities:
 - `RIoTTrigger` starts or resumes workflows for a selected report id.
 - `RIoTData` reads a report, variable or command value from the orchestrator.
 - `RIoTOutput` evaluates a JavaScript expression and submits a command through the orchestrator.
+- "RIoT Command with confirmation" (`RIoTConfirmedCommand`) does the same with
+  `POST /api/v2/commands` and `"wait": true`, and continues on `Done` or `Failed` once the device
+  answered or the timeout (1 to 50 s) passed; `Status` and `Error` are its outputs.
 
 The externally visible contracts are documented in the hub:
 

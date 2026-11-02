@@ -34,23 +34,26 @@ namespace RIoT2.Elsa.Server.RIoT.Activities
             if (cmd == null || string.IsNullOrWhiteSpace(cmd.Id))
                 throw new InvalidOperationException("RIoT Output requires a command identifier.");
 
+            var result = await EvaluateValueAsync(context, cmd);
+            var riot = context.GetRequiredService<IRIoTDataService>();
+            await riot.ExecuteCommandAsync(cmd.Id, result, context.CancellationToken);
+        }
+
+        /// <summary>Runs the command's value expression (JavaScript), as RIoT Output and RIoT Command with confirmation do.</summary>
+        internal static async Task<object?> EvaluateValueAsync(ActivityExecutionContext context, RIoTTemplateItem cmd)
+        {
             var script = cmd.Value ?? string.Empty;
-            
             if (string.IsNullOrWhiteSpace(script))
-                throw new InvalidOperationException("RIoT Output requires a command value expression.");
+                throw new InvalidOperationException("The command needs a value expression.");
 
             var javaScriptEvaluator = context.GetRequiredService<IJavaScriptEvaluator>();
-
-            var result = await javaScriptEvaluator.EvaluateAsync(
+            return await javaScriptEvaluator.EvaluateAsync(
                 script,
                 typeof(object),
                 context.ExpressionExecutionContext,
                 ExpressionEvaluatorOptions.Empty,
                 engine => ConfigureEngine(engine, context),
                 context.CancellationToken);
-
-            var riot = context.GetRequiredService<IRIoTDataService>();
-            await riot.ExecuteCommandAsync(cmd.Id, result, context.CancellationToken);
         }
 
         private static void ConfigureEngine(Engine engine, ActivityExecutionContext context)

@@ -37,6 +37,19 @@ namespace RIoT2.Elsa.Server.RIoT.Services
             response.EnsureSuccessStatusCode();
         }
 
+        public async Task<CommandConfirmation> ExecuteCommandWithConfirmationAsync(string id, object? data, int ttlSeconds, CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+                throw new ArgumentException("A command identifier is required.", nameof(id));
+            var request = new { id, value = new ValueModel(data), ttlSeconds, wait = true };
+            using var body = new StringContent(Json.Serialize(request), System.Text.Encoding.UTF8, "application/json");
+            using var response = await _httpClient.PostAsync(BuildUrl("/api/v2/commands"), body, cancellationToken);
+            response.EnsureSuccessStatusCode();
+            var json = await response.Content.ReadAsStringAsync(cancellationToken);
+            return Json.Deserialize<CommandConfirmation>(json)
+                ?? throw new InvalidOperationException("The orchestrator answered the command without a delivery status.");
+        }
+
         public async Task<List<Template>> GetCommandTemplatesAsync()
         {
             return await GetTemplateListAsync("/api/command/templates");

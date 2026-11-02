@@ -5,6 +5,20 @@ pushes the Docker image to GitHub Container Registry.
 
 ## [Unreleased]
 
+## [1.9.0] - 2026-11-02
+
+A command activity that waits for the device ([I36](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/increments/phase-3-4.md#i36-sync-and-command-status-in-the-ui-m), [design 7.1](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/design/reliable-delivery.md) phase 4). No port, user,
+volume or variable changes; existing workflows are unchanged.
+
+- Added: "RIoT Command with confirmation" (`RIoTConfirmedCommand`). It sends the command like RIoT
+  Output, through `POST /api/v2/commands` with `"wait": true` and a timeout of 1 to 50 seconds
+  (default 30), and continues on `Done` (`executed`, `duplicate`, or `sent` to a node that doesn't
+  report results) or `Failed` (`failed`, `unknownCommand`, `expired`), with `Status` and `Error` as
+  outputs. Needs Orchestrator 1.4.0 or later.
+- Security: ASP.NET Core WebAssembly packages 10.0.14 and `Microsoft.AspNetCore.SignalR.Common`
+  10.0.14 (pinned over Elsa Studio's 10.0.3): GHSA-g27p-qf6j-c96c, GHSA-qjpx-jqm5-h2c4,
+  GHSA-334f-vvp4-7g6p.
+
 ## [1.8.0] - 2026-11-02
 
 The optional security mode's seams ([I34](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/increments/phase-2.md#i34-security-seams-with-the-mode-fixed-at-off-m), [design 7.5](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/design/security-mode.md) phase S0), with RIoT2.Core 1.18.0 (was 1.14.1).

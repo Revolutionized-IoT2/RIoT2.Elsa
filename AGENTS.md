@@ -41,7 +41,7 @@ dotnet run --project .\RIoT2.Elsa\RIoT2.Elsa.Server\RIoT2.Elsa.Server.csproj
 | Path | Contents |
 |---|---|
 | `RIoT2.Elsa.Server/Program.cs` | Elsa, identity, `AddRIoT2Security()` (CORS, the RIoT policies), health, RIoT HTTP and gRPC wiring |
-| `RIoT2.Elsa.Server/RIoT/Activities/` | `RIoTTrigger`, `RIoTData`, `RIoTOutput` workflow activities |
+| `RIoT2.Elsa.Server/RIoT/Activities/` | `RIoTTrigger`, `RIoTData`, `RIoTOutput`, `RIoTConfirmedCommand` workflow activities |
 | `RIoT2.Elsa.Server/RIoT/Endpoints/RIoTEndpoints.cs` | `POST /riot/trigger/{id}` trigger endpoint |
 | `RIoT2.Elsa.Server/RIoT/Services/` | MQTT, configuration, gRPC trigger (with `TriggerDeduplicator`), data and command services |
 | `RIoT2.Elsa.Server/RIoT/Protos/riot.proto` | Elsa copy of the workflow trigger gRPC contract |
@@ -71,7 +71,9 @@ repositories.
 
 - Do not reintroduce the old internal rule engine, NCalc rules, rule models or rule UI. Elsa is
   the only automation engine ([ADR 0003](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/adr/0003-elsa-sole-automation-engine.md)).
-- Keep the custom activities named and registered as `RIoTTrigger`, `RIoTData` and `RIoTOutput`.
+- Keep the custom activities named and registered as `RIoTTrigger`, `RIoTData`, `RIoTOutput` and
+  `RIoTConfirmedCommand` (saved workflows refer to them by type name). `RIoTConfirmedCommand`'s
+  timeout stays below the orchestrator client's 60 s (`MaxTimeoutSeconds`).
 - Keep workflow work asynchronous. Do not block on `.Result`, `.Wait()` or `Task.WaitAll`.
 - Keep `RIOT2_WORKFLOW_GRPC_URL` required and absolute. The orchestrator needs this advertised
   endpoint to trigger workflows over the dedicated HTTP/2 listener.

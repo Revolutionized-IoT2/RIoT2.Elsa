@@ -58,5 +58,6 @@ public class RIoTDataActivityTests
         public Task<List<Template>> GetVariableTemplatesAsync() => throw new NotSupportedException();
         public Task<object> GetCommandValueAsync(string commandId) => throw new NotSupportedException();
         public Task<object> GetVariableValueAsync(string variableId) => throw new NotSupportedException();
+        public Task<RIoT2.Elsa.Server.RIoT.Models.CommandConfirmation> ExecuteCommandWithConfirmationAsync(string id, object? data, int ttlSeconds, CancellationToken cancellationToken = default) => throw new NotSupportedException();
     }
 }
