@@ -4,7 +4,7 @@
 # /app/Data
 
 # This stage is used when running from VS in fast mode (Default for Debug configuration)
-FROM mcr.microsoft.com/dotnet/aspnet:10.0-alpine AS base
+FROM mcr.microsoft.com/dotnet/aspnet:10.0-alpine@sha256:254fe017495996d3abcc487ffacdcce2b73affb380d3af87af12c8dff41fe0b0 AS base
 WORKDIR /app
 RUN apk add --upgrade --no-cache tzdata
 ENV DOTNET_RUNNING_IN_CONTAINER=true
@@ -16,7 +16,7 @@ EXPOSE 5003
 # NOTE: the Debian-based SDK image is required (not -alpine): Grpc.Tools ships a glibc-linked
 # protoc, which cannot be executed on musl/Alpine. The publish output is portable (no RID,
 # UseAppHost=false), so it still runs on the Alpine runtime image used by the final stage.
-FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:10.0@sha256:de4fe90a98845d75910b9769662465c84de1a934665c431279d1382b2bddc02b AS build
 ARG BUILD_CONFIGURATION=Release
 ARG NUGET_URL=https://nuget.pkg.github.com/Revolutionized-IoT2/index.json
 WORKDIR /src

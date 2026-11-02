@@ -47,7 +47,7 @@ dotnet run --project .\RIoT2.Elsa\RIoT2.Elsa.Server\RIoT2.Elsa.Server.csproj
 | `RIoT2.Elsa.Server/RIoT/Protos/riot.proto` | Elsa copy of the workflow trigger gRPC contract |
 | `RIoT2.Elsa.Studio/` | Blazor WebAssembly Elsa Studio and RIoT picker UI |
 | `RIoT2.Elsa.Tests/` | MSTest coverage for endpoint, activity, gRPC and trigger deduplication behaviours |
-| `Dockerfile` | `net10.0` multi-stage image, web port 8080 and gRPC port 5003 |
+| `Dockerfile` | `net10.0` multi-stage image, web port 8080 and gRPC port 5003; base images pinned by digest (Renovate updates them) |
 
 ## Contracts implemented here
 
