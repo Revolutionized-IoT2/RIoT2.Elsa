@@ -40,7 +40,7 @@ dotnet run --project .\RIoT2.Elsa\RIoT2.Elsa.Server\RIoT2.Elsa.Server.csproj
 
 | Path | Contents |
 |---|---|
-| `RIoT2.Elsa.Server/Program.cs` | Elsa, identity, CORS, health, RIoT HTTP and gRPC wiring |
+| `RIoT2.Elsa.Server/Program.cs` | Elsa, identity, `AddRIoT2Security()` (CORS, the RIoT policies), health, RIoT HTTP and gRPC wiring |
 | `RIoT2.Elsa.Server/RIoT/Activities/` | `RIoTTrigger`, `RIoTData`, `RIoTOutput` workflow activities |
 | `RIoT2.Elsa.Server/RIoT/Endpoints/RIoTEndpoints.cs` | `POST /riot/trigger/{id}` trigger endpoint |
 | `RIoT2.Elsa.Server/RIoT/Services/` | MQTT, configuration, gRPC trigger (with `TriggerDeduplicator`), data and command services |
@@ -82,7 +82,7 @@ repositories.
 - Do not copy hub contract tables into this repository. Link to the hub and update the hub only
   when a contract changes.
 - Keep the Core packages as package references, and only the narrow ones (plan M1 step 4): this
-  repository pins `RIoT2.Core.Contracts`, `RIoT2.Core.Mqtt` and `RIoT2.Core.Hosting` `1.14.1`. Don't
+  repository pins `RIoT2.Core.Contracts`, `RIoT2.Core.Mqtt` and `RIoT2.Core.Hosting` `1.18.0`. Don't
   add the `RIoT2.Core` facade or `RIoT2.Core.Node`.
 - Every gRPC trigger runs through the singleton `TriggerDeduplicator`. Keep `message_id` (field 3)
   in `riot.proto` and in the orchestrator's `riot_trigger.proto`; never reuse a field number.
@@ -104,10 +104,11 @@ repositories.
   retained orchestrator-online message arrives. Install handlers before subscribing.
 - Workflow and identity state lives in `Data/elsa.sqlite.db` (`/app/Data/elsa.sqlite.db` in the
   image). Bind-mounted data must be writable by UID 1654.
-- `Program.cs` still uses Elsa `UseAdminUserProvider`, permissive CORS and disabled antiforgery.
-  That is intentional until optional security mode work lands; do not silently tighten it in an
-  unrelated change.
-- The Core packages `1.14.1` are published. Use `C:\Src\RIoT2\.localfeed` as an extra NuGet source only
+- `Program.cs` still uses Elsa `UseAdminUserProvider`, permissive CORS (from `AddRIoT2Security`
+  while the mode is `off`) and disabled antiforgery, until S4 (I52); don't tighten them elsewhere.
+- The RIoT endpoints (`/riot/trigger`, the gRPC service) carry `SecurityPolicies.Operator`. Keep
+  `AddRIoT2Security(..., defaultScheme: false)`: Elsa's own scheme must stay the default.
+- The Core packages `1.18.0` are published. Use `C:\Src\RIoT2\.localfeed` as an extra NuGet source only
   to try an unreleased Core version.
 - The trigger deduplication window lives in memory: after an Elsa restart, a redelivery of a
   trigger that already ran runs again. The gRPC service doesn't pass the call's cancellation to

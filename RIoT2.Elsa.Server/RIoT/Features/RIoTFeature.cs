@@ -2,6 +2,8 @@
 using Elsa.Features.Abstractions;
 using Elsa.Features.Services;
 using Elsa.Workflows;
+using Microsoft.Extensions.Options;
+using RIoT2.Core.Security;
 using RIoT2.Elsa.Server.RIoT.Services;
 using RIoT2.Elsa.Server.RIoT.Services.Interfaces;
 using RIoT2.Elsa.Server.RIoT.UIHints;
@@ -32,7 +34,12 @@ namespace RIoT2.Elsa.Server.RIoT.Features
             Services.AddScoped<IPropertyUIHandler, RIoTDataOptionsProvider>();
             Services.AddScoped<IPropertyUIHandler, RIoTOutputOptionsProvider>();
             //Services.AddScoped<IUIHintHandler, RIoTOutputSelectorUIHintHandler>();
-            Services.AddHttpClient<IRIoTDataService, RIoTDataService>(client => client.Timeout = TimeSpan.FromSeconds(60));
+            // Calls to the orchestrator send X-RIoT2-Key when RIOT2_API_KEY is set, and pass the outbound
+            // URL policy (design 7.5).
+            Services.AddHttpClient<IRIoTDataService, RIoTDataService>(client => client.Timeout = TimeSpan.FromSeconds(60))
+                .AddHttpMessageHandler(services => new ApiKeyHandler(services.GetService<IOptions<WorkflowOptions>>()?.Value.Security.ApiKey))
+                .AddHttpMessageHandler(services => new OutboundUrlPolicyHandler(
+                    services.GetService<IOutboundUrlPolicy>() ?? AllowAllOutboundUrlPolicy.Instance, OutboundPurposes.Orchestrator));
             Services.AddHostedService<MqttBackgroundService>();
         }
 

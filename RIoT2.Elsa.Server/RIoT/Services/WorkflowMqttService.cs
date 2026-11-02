@@ -39,8 +39,9 @@ namespace RIoT2.Elsa.Server.RIoT.Services
                 IsOnline = true,
                 Name = "Elsa3",
                 NodeType = NodeType.Workflow,
-                NodeBaseUrl = _configuration.WorkflowBaseUrl,
-                GrpcBaseUrl = _configuration.WorkflowGrpcBaseUrl
+                // Both are required settings (WorkflowOptions), so they are never empty here.
+                NodeBaseUrl = _configuration.WorkflowBaseUrl ?? "",
+                GrpcBaseUrl = _configuration.WorkflowGrpcBaseUrl ?? ""
             }));
 
         }
@@ -77,7 +78,10 @@ namespace RIoT2.Elsa.Server.RIoT.Services
                 if (MqttClient.IsMatch(mqttEventArgs.Topic, _configureTopic))
                 {
                     var configurationCmd = Json.Deserialize<ConfigurationCommand>(mqttEventArgs.Message);
-                    _configuration.OrchestratorBaseUrl = configurationCmd.ApiBaseUrl;
+                    if (configurationCmd != null)
+                        _configuration.OrchestratorBaseUrl = configurationCmd.ApiBaseUrl;
+                    else
+                        _logger.LogWarning("Ignored an empty configuration command on {Topic}", mqttEventArgs.Topic);
                 }
             }
             catch (Exception x)

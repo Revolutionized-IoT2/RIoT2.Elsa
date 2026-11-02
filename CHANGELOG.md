@@ -5,6 +5,23 @@ pushes the Docker image to GitHub Container Registry.
 
 ## [Unreleased]
 
+## [1.8.0] - 2026-11-02
+
+The optional security mode's seams ([I34](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/increments/phase-2.md#i34-security-seams-with-the-mode-fixed-at-off-m), [design 7.5](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/design/security-mode.md) phase S0), with RIoT2.Core 1.18.0 (was 1.14.1).
+No port, user, volume or JSON changes; with the default mode `off` nothing is enforced, and Elsa
+Studio's login is unchanged.
+
+- Added: `POST /riot/trigger/{id}` and the gRPC trigger service have the `Operator` policy, which
+  the `LocalTrust` scheme passes while the mode is `off`. Elsa's own authentication stays the
+  default scheme.
+- Added: `RIOT2_SECURITY_MODE` (only `off` is accepted; `audit` or `on` stops the start),
+  `RIOT2_SECURITY_FEATURES`, `RIOT2_API_KEY` (sent in `X-RIoT2-Key` on calls to the orchestrator)
+  and `RIOT2_CORS_ORIGINS` (used once the `api` feature exists; any origin while `off`, as before).
+- Added: `RIOT2_MQTT_TLS` and `RIOT2_MQTT_CA_FILE` connect to a TLS broker.
+- Changed: the orchestrator client passes the outbound URL policy (allow-all while `off`).
+- Changed: an empty configuration command (`null`) is logged as a warning, where it threw a
+  `NullReferenceException` that was logged as an error. Built with the nullable-annotated Core.
+
 ## [1.7.2] - 2026-11-02
 
 Supply chain ([I33](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/increments/phase-2.md#i33-supply-chain-s)). No port, user, volume, variable or JSON changes.

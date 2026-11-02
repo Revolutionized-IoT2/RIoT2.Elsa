@@ -1,6 +1,7 @@
 ﻿using Elsa.Workflows.Helpers;
 using Elsa.Workflows.Runtime;
 using Microsoft.AspNetCore.Mvc;
+using RIoT2.Core.Security;
 using RIoT2.Elsa.Server.RIoT.Activities;
 using RIoT2.Elsa.Server.RIoT.Services;
 
@@ -23,7 +24,9 @@ namespace RIoT2.Elsa.Server.RIoT.Endpoints
                 return Results.Ok();
             })
             .WithName("RunTrigger")
-            .WithTags("RIoT");
+            .WithTags("RIoT")
+            // Passed by the LocalTrust scheme while the security mode is off (design 7.5).
+            .RequireAuthorization(SecurityPolicies.Operator);
 
             return endpoints;
         }

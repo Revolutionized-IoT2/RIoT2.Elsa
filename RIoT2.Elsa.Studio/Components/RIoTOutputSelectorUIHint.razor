@@ -144,9 +144,9 @@
         else
         {
             if(valueType == Core.ValueType.Text)
-                JsLiteral = "let " + camelName + " = '" + obj.ToString() + "';";
+                JsLiteral = "let " + camelName + " = '" + obj?.ToString() + "';";
             else
-                JsLiteral = "let " + camelName + " = " + obj.ToString()?.ToLower() + ";";
+                JsLiteral = "let " + camelName + " = " + obj?.ToString()?.ToLower() + ";";
         }
 
         if (isEditorHidden && valueType == Core.ValueType.Entity)

@@ -12,6 +12,7 @@ using Elsa.Workflows.Management.Enums;
 using Elsa.Workflows.Management.Models;
 using Microsoft.AspNetCore.Mvc;
 using RIoT2.Core.Hosting;
+using RIoT2.Core.Security;
 using RIoT2.Elsa.Server.RIoT.Endpoints;
 using RIoT2.Elsa.Server.RIoT.Extensions;
 using RIoT2.Elsa.Server.RIoT.Services;
@@ -86,7 +87,11 @@ services
         })
     );
 
-services.AddCors(cors => cors.AddDefaultPolicy(policy => policy.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin().WithExposedHeaders("*")));
+// The optional security mode's seams (design 7.5, phase S0): the RIoT trigger endpoints have the Operator
+// policy, which the LocalTrust scheme passes while RIOT2_SECURITY_MODE is off (the only mode this
+// version accepts). Elsa's own authentication stays the default scheme, so Studio's login is unchanged.
+// CORS allows any origin while the mode is off.
+services.AddRIoT2Security(workflowOptions.Security, defaultScheme: false, configureCors: policy => policy.WithExposedHeaders("*"));
 services.AddRazorPages(options => options.Conventions.ConfigureFilter(new IgnoreAntiforgeryTokenAttribute()));
 services.AddGrpc();
 // One per process: it remembers the trigger message ids of the last ten minutes.
@@ -106,7 +111,8 @@ if (!app.Environment.IsDevelopment())
 app.MapStaticAssets();
 app.UseRouting();
 app.MapRIoTEndpoints(); // <-- Map the RIoT endpoints
-app.MapGrpcService<RIoTTriggerGrpcService>(); // <-- Optional gRPC transport for the same trigger endpoint
+app.MapGrpcService<RIoTTriggerGrpcService>() // <-- Optional gRPC transport for the same trigger endpoint
+    .RequireAuthorization(SecurityPolicies.Operator);
 var health = () => Results.Ok(new { status = "ok" });
 app.MapGet("/health", health).AllowAnonymous();
 app.MapGet("/healthz", health).AllowAnonymous();
@@ -114,6 +120,8 @@ app.UseCors();
 app.UseStaticFiles();
 app.UseAuthentication();
 app.UseAuthorization();
+// The middlewares are above; this sets the outbound URL policy and logs the mode.
+app.UseRIoT2Security(pipeline: false);
 app.UseWorkflowsApi();
 app.UseWorkflows();
 app.MapFallbackToPage("/_Host");

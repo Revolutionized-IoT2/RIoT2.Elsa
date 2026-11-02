@@ -27,9 +27,9 @@
     <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.12" />
     <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="10.0.12" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.12" />
-    <PackageVersion Include="RIoT2.Core.Contracts" Version="1.14.1" />
-    <PackageVersion Include="RIoT2.Core.Hosting" Version="1.14.1" />
-    <PackageVersion Include="RIoT2.Core.Mqtt" Version="1.14.1" />
+    <PackageVersion Include="RIoT2.Core.Contracts" Version="1.18.0" />
+    <PackageVersion Include="RIoT2.Core.Hosting" Version="1.18.0" />
+    <PackageVersion Include="RIoT2.Core.Mqtt" Version="1.18.0" />
     <PackageVersion Include="SQLitePCLRaw.lib.e_sqlite3" Version="2.1.12" />
   </ItemGroup>
 </Project>

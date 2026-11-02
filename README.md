@@ -47,7 +47,10 @@ Set these variables when running the server outside a local Development profile:
 - `RIOT2_WORKFLOW_GRPC_URL`
 - `RIOT2_WORKFLOW_GRPC_PORT` (optional, default `5003`)
 - `RIOT2_MQTT_IP`
-- `RIOT2_MQTT_USERNAME` and `RIOT2_MQTT_PASSWORD` (optional for anonymous brokers)
+- `RIOT2_MQTT_USERNAME` and `RIOT2_MQTT_PASSWORD` (optional for anonymous brokers);
+  `RIOT2_MQTT_TLS` and `RIOT2_MQTT_CA_FILE` (optional, TLS to the broker)
+- `RIOT2_SECURITY_MODE` (optional, only `off` yet), `RIOT2_SECURITY_FEATURES`, `RIOT2_API_KEY` (sent
+  to the orchestrator) and `RIOT2_CORS_ORIGINS`: the optional security mode ({D75})
 - `ELSA_IDENTITY_SIGNING_KEY` (required outside Development)
 - `RIOT2_LOG_FORMAT` (optional, `text` or `json`) and `RIOT2_LOG_LEVEL` (optional, default
   `Information`)
@@ -124,7 +127,7 @@ by UID 1654.
 - To release, push a tag `x.y.z` on `master`. The release workflow runs the tests, then publishes
   the Docker image to GitHub Container Registry ([CI guide](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/guides/ci.md)).
 - This repository references the `RIoT2.Core.Contracts`, `RIoT2.Core.Mqtt` and `RIoT2.Core.Hosting`
-  packages `1.14.1` from GitHub Packages: the contract and the MQTT client, without the device SDK,
+  packages `1.18.0` from GitHub Packages: the contract and the MQTT client, without the device SDK,
   the node runtime or Quartz.
 
 ## Contributing
