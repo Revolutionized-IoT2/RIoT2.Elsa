@@ -85,7 +85,7 @@ repositories.
   when a contract changes.
 - Keep the Core packages as package references, and only the narrow ones (plan M1 step 4): this
   repository pins `RIoT2.Core.Contracts`, `RIoT2.Core.Mqtt` and `RIoT2.Core.Hosting` `1.18.0`. Don't
-  add the `RIoT2.Core` facade or `RIoT2.Core.Node`.
+  add `RIoT2.Core.Node`.
 - Every gRPC trigger runs through the singleton `TriggerDeduplicator`. Keep `message_id` (field 3)
   in `riot.proto` and in the orchestrator's `riot_trigger.proto`; never reuse a field number.
 - Keep `PackageReference` items versionless; package versions belong in `Directory.Packages.props`.

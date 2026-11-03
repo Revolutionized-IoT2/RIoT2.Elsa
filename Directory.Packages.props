@@ -31,9 +31,9 @@
     <!-- 10.0.14: GHSA-334f-vvp4-7g6p (10.0.3 comes with Elsa.Studio); WebAssembly.Server: GHSA-g27p-qf6j-c96c, GHSA-qjpx-jqm5-h2c4. -->
     <PackageVersion Include="Microsoft.AspNetCore.SignalR.Common" Version="10.0.14" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.12" />
-    <PackageVersion Include="RIoT2.Core.Contracts" Version="1.18.0" />
-    <PackageVersion Include="RIoT2.Core.Hosting" Version="1.18.0" />
-    <PackageVersion Include="RIoT2.Core.Mqtt" Version="1.18.0" />
+    <PackageVersion Include="RIoT2.Core.Contracts" Version="2.0.0" />
+    <PackageVersion Include="RIoT2.Core.Hosting" Version="2.0.0" />
+    <PackageVersion Include="RIoT2.Core.Mqtt" Version="2.0.0" />
     <PackageVersion Include="SQLitePCLRaw.lib.e_sqlite3" Version="2.1.12" />
   </ItemGroup>
 </Project>

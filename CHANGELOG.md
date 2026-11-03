@@ -5,6 +5,11 @@ pushes the Docker image to GitHub Container Registry.
 
 ## [Unreleased]
 
+## [1.10.0] - 2026-11-03
+
+- Changed: built on `RIoT2.Core.Contracts`, `.Mqtt` and `.Hosting` 2.0.0 ([I45](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/increments/phase-3-4.md#i45-core-20-remove-compatibility-layers-m)): no Newtonsoft.Json
+  through Core. No change to the activities, the wire format or the settings.
+
 ## [1.9.0] - 2026-11-02
 
 A command activity that waits for the device ([I36](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/increments/phase-3-4.md#i36-sync-and-command-status-in-the-ui-m), [design 7.1](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/design/reliable-delivery.md) phase 4). No port, user,
