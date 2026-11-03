@@ -5,7 +5,9 @@ pushes the Docker image to GitHub Container Registry.
 
 ## [Unreleased]
 
-Planned as 2.0.0: the integrated designer, the embedded mode and Run LLM ([I55](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/increments/phase-3-4.md#i55-integrated-workflows-and-run-llm-m),
+## [2.0.0] - 2026-11-03
+
+The integrated designer, the embedded mode and Run LLM ([I55](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/increments/phase-3-4.md#i55-integrated-workflows-and-run-llm-m),
 [ADR 0016](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/adr/0016-integrated-workflows-and-llm.md)). Breaking: read the
 [upgrade notes](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/guides/upgrading.md#integrated-workflows-and-run-llm-elsa-200-orchestrator-1210-ui-1110)
 first. Existing workflows load unchanged.
