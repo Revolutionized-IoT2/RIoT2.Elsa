@@ -1,4 +1,4 @@
-﻿namespace RIoT2.Elsa.Server.RIoT.Models
+namespace RIoT2.Elsa.Workflows.Models
 {
     //remove this once report uses object instead of valuemodel
     public class ElsaReport

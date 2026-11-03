@@ -1,14 +1,13 @@
-﻿using Elsa.Extensions;
-using Elsa.Studio.UIHints;
+using Elsa.Extensions;
 using Elsa.Workflows;
 using Elsa.Workflows.Attributes;
 using Elsa.Workflows.Models;
 using Elsa.Workflows.UIHints.Dropdown;
-using RIoT2.Elsa.Server.RIoT.Services.Interfaces;
-using RIoT2.Elsa.Server.RIoT.UIHints;
-using RIoT2.Elsa.Studio.Models;
+using RIoT2.Elsa.Workflows.Services;
+using RIoT2.Elsa.Workflows.UIHints;
+using RIoT2.Elsa.Workflows.Models;
 
-namespace RIoT2.Elsa.Server.RIoT.Activities
+namespace RIoT2.Elsa.Workflows.Activities
 {
     [Activity(
         Namespace = "RIoT2",

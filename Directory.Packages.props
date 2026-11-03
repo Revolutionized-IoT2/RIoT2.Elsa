@@ -3,36 +3,25 @@
        Revolutionized-IoT2/.github build/Directory.Packages.props.template. -->
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
-    <!-- Lets a version below raise a transitive dependency, such as the patched SignalR.Common under Elsa.Studio. -->
+    <!-- Lets a version below raise a transitive dependency of Elsa when an advisory needs it. -->
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
   </PropertyGroup>
   <ItemGroup Label="Elsa">
-    <PackageVersion Include="Elsa" Version="3.7.1" />
-    <PackageVersion Include="Elsa.Api.Client" Version="3.7.1" />
-    <PackageVersion Include="Elsa.Expressions.CSharp" Version="3.7.1" />
-    <PackageVersion Include="Elsa.Expressions.JavaScript" Version="3.7.1" />
-    <PackageVersion Include="Elsa.Expressions.Liquid" Version="3.7.1" />
-    <PackageVersion Include="Elsa.Http" Version="3.7.1" />
-    <PackageVersion Include="Elsa.Identity" Version="3.7.1" />
-    <PackageVersion Include="Elsa.Persistence.EFCore.Sqlite" Version="3.7.1" />
-    <PackageVersion Include="Elsa.Retention" Version="3.7.1" />
-    <PackageVersion Include="Elsa.Scheduling" Version="3.7.1" />
-    <PackageVersion Include="Elsa.Studio" Version="3.7.1" />
-    <PackageVersion Include="Elsa.Studio.Core.BlazorWasm" Version="3.7.1" />
-    <PackageVersion Include="Elsa.Studio.Login.BlazorWasm" Version="3.7.1" />
-    <PackageVersion Include="Elsa.Studio.Shared" Version="3.7.1" />
-    <PackageVersion Include="Elsa.Workflows.Api" Version="3.7.1" />
+    <PackageVersion Include="Elsa" Version="3.9.0" />
+    <PackageVersion Include="Elsa.Expressions.CSharp" Version="3.9.0" />
+    <PackageVersion Include="Elsa.Expressions.JavaScript" Version="3.9.0" />
+    <PackageVersion Include="Elsa.Expressions.Liquid" Version="3.9.0" />
+    <PackageVersion Include="Elsa.Http" Version="3.9.0" />
+    <PackageVersion Include="Elsa.Persistence.EFCore.Sqlite" Version="3.9.0" />
+    <PackageVersion Include="Elsa.Retention" Version="3.9.0" />
+    <PackageVersion Include="Elsa.Scheduling" Version="3.9.0" />
   </ItemGroup>
   <ItemGroup>
     <PackageVersion Include="Grpc.AspNetCore" Version="2.84.0" />
-    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.14" />
-    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.14" />
-    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="10.0.14" />
-    <!-- 10.0.14: GHSA-334f-vvp4-7g6p (10.0.3 comes with Elsa.Studio); WebAssembly.Server: GHSA-g27p-qf6j-c96c, GHSA-qjpx-jqm5-h2c4. -->
-    <PackageVersion Include="Microsoft.AspNetCore.SignalR.Common" Version="10.0.14" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.12" />
     <PackageVersion Include="RIoT2.Core.Contracts" Version="2.0.0" />
     <PackageVersion Include="RIoT2.Core.Hosting" Version="2.0.0" />
+    <PackageVersion Include="RIoT2.Core.Http" Version="2.0.0" />
     <PackageVersion Include="RIoT2.Core.Mqtt" Version="2.0.0" />
     <PackageVersion Include="SQLitePCLRaw.lib.e_sqlite3" Version="2.1.12" />
   </ItemGroup>

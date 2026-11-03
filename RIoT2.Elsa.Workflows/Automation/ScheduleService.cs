@@ -3,10 +3,10 @@ using Elsa.Workflows.Helpers;
 using Elsa.Workflows.Runtime;
 using Elsa.Workflows.Runtime.Filters;
 using Microsoft.Extensions.Options;
-using RIoT2.Elsa.Server.RIoT.Activities;
-using RIoT2.Elsa.Server.RIoT.Services;
+using RIoT2.Elsa.Workflows.Activities;
+using RIoT2.Elsa.Workflows.Services;
 
-namespace RIoT2.Elsa.Server.RIoT.Automation
+namespace RIoT2.Elsa.Workflows.Automation
 {
     /// <summary>
     /// Fires the <c>RIoT Schedule</c> triggers and bookmarks: it reads their schedules from Elsa's trigger and bookmark
@@ -29,7 +29,7 @@ namespace RIoT2.Elsa.Server.RIoT.Automation
         private readonly HashSet<string> _warned = new(StringComparer.Ordinal);
         private readonly IHostApplicationLifetime? _lifetime;
 
-        public ScheduleService(IServiceScopeFactory scopes, IOptions<WorkflowOptions> options, TimeProvider time, IHostApplicationLifetime lifetime, ILogger<ScheduleService> logger)
+        public ScheduleService(IServiceScopeFactory scopes, IOptions<RIoT2WorkflowsOptions> options, TimeProvider time, IHostApplicationLifetime lifetime, ILogger<ScheduleService> logger)
             : this(scopes, options.Value.Location, TimeZoneInfo.Local, time, logger)
         {
             _lifetime = lifetime;

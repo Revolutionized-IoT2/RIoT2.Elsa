@@ -1,6 +1,6 @@
 using Elsa.Workflows;
 
-namespace RIoT2.Elsa.Server.RIoT.Activities
+namespace RIoT2.Elsa.Workflows.Activities
 {
     /// <summary>What the automation activities share.</summary>
     public static class AutomationActivity

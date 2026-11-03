@@ -3,10 +3,9 @@ using Elsa.Extensions;
 using Elsa.Workflows;
 using Elsa.Workflows.Models;
 using Microsoft.Extensions.DependencyInjection;
-using RIoT2.Elsa.Server.RIoT.Activities;
+using RIoT2.Elsa.Workflows.Activities;
 using RIoT2.Elsa.Server.RIoT.Services.Interfaces;
-using RIoT2.Elsa.Studio.Models;
-using Template = RIoT2.Elsa.Server.RIoT.Models.Template;
+using RIoT2.Elsa.Workflows.Models;
 
 namespace RIoT2.Elsa.Tests;
 
@@ -53,11 +52,8 @@ public class RIoTDataActivityTests
         }
 
         public Task ExecuteCommandAsync(string id, object? data, CancellationToken cancellationToken = default) => throw new NotSupportedException();
-        public Task<List<Template>> GetReportTemplatesAsync() => throw new NotSupportedException();
-        public Task<List<Template>> GetCommandTemplatesAsync() => throw new NotSupportedException();
-        public Task<List<Template>> GetVariableTemplatesAsync() => throw new NotSupportedException();
         public Task<object> GetCommandValueAsync(string commandId) => throw new NotSupportedException();
         public Task<object> GetVariableValueAsync(string variableId) => throw new NotSupportedException();
-        public Task<RIoT2.Elsa.Server.RIoT.Models.CommandConfirmation> ExecuteCommandWithConfirmationAsync(string id, object? data, int ttlSeconds, CancellationToken cancellationToken = default) => throw new NotSupportedException();
+        public Task<RIoT2.Elsa.Workflows.Models.CommandConfirmation> ExecuteCommandWithConfirmationAsync(string id, object? data, int ttlSeconds, CancellationToken cancellationToken = default) => throw new NotSupportedException();
     }
 }

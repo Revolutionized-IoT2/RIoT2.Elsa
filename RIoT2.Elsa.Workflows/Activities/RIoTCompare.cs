@@ -4,9 +4,9 @@ using Elsa.Workflows.Activities.Flowchart.Attributes;
 using Elsa.Workflows.Attributes;
 using Elsa.Workflows.Models;
 using Elsa.Workflows.UIHints;
-using RIoT2.Elsa.Server.RIoT.Automation;
+using RIoT2.Elsa.Workflows.Automation;
 
-namespace RIoT2.Elsa.Server.RIoT.Activities
+namespace RIoT2.Elsa.Workflows.Activities
 {
     /// <summary>
     /// Compares a value with a constant: continues on <c>True</c> or <c>False</c>. Without a value it compares the report

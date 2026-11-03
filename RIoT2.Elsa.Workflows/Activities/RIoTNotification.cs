@@ -2,11 +2,11 @@ using Elsa.Extensions;
 using Elsa.Workflows;
 using Elsa.Workflows.Attributes;
 using Elsa.Workflows.Models;
-using RIoT2.Elsa.Server.RIoT.Services.Interfaces;
-using RIoT2.Elsa.Server.RIoT.UIHints;
-using RIoT2.Elsa.Studio.Models;
+using RIoT2.Elsa.Workflows.Services;
+using RIoT2.Elsa.Workflows.UIHints;
+using RIoT2.Elsa.Workflows.Models;
 
-namespace RIoT2.Elsa.Server.RIoT.Activities
+namespace RIoT2.Elsa.Workflows.Activities
 {
     /// <summary>
     /// Sends a notification through a RIoT2 command, normally a Messaging device's "Send firebase message" (push to the

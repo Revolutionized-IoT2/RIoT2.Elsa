@@ -5,6 +5,33 @@ pushes the Docker image to GitHub Container Registry.
 
 ## [Unreleased]
 
+Planned as 2.0.0: the integrated designer, the embedded mode and Run LLM ([I55](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/increments/phase-3-4.md#i55-integrated-workflows-and-run-llm-m),
+[ADR 0016](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/adr/0016-integrated-workflows-and-llm.md)). Breaking: read the
+[upgrade notes](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/guides/upgrading.md#integrated-workflows-and-run-llm-elsa-200-orchestrator-1210-ui-1110)
+first. Existing workflows load unchanged.
+
+- Removed: Elsa Studio (`RIoT2.Elsa.Studio`), Elsa Identity with its built-in admin login and
+  `ELSA_IDENTITY_SIGNING_KEY`, and the Elsa Workflows API. Workflows are designed on RIoT2.UI's
+  *Workflows* page through the orchestrator (Orchestrator 1.21.0, UI 1.11.0).
+- Added: the `RIoT2.Elsa.Workflows` package with every activity, `AddRIoT2Workflows()` and the
+  workflow management service, so the orchestrator can run workflows itself (its default since
+  1.21.0). The container is now for `RIOT2_WORKFLOW_MODE=remote`, under the compose profile
+  `remote-workflows`.
+- Added: `/riot/workflows` on the host (list, catalog, save, import, export, versions, publish,
+  retract, delete, runs and cancel; Viewer, Admin and Operator policies). The orchestrator's
+  `/api/workflows` forwards to it in the remote mode.
+- Added: the **Run LLM** activity (`RIoT2.RIoTRunLlm`). It sends instructions and input to a
+  language model through a connection kept by the orchestrator, answering as text or as JSON checked
+  against a schema. Optional tools read values (`ReadValues`) and send allowed commands
+  (`SendCommands`), within command, tool call and time limits. The host runs it with
+  `POST /api/llm/run` on the orchestrator.
+- Changed: Elsa 3.7.1 → 3.9.0; the database is migrated on the first start. Saved workflows' type
+  names (`RIoT2.RIoTTemplateItem` and the old `RIoT2.Elsa.Studio.Models.RIoTTemplateItem`, `ElsaReport`,
+  `CommandConfirmation`, `Command`, `Variable`) are registered aliases, so they read back as before.
+- Changed: the C# namespaces are `RIoT2.Elsa.Workflows.*`; activity type names stay `RIoT2.*`.
+- Fixed: the triggers in `templates/` now have `canStartWorkflow`, so imported templates start.
+- Changed: also references `RIoT2.Core.Http` 2.0.0 (the outbound URL policy).
+
 ## [1.11.0] - 2026-11-03
 
 The activity pack ([I48](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/increments/phase-3-4.md#i48-elsa-activity-pack-m), [automation guide](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/guides/automation.md)).

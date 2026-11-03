@@ -5,7 +5,7 @@ using Elsa.Workflows.Runtime.Results;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
-using RIoT2.Elsa.Server.RIoT.Automation;
+using RIoT2.Elsa.Workflows.Automation;
 
 namespace RIoT2.Elsa.Tests;
 

@@ -1,4 +1,4 @@
-﻿namespace RIoT2.Elsa.Studio.Models
+namespace RIoT2.Elsa.Workflows.Models
 {
     public enum TemplateType
     {

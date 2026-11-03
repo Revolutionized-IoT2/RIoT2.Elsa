@@ -10,11 +10,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using RIoT2.Core.Models;
 using RIoT2.Core.Utils;
-using RIoT2.Elsa.Server.RIoT.Activities;
+using RIoT2.Elsa.Workflows.Activities;
 using RIoT2.Elsa.Server.RIoT.Services;
 using RIoT2.Elsa.Server.RIoT.Services.Interfaces;
-using RIoT2.Elsa.Studio.Models;
-using Template = RIoT2.Elsa.Server.RIoT.Models.Template;
+using RIoT2.Elsa.Workflows.Models;
 
 namespace RIoT2.Elsa.Tests;
 
@@ -120,7 +119,7 @@ public class WorkflowIntegrationTests
         using var client = new HttpClient(new Handler(async (request, cancellationToken) =>
         {
             Assert.AreEqual("/api/command/execute", request.RequestUri!.AbsolutePath);
-            received = Json.Deserialize<Command>(await request.Content!.ReadAsStringAsync(cancellationToken));
+            received = RIoT2.Core.Utils.Json.Deserialize<Command>(await request.Content!.ReadAsStringAsync(cancellationToken));
             entered.TrySetResult();
             await Task.Delay(Timeout.Infinite, cancellationToken);
             return new HttpResponseMessage(HttpStatusCode.OK);
@@ -200,12 +199,9 @@ public class WorkflowIntegrationTests
             if (Fail)
                 throw new HttpRequestException("Injected command failure");
         }
-        public Task<List<Template>> GetReportTemplatesAsync() => throw new NotSupportedException();
-        public Task<List<Template>> GetCommandTemplatesAsync() => throw new NotSupportedException();
-        public Task<List<Template>> GetVariableTemplatesAsync() => throw new NotSupportedException();
         public Task<object> GetReportValueAsync(string reportId) => throw new NotSupportedException();
         public Task<object> GetCommandValueAsync(string commandId) => throw new NotSupportedException();
         public Task<object> GetVariableValueAsync(string variableId) => throw new NotSupportedException();
-        public Task<RIoT2.Elsa.Server.RIoT.Models.CommandConfirmation> ExecuteCommandWithConfirmationAsync(string id, object? data, int ttlSeconds, CancellationToken cancellationToken = default) => throw new NotSupportedException();
+        public Task<RIoT2.Elsa.Workflows.Models.CommandConfirmation> ExecuteCommandWithConfirmationAsync(string id, object? data, int ttlSeconds, CancellationToken cancellationToken = default) => throw new NotSupportedException();
     }
 }

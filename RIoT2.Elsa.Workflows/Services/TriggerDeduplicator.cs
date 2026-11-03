@@ -1,6 +1,6 @@
 using System.Collections.Concurrent;
 
-namespace RIoT2.Elsa.Server.RIoT.Services
+namespace RIoT2.Elsa.Workflows.Services
 {
     /// <summary>
     /// Runs a workflow trigger once per message id (design 7.1). The orchestrator's outbox delivers at

@@ -1,10 +1,47 @@
 using System.Globalization;
 using System.Text.RegularExpressions;
 
-namespace RIoT2.Elsa.Server.RIoT.Automation
+namespace RIoT2.Elsa.Workflows.Automation
 {
     /// <summary>Where the sun is calculated for: <c>RIOT2_LATITUDE</c> and <c>RIOT2_LONGITUDE</c> in degrees (north and east positive).</summary>
-    public sealed record GeoLocation(double Latitude, double Longitude);
+    public sealed record GeoLocation(double Latitude, double Longitude)
+    {
+        public const string LatitudeVariable = "RIOT2_LATITUDE";
+        public const string LongitudeVariable = "RIOT2_LONGITUDE";
+
+        /// <summary>
+        /// Reads <c>RIOT2_LATITUDE</c> and <c>RIOT2_LONGITUDE</c>, both or neither, the same way in every workflow host.
+        /// </summary>
+        /// <param name="read">Reads a setting; null or blank when it is unset.</param>
+        /// <param name="addError">Collects a problem; the host reports them together.</param>
+        /// <returns>The location, or null when neither is set or a value is invalid.</returns>
+        public static GeoLocation? Read(Func<string, string?> read, Action<string> addError)
+        {
+            ArgumentNullException.ThrowIfNull(read);
+            ArgumentNullException.ThrowIfNull(addError);
+            var latitude = Degrees(read, addError, LatitudeVariable, 90);
+            var longitude = Degrees(read, addError, LongitudeVariable, 180);
+            if (latitude.Set != longitude.Set)
+            {
+                addError($"{LatitudeVariable} and {LongitudeVariable} must be set together");
+                return null;
+            }
+            return latitude.Value is { } lat && longitude.Value is { } lon ? new GeoLocation(lat, lon) : null;
+        }
+
+        private static (bool Set, double? Value) Degrees(Func<string, string?> read, Action<string> addError, string name, double limit)
+        {
+            var text = read(name);
+            if (string.IsNullOrWhiteSpace(text))
+                return (false, null);
+            if (!double.TryParse(text, NumberStyles.Float, CultureInfo.InvariantCulture, out var value) || Math.Abs(value) > limit)
+            {
+                addError($"{name} must be a number of degrees from -{limit} to {limit}, with a decimal point");
+                return (true, null);
+            }
+            return (true, value);
+        }
+    }
 
     /// <summary>
     /// Sunrise and sunset with the sun's upper edge at the horizon and standard refraction (zenith 90.833°), by the

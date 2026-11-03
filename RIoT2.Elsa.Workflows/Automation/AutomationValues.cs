@@ -1,7 +1,7 @@
 using System.Globalization;
 using System.Text.Json;
 
-namespace RIoT2.Elsa.Server.RIoT.Automation
+namespace RIoT2.Elsa.Workflows.Automation
 {
     /// <summary>The comparisons of <c>RIoT Compare</c> and <c>RIoT Wait for state</c>.</summary>
     public enum CompareOperator

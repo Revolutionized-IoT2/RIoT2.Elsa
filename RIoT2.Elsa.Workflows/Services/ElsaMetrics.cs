@@ -4,7 +4,7 @@ using Elsa.Workflows;
 using Elsa.Workflows.Notifications;
 using RIoT2.Core.Diagnostics;
 
-namespace RIoT2.Elsa.Server.RIoT.Services
+namespace RIoT2.Elsa.Workflows.Services
 {
     /// <summary>
     /// Elsa's instruments (meter <see cref="MeterNames.Elsa"/>, design 7.4 phase 4). Nothing is measured
@@ -23,10 +23,10 @@ namespace RIoT2.Elsa.Server.RIoT.Services
 
         /// <summary>
         /// RIoT triggers, by <c>result</c> (<c>received</c>: sent to the workflows; <c>duplicate</c>: a
-        /// redelivered message id, not run again) and <c>transport</c> (<c>grpc</c> or <c>http</c>).
+        /// redelivered message id, not run again) and <c>transport</c> (<c>grpc</c>, <c>http</c>, or <c>inprocess</c> in the orchestrator).
         /// </summary>
         public static readonly Counter<long> Triggers = Meter.CreateCounter<long>(TriggersName, "{trigger}",
-            "RIoT workflow triggers, by result (received or duplicate) and transport (grpc or http).");
+            "RIoT workflow triggers, by result (received or duplicate) and transport (grpc, http or inprocess).");
 
         /// <summary>Workflow runs that ended faulted, by <c>definition</c> (the workflow definition id).</summary>
         public static readonly Counter<long> Faults = Meter.CreateCounter<long>(FaultsName, "{workflow}",

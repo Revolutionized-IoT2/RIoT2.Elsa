@@ -1,11 +1,16 @@
 # RIoT2.Elsa
 
 Elsa 3 workflow automation for the [RIoT2](https://github.com/Revolutionized-IoT2) platform. This
-repository contains the workflow server, the Elsa Studio browser UI, and the RIoT-specific
-activities that connect workflows to orchestrator reports, variables and commands.
+repository contains the RIoT activities that connect workflows to orchestrator reports, variables
+and commands, the *Run LLM* activity, and the workflow management service, all in the
+`RIoT2.Elsa.Workflows` library, plus the separate workflow host that runs them in a container.
 
-- Type: ASP.NET Core / Blazor WebAssembly application
-- Target framework: .NET 10
+Since 2.0.0 there is no Elsa Studio: workflows are designed on RIoT2.UI's *Workflows* page, and by
+default the orchestrator runs them itself with this library (`RIOT2_WORKFLOW_MODE=embedded`). The
+container is for `RIOT2_WORKFLOW_MODE=remote` ([ADR 0016](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/adr/0016-integrated-workflows-and-llm.md)).
+
+- Type: .NET class library (NuGet `RIoT2.Elsa.Workflows`) and ASP.NET Core application
+- Target framework: .NET 10; Elsa 3.9
 - Default branch: `master`
 - Image: `ghcr.io/revolutionized-iot2/riot2-elsa`
 
@@ -16,19 +21,23 @@ Elsa is the only RIoT2 automation engine: [ADR 0003](https://github.com/Revoluti
 
 | Path | Contents |
 | --- | --- |
-| `RIoT2.Elsa.Server/` | ASP.NET Core host for Elsa Workflows, Studio assets, RIoT endpoints and services |
-| `RIoT2.Elsa.Server/RIoT/Activities/` | The RIoT activities: trigger, schedule, data, compare, threshold, debounce, throttle, wait for state, output, command with confirmation, notification, webhook |
-| `RIoT2.Elsa.Server/RIoT/Automation/` | What the activities share: value comparison, hysteresis, the state store, schedules and sunrise/sunset, `ScheduleService` |
+| `RIoT2.Elsa.Workflows/` | The library both hosts use (NuGet `RIoT2.Elsa.Workflows`): `AddRIoT2Workflows()` sets up Elsa with SQLite, the expression languages, the HTTP activities and the RIoT feature |
+| `RIoT2.Elsa.Workflows/Activities/` | The RIoT activities: trigger, schedule, data, compare, threshold, debounce, throttle, wait for state, output, command with confirmation, notification, webhook, Run LLM |
+| `RIoT2.Elsa.Workflows/Automation/` | What the activities share: value comparison, hysteresis, the state store, schedules and sunrise/sunset, `ScheduleService` |
+| `RIoT2.Elsa.Workflows/Management/` | `WorkflowManagementService` (list, save, import, export, publish, runs) and the activity catalog the designer shows |
+| `RIoT2.Elsa.Workflows/Llm/` | The Run LLM contract: `LlmRunRequest`, `LlmRunResult`, `ILlmRunner` (implemented by the orchestrator) |
+| `RIoT2.Elsa.Workflows/Services/`, `UIHints/` | `IRIoTDataService` (implemented by each host), `RIoTTriggers`, trigger deduplication, metrics; the RIoT selector's settings for the designer |
+| `RIoT2.Elsa.Server/` | The remote workflow host: MQTT presence, the RIoT endpoints, gRPC, and HTTP implementations of `IRIoTDataService` and `ILlmRunner` |
 | `RIoT2.Elsa.Server/RIoT/Protos/riot.proto` | gRPC trigger contract used by the orchestrator |
-| `RIoT2.Elsa.Studio/` | Blazor WebAssembly Elsa Studio client and RIoT picker UI |
-| `RIoT2.Elsa.Tests/` | MSTest coverage for activities, schedules, the templates, split ports, command failures, gRPC behaviour and trigger deduplication |
-| `templates/` | Workflow templates to import into Elsa Studio ([templates/README.md](templates/README.md)) |
-| `Dockerfile` | Production image, web/Studio port 8080 and gRPC port 5003 |
+| `RIoT2.Elsa.Tests/` | MSTest coverage for activities, schedules, the templates, the management service, Run LLM, split ports, command failures, gRPC behaviour and trigger deduplication |
+| `templates/` | Workflow templates to import on the UI's *Workflows* page ([templates/README.md](templates/README.md)) |
+| `Dockerfile` | Production image, web port 8080 (workflow API and `/health`) and gRPC port 5003 |
 
 ## RIoT integration
 
-The server publishes itself as a workflow node on MQTT. When the orchestrator sends configuration,
-Elsa stores the orchestrator base URL and uses it for workflow activities:
+In the embedded mode the orchestrator gives the activities its data in process. The remote host
+publishes itself as a workflow node on MQTT; when the orchestrator sends configuration, it stores the
+orchestrator base URL and uses it for the activities:
 
 - `RIoTTrigger` starts or resumes workflows for a selected report id.
 - `RIoTData` reads a report, variable or command value from the orchestrator.
@@ -40,6 +49,10 @@ Elsa stores the orchestrator base URL and uses it for workflow activities:
   `RIoTThreshold` (hysteresis), `RIoTDebounce`, `RIoTThrottle`, `RIoTWaitForState`,
   `RIoTNotification` (through a Messaging device) and `RIoTWebhook`. How to use them, and the
   templates: the [automation guide](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/guides/automation.md).
+- `RIoTRunLlm` (2.0.0) sends instructions and input to a language model through a connection the
+  orchestrator keeps, and continues on `Done` with the answer (text, or JSON checked against a
+  schema) or on `Failed`. It may read values and send allowed commands within limits. The host calls
+  `ILlmRunner`: in process in the orchestrator, `POST /api/llm/run` from the container.
 
 The externally visible contracts are documented in the hub:
 
@@ -49,7 +62,7 @@ The externally visible contracts are documented in the hub:
 
 ## Configuration
 
-Set these variables when running the server outside a local Development profile:
+The remote host reads these variables:
 
 - `RIOT2_WORKFLOW_ID`
 - `RIOT2_WORKFLOW_URL`
@@ -60,7 +73,6 @@ Set these variables when running the server outside a local Development profile:
   `RIOT2_MQTT_TLS` and `RIOT2_MQTT_CA_FILE` (optional, TLS to the broker)
 - `RIOT2_SECURITY_MODE` (optional, only `off` yet), `RIOT2_SECURITY_FEATURES`, `RIOT2_API_KEY` (sent
   to the orchestrator) and `RIOT2_CORS_ORIGINS`: the optional security mode ({D75})
-- `ELSA_IDENTITY_SIGNING_KEY` (required outside Development)
 - `RIOT2_LATITUDE` and `RIOT2_LONGITUDE` (optional, both or neither; decimal degrees): where
   `RIoTSchedule` calculates sunrise and sunset. Schedules use the time zone `TZ`.
 - `RIOT2_LOG_FORMAT` (optional, `text` or `json`) and `RIOT2_LOG_LEVEL` (optional, default
@@ -80,8 +92,9 @@ ASP.NET Core and the runtime. Every name is in the [metrics contract](https://gi
 Use an externally reachable URL for `RIOT2_WORKFLOW_URL` and `RIOT2_WORKFLOW_GRPC_URL`. Do not use
 `localhost` when the orchestrator runs in another container or on another machine.
 
-Workflow and identity data is stored in `Data/elsa.sqlite.db`, or `/app/Data/elsa.sqlite.db` in
-the container. Mount `/app/Data` for persistent workflows.
+Workflows are stored in `Data/elsa.sqlite.db`, or `/app/Data/elsa.sqlite.db` in the container.
+Mount `/app/Data` for persistent workflows. A 1.x database (with Studio's identity tables) is
+migrated on the first start and loads unchanged.
 
 ## Build, test and run
 
@@ -97,9 +110,11 @@ dotnet run --project .\RIoT2.Elsa\RIoT2.Elsa.Server\RIoT2.Elsa.Server.csproj
 `GoldenMessageTests` read the [golden files](https://github.com/Revolutionized-IoT2/RIoT2.Core/blob/main/contracts/golden/README.md) from RIoT2.Core, which must be checked out next to this
 repository (CI clones it).
 
-The server hosts Studio at `/`, the RIoT HTTP trigger at `POST /riot/trigger/{id}`, the gRPC
-`riot.RIoTTriggerService/Trigger` service on the dedicated HTTP/2 port, and health endpoints at
-`GET /health` and `GET /healthz`.
+The host serves the RIoT HTTP trigger at `POST /riot/trigger/{id}`, the workflow management API at
+`/riot/workflows` (which the orchestrator's `/api/workflows` forwards to), the gRPC
+`riot.RIoTTriggerService/Trigger` service on the dedicated HTTP/2 port, Elsa's HTTP endpoint
+activities below `/api/workflows`, and health endpoints at `GET /health` and `GET /healthz`. It has no
+UI and no login.
 
 The orchestrator delivers triggers over gRPC through its durable outbox, at least once
 ([design 7.1](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/design/reliable-delivery.md)).
@@ -124,7 +139,6 @@ docker run -p 8080:8080 -p 5003:5003 `
   -e RIOT2_WORKFLOW_ID=<workflow-id> `
   -e RIOT2_WORKFLOW_URL=http://<host>:8080 `
   -e RIOT2_WORKFLOW_GRPC_URL=http://<host>:5003 `
-  -e ELSA_IDENTITY_SIGNING_KEY=<strong-signing-key> `
   -v <host-data-directory>:/app/Data `
   riot2-elsa
 ```
@@ -135,11 +149,13 @@ by UID 1654.
 ## Versions and releases
 
 - Release notes are in [CHANGELOG.md](CHANGELOG.md).
-- To release, push a tag `x.y.z` on `master`. The release workflow runs the tests, then publishes
-  the Docker image to GitHub Container Registry ([CI guide](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/guides/ci.md)).
-- This repository references the `RIoT2.Core.Contracts`, `RIoT2.Core.Mqtt` and `RIoT2.Core.Hosting`
-  packages `1.18.0` from GitHub Packages: the contract and the MQTT client, without the device SDK,
-  the node runtime or Quartz.
+- To release, push a tag `x.y.z` on `master`. The release workflow runs the tests, publishes the
+  `RIoT2.Elsa.Workflows` package to GitHub Packages, then the Docker image to GitHub Container
+  Registry ([CI guide](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/guides/ci.md)).
+  Release the package before the orchestrator that uses it.
+- This repository references the `RIoT2.Core.Contracts`, `RIoT2.Core.Mqtt`, `RIoT2.Core.Http` and
+  `RIoT2.Core.Hosting` packages `2.0.0` from GitHub Packages: the contract, the MQTT client and the
+  outbound HTTP policy, without the device SDK, the node runtime or Quartz.
 
 ## Contributing
 

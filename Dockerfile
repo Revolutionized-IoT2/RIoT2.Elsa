@@ -22,7 +22,7 @@ ARG NUGET_URL=https://nuget.pkg.github.com/Revolutionized-IoT2/index.json
 WORKDIR /src
 COPY ["Directory.Build.props", "Directory.Packages.props", "./"]
 COPY ["RIoT2.Elsa.Server/RIoT2.Elsa.Server.csproj", "RIoT2.Elsa.Server/"]
-COPY ["RIoT2.Elsa.Studio/RIoT2.Elsa.Studio.csproj", "RIoT2.Elsa.Studio/"]
+COPY ["RIoT2.Elsa.Workflows/RIoT2.Elsa.Workflows.csproj", "RIoT2.Elsa.Workflows/"]
 # The feed token is the BuildKit secret "nuget_token" and reaches NuGet only through an environment
 # variable of this RUN, so no layer stores it:
 #   docker build --secret id=nuget_token,env=NUGET_AUTH_TOKEN .

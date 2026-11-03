@@ -3,9 +3,9 @@ using Elsa.Workflows;
 using Elsa.Workflows.Activities.Flowchart.Attributes;
 using Elsa.Workflows.Attributes;
 using Elsa.Workflows.Models;
-using RIoT2.Elsa.Server.RIoT.Automation;
+using RIoT2.Elsa.Workflows.Automation;
 
-namespace RIoT2.Elsa.Server.RIoT.Activities
+namespace RIoT2.Elsa.Workflows.Activities
 {
     /// <summary>
     /// Debounce: waits <c>WindowSeconds</c>, then continues on <c>Done</c> only if no later run reached the same activity

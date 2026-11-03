@@ -1,6 +1,6 @@
 # Workflow templates
 
-Workflows to import into Elsa Studio (**Workflows → Definitions → Import**). Each imports as a draft
+Workflows to import on RIoT2.UI's *Workflows* page (**Import**). Each imports as a draft
 with placeholder selections: choose your own reports and commands in its RIoT activities, then
 publish. How to use them and the activities: the [automation guide](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/guides/automation.md#templates).
 

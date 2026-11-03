@@ -38,7 +38,7 @@ public class ElsaMetricsTests
     public async Task TriggersAreCountedAsReceivedOrDuplicate()
     {
         var tags = Record(ElsaMetrics.TriggersName);
-        var service = new RIoTTriggerGrpcService(new Sender(), new TriggerDeduplicator(), NullLogger<RIoTTriggerGrpcService>.Instance);
+        var service = new RIoTTriggerGrpcService(TestTriggers.Create(new Sender(), new TriggerDeduplicator()), NullLogger<RIoTTriggerGrpcService>.Instance);
         var request = new TriggerRequest { Id = "report", MessageId = "m1" };
 
         await service.Trigger(request, null!);

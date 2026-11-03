@@ -13,12 +13,11 @@ using Elsa.Workflows.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using RIoT2.Core.Security;
-using RIoT2.Elsa.Server.RIoT.Activities;
-using RIoT2.Elsa.Server.RIoT.Automation;
-using RIoT2.Elsa.Server.RIoT.Models;
+using RIoT2.Elsa.Workflows.Activities;
+using RIoT2.Elsa.Workflows.Automation;
+using RIoT2.Elsa.Workflows.Models;
 using RIoT2.Elsa.Server.RIoT.Services.Interfaces;
-using RIoT2.Elsa.Studio.Models;
-using Template = RIoT2.Elsa.Server.RIoT.Models.Template;
+using RIoT2.Elsa.Workflows.Models;
 
 namespace RIoT2.Elsa.Tests;
 
@@ -458,9 +457,6 @@ public class ActivityPackTests
         }
 
         public Task<CommandConfirmation> ExecuteCommandWithConfirmationAsync(string id, object? data, int ttlSeconds, CancellationToken cancellationToken = default) => throw new NotSupportedException();
-        public Task<List<Template>> GetReportTemplatesAsync() => throw new NotSupportedException();
-        public Task<List<Template>> GetCommandTemplatesAsync() => throw new NotSupportedException();
-        public Task<List<Template>> GetVariableTemplatesAsync() => throw new NotSupportedException();
         public Task<object> GetCommandValueAsync(string commandId) => throw new NotSupportedException();
         public Task<object> GetVariableValueAsync(string variableId) => throw new NotSupportedException();
     }

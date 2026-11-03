@@ -8,7 +8,7 @@ using Elsa.Workflows.Models;
 using Elsa.Workflows.UIHints;
 using RIoT2.Core.Security;
 
-namespace RIoT2.Elsa.Server.RIoT.Activities
+namespace RIoT2.Elsa.Workflows.Activities
 {
     /// <summary>
     /// Calls a webhook: continues on <c>Done</c> for a 2xx answer, and on <c>Failed</c> for any other status, a timeout,

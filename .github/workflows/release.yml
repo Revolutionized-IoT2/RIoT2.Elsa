@@ -1,13 +1,15 @@
 name: Release
 
-# Push a x.y.z tag to release ghcr.io/revolutionized-iot2/riot2-elsa:<tag> and :latest.
+# Push a x.y.z tag to release ghcr.io/revolutionized-iot2/riot2-elsa:<tag> and :latest, and the RIoT2.Elsa.Workflows
+# package with the version in Directory.Build.repo.props, which the orchestrator's embedded workflow engine uses (ADR 0016).
 
 on:
   push:
     tags: ["*.*.*"]
 
 permissions:
-  contents: read
+  # write: the package job attaches its SBOM to the GitHub release of the tag.
+  contents: write
   packages: write
 
 jobs:
@@ -25,5 +27,13 @@ jobs:
     uses: Revolutionized-IoT2/.github/.github/workflows/docker-publish.yml@main
     with:
       image: riot2-elsa
+      push: true
+    secrets: inherit
+
+  package:
+    needs: validate
+    uses: Revolutionized-IoT2/.github/.github/workflows/nuget-publish.yml@main
+    with:
+      project: RIoT2.Elsa.Workflows/RIoT2.Elsa.Workflows.csproj
       push: true
     secrets: inherit

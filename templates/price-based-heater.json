@@ -26,7 +26,7 @@
     "activities": [
       {
         "selectedTrigger": {
-          "typeName": "RIoT2.Elsa.Studio.Models.RIoTTemplateItem, RIoT2.Elsa.Studio",
+          "typeName": "RIoT2.RIoTTemplateItem",
           "expression": {
             "type": "Literal",
             "value": "{\"Id\":\"\",\"Name\":\"Choose the electricity price report\",\"Type\":0,\"Node\":null,\"Device\":null,\"Value\":null,\"Model\":null,\"TemplateType\":2}"
@@ -38,7 +38,9 @@
         "name": "ElectricityPrice",
         "type": "RIoT2.RIoTTrigger",
         "version": 1,
-        "customProperties": {},
+        "customProperties": {
+          "canStartWorkflow": true
+        },
         "metadata": {
           "designer": {
             "position": {
@@ -91,7 +93,7 @@
       },
       {
         "command": {
-          "typeName": "RIoT2.Elsa.Studio.Models.RIoTTemplateItem, RIoT2.Elsa.Studio",
+          "typeName": "RIoT2.RIoTTemplateItem",
           "expression": {
             "type": "Literal",
             "value": "{\"Id\":\"\",\"Name\":\"Choose the heater's command\",\"Type\":0,\"Node\":null,\"Device\":null,\"Value\":\"return false;\",\"Model\":null,\"TemplateType\":1}"
@@ -118,7 +120,7 @@
       },
       {
         "command": {
-          "typeName": "RIoT2.Elsa.Studio.Models.RIoTTemplateItem, RIoT2.Elsa.Studio",
+          "typeName": "RIoT2.RIoTTemplateItem",
           "expression": {
             "type": "Literal",
             "value": "{\"Id\":\"\",\"Name\":\"Choose the heater's command\",\"Type\":0,\"Node\":null,\"Device\":null,\"Value\":\"return true;\",\"Model\":null,\"TemplateType\":1}"

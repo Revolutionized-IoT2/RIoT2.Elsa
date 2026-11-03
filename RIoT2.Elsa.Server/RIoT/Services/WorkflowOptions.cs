@@ -1,11 +1,11 @@
 using System.Globalization;
 using RIoT2.Core.Configuration;
-using RIoT2.Elsa.Server.RIoT.Automation;
+using RIoT2.Elsa.Workflows.Automation;
 
 namespace RIoT2.Elsa.Server.RIoT.Services;
 
 /// <summary>
-/// The workflow engine's settings. Every <c>RIOT2_*</c> and <c>ELSA_*</c> name it reads is mapped
+/// The workflow engine's settings. Every <c>RIOT2_*</c> name it reads is mapped
 /// here (plan M4).
 /// </summary>
 public sealed class WorkflowOptions
@@ -14,15 +14,14 @@ public sealed class WorkflowOptions
     public const string UrlVariable = "RIOT2_WORKFLOW_URL";
     public const string GrpcUrlVariable = "RIOT2_WORKFLOW_GRPC_URL";
     public const string GrpcPortVariable = "RIOT2_WORKFLOW_GRPC_PORT";
-    public const string IdentitySigningKeyVariable = "ELSA_IDENTITY_SIGNING_KEY";
-    public const string LatitudeVariable = "RIOT2_LATITUDE";
-    public const string LongitudeVariable = "RIOT2_LONGITUDE";
+    public const string LatitudeVariable = GeoLocation.LatitudeVariable;
+    public const string LongitudeVariable = GeoLocation.LongitudeVariable;
     public const int DefaultGrpcPort = 5003;
 
     /// <summary>Unique id; also the MQTT client id.</summary>
     public string Id { get; set; } = "";
 
-    /// <summary>Studio and web URL as reachable from outside the container; advertised as <c>nodeBaseUrl</c>.</summary>
+    /// <summary>Web URL (the management API) as reachable from outside the container; advertised as <c>nodeBaseUrl</c>.</summary>
     public string Url { get; set; } = "";
 
     /// <summary>Externally reachable gRPC URL, including the published port; advertised as <c>grpcBaseUrl</c>.</summary>
@@ -30,9 +29,6 @@ public sealed class WorkflowOptions
 
     /// <summary>Port of the local plaintext HTTP/2 listener.</summary>
     public int GrpcPort { get; set; } = DefaultGrpcPort;
-
-    /// <summary>Signing key for Elsa identity tokens; <c>null</c> only in Development.</summary>
-    public string? IdentitySigningKey { get; set; }
 
     /// <summary>
     /// <c>RIOT2_LATITUDE</c> and <c>RIOT2_LONGITUDE</c>, both or neither: where <c>RIoT Schedule</c> calculates sunrise and
@@ -59,9 +55,8 @@ public sealed class WorkflowOptions
     /// listing every problem (logged as critical) when any is missing or invalid.
     /// </summary>
     /// <param name="configuration">The host configuration, which includes the environment variables.</param>
-    /// <param name="isDevelopment">In Development the signing key may be missing; Program then generates one.</param>
     /// <param name="logger">Optional logger for the critical message.</param>
-    public static WorkflowOptions Load(IConfiguration configuration, bool isDevelopment, ILogger? logger = null)
+    public static WorkflowOptions Load(IConfiguration configuration, ILogger? logger = null)
     {
         var settings = new SettingsReader(configuration);
         var options = new WorkflowOptions
@@ -70,41 +65,15 @@ public sealed class WorkflowOptions
             Url = settings.RequiredHttpUrl(UrlVariable),
             GrpcUrl = settings.RequiredHttpUrl(GrpcUrlVariable),
             GrpcPort = settings.Integer(GrpcPortVariable, DefaultGrpcPort, 1, 65535),
-            IdentitySigningKey = settings.Optional(IdentitySigningKeyVariable),
             Mqtt = MqttOptions.Read(settings),
             Logging = LoggingOptions.Read(settings),
             Telemetry = TelemetryOptions.Read(settings),
             Security = SecurityOptions.Read(settings),
             Location = ReadLocation(settings)
         };
-        if (!isDevelopment && string.IsNullOrWhiteSpace(options.IdentitySigningKey))
-            settings.AddError($"{IdentitySigningKeyVariable} is required outside Development");
         settings.ThrowIfInvalid("workflow", logger);
         return options;
     }
 
-    private static GeoLocation? ReadLocation(SettingsReader settings)
-    {
-        var latitude = Degrees(settings, LatitudeVariable, 90);
-        var longitude = Degrees(settings, LongitudeVariable, 180);
-        if (latitude.Set != longitude.Set)
-        {
-            settings.AddError($"{LatitudeVariable} and {LongitudeVariable} must be set together");
-            return null;
-        }
-        return latitude.Value is { } lat && longitude.Value is { } lon ? new GeoLocation(lat, lon) : null;
-    }
-
-    private static (bool Set, double? Value) Degrees(SettingsReader settings, string name, double limit)
-    {
-        var text = settings.Optional(name);
-        if (string.IsNullOrWhiteSpace(text))
-            return (false, null);
-        if (!double.TryParse(text, NumberStyles.Float, CultureInfo.InvariantCulture, out var value) || Math.Abs(value) > limit)
-        {
-            settings.AddError($"{name} must be a number of degrees from -{limit} to {limit}, with a decimal point");
-            return (true, null);
-        }
-        return (true, value);
-    }
+    private static GeoLocation? ReadLocation(SettingsReader settings) => GeoLocation.Read(name => settings.Optional(name), settings.AddError);
 }

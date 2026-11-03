@@ -1,4 +1,4 @@
-namespace RIoT2.Elsa.Server.RIoT.Automation
+namespace RIoT2.Elsa.Workflows.Automation
 {
     /// <summary>
     /// The state the debounce, throttle and threshold activities share between workflow runs, by key. It is kept in

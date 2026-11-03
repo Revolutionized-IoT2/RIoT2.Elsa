@@ -1,0 +1,42 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>RIoT2.Elsa.Workflows</RootNamespace>
+    <PackageId>RIoT2.Elsa.Workflows</PackageId>
+    <Description>The RIoT2 workflow engine (ADR 0016): Elsa 3 with the RIoT activities, AddRIoT2Workflows() and the workflow management service the designer uses. The remote workflow host (RIoT2.Elsa.Server) and the orchestrator's embedded engine both run it.</Description>
+    <!-- GitHub Packages has no symbol server: ship the PDB inside the DLL for SourceLink. -->
+    <DebugType>embedded</DebugType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Microsoft.Extensions.DependencyInjection" />
+    <Using Include="Microsoft.Extensions.Hosting" />
+    <Using Include="Microsoft.Extensions.Logging" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Elsa" />
+    <PackageReference Include="Elsa.Expressions.CSharp" />
+    <PackageReference Include="Elsa.Expressions.JavaScript" />
+    <PackageReference Include="Elsa.Expressions.Liquid" />
+    <PackageReference Include="Elsa.Http" />
+    <PackageReference Include="Elsa.Persistence.EFCore.Sqlite" />
+    <PackageReference Include="Elsa.Retention" />
+    <PackageReference Include="Elsa.Scheduling" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
+    <!-- The contract and the outbound URL policy only (plan M1 step 4). -->
+    <PackageReference Include="RIoT2.Core.Contracts" />
+    <PackageReference Include="RIoT2.Core.Http" />
+    <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="RIoT2.Elsa.Tests" />
+  </ItemGroup>
+
+</Project>

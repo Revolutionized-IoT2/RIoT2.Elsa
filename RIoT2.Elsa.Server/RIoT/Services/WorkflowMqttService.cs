@@ -1,4 +1,4 @@
-﻿using RIoT2.Core;
+using RIoT2.Core;
 using RIoT2.Core.Models;
 using RIoT2.Core.Utils;
 using RIoT2.Elsa.Server.RIoT.Services.Interfaces;
@@ -34,7 +34,7 @@ namespace RIoT2.Elsa.Server.RIoT.Services
 
         private Task sendWorkflowOnlineCommand()
         {
-            return _client.PublishAsync(_nodeOnlineTopic, Json.SerializeIgnoreNulls(new NodeOnlineMessage()
+            return _client.PublishAsync(_nodeOnlineTopic, RIoT2.Core.Utils.Json.SerializeIgnoreNulls(new NodeOnlineMessage()
             {
                 IsOnline = true,
                 Name = "Elsa3",
@@ -77,7 +77,7 @@ namespace RIoT2.Elsa.Server.RIoT.Services
                 }
                 if (MqttClient.IsMatch(mqttEventArgs.Topic, _configureTopic))
                 {
-                    var configurationCmd = Json.Deserialize<ConfigurationCommand>(mqttEventArgs.Message);
+                    var configurationCmd = RIoT2.Core.Utils.Json.Deserialize<ConfigurationCommand>(mqttEventArgs.Message);
                     if (configurationCmd != null)
                         _configuration.OrchestratorBaseUrl = configurationCmd.ApiBaseUrl;
                     else

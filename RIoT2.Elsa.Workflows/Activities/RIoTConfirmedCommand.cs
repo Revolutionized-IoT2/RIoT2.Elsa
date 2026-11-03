@@ -3,12 +3,11 @@ using Elsa.Workflows;
 using Elsa.Workflows.Activities.Flowchart.Attributes;
 using Elsa.Workflows.Attributes;
 using Elsa.Workflows.Models;
-using RIoT2.Elsa.Server.RIoT.Models;
-using RIoT2.Elsa.Server.RIoT.Services.Interfaces;
-using RIoT2.Elsa.Server.RIoT.UIHints;
-using RIoT2.Elsa.Studio.Models;
+using RIoT2.Elsa.Workflows.Models;
+using RIoT2.Elsa.Workflows.Services;
+using RIoT2.Elsa.Workflows.UIHints;
 
-namespace RIoT2.Elsa.Server.RIoT.Activities
+namespace RIoT2.Elsa.Workflows.Activities
 {
     /// <summary>
     /// Sends a command and waits for the device's result (design 7.1 phase 4): <c>POST /api/v2/commands</c>

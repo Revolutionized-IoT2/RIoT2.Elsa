@@ -3,9 +3,9 @@ using Elsa.Workflows;
 using Elsa.Workflows.Activities.Flowchart.Attributes;
 using Elsa.Workflows.Attributes;
 using Elsa.Workflows.Models;
-using RIoT2.Elsa.Server.RIoT.Automation;
+using RIoT2.Elsa.Workflows.Automation;
 
-namespace RIoT2.Elsa.Server.RIoT.Activities
+namespace RIoT2.Elsa.Workflows.Activities
 {
     /// <summary>
     /// A threshold with hysteresis: the state becomes high above <c>Upper</c> and low below <c>Lower</c>, and stays in

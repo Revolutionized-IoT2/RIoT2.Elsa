@@ -1,4 +1,4 @@
-namespace RIoT2.Elsa.Server.RIoT.Models
+namespace RIoT2.Elsa.Workflows.Models
 {
     /// <summary>
     /// The orchestrator's answer to a command sent with <c>"wait": true</c> (<c>POST /api/v2/commands</c>, design 7.1).

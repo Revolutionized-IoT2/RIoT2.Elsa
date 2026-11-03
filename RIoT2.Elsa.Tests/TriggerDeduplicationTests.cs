@@ -19,7 +19,7 @@ public class TriggerDeduplicationTests
     public async Task DuplicateMessageIdDoesNotRunTheWorkflowAgain()
     {
         var sender = new RecordingStimulusSender();
-        var service = new RIoTTriggerGrpcService(sender, new TriggerDeduplicator(), NullLogger<RIoTTriggerGrpcService>.Instance);
+        var service = new RIoTTriggerGrpcService(TestTriggers.Create(sender, new TriggerDeduplicator()), NullLogger<RIoTTriggerGrpcService>.Instance);
         var request = new TriggerRequest { Id = "report", Data = """{"value":1}""", MessageId = "m1" };
 
         Assert.IsTrue((await service.Trigger(request, null!)).Success);
@@ -35,7 +35,7 @@ public class TriggerDeduplicationTests
     public async Task TriggerWithoutAMessageIdAlwaysRuns()
     {
         var sender = new RecordingStimulusSender();
-        var service = new RIoTTriggerGrpcService(sender, new TriggerDeduplicator(), NullLogger<RIoTTriggerGrpcService>.Instance);
+        var service = new RIoTTriggerGrpcService(TestTriggers.Create(sender, new TriggerDeduplicator()), NullLogger<RIoTTriggerGrpcService>.Instance);
         var request = new TriggerRequest { Id = "report" };
 
         await service.Trigger(request, null!);
@@ -48,7 +48,7 @@ public class TriggerDeduplicationTests
     public async Task InvalidDataIsRejectedAndItsIdIsNotRemembered()
     {
         var deduplicator = new TriggerDeduplicator();
-        var service = new RIoTTriggerGrpcService(new RecordingStimulusSender(), deduplicator, NullLogger<RIoTTriggerGrpcService>.Instance);
+        var service = new RIoTTriggerGrpcService(TestTriggers.Create(new RecordingStimulusSender(), deduplicator), NullLogger<RIoTTriggerGrpcService>.Instance);
 
         var error = await Assert.ThrowsExactlyAsync<RpcException>(() =>
             service.Trigger(new TriggerRequest { Id = "report", Data = "{", MessageId = "m1" }, null!));
@@ -62,7 +62,7 @@ public class TriggerDeduplicationTests
     {
         var sender = new RecordingStimulusSender();
         var deduplicator = new TriggerDeduplicator();
-        var service = new RIoTTriggerGrpcService(sender, deduplicator, NullLogger<RIoTTriggerGrpcService>.Instance);
+        var service = new RIoTTriggerGrpcService(TestTriggers.Create(sender, deduplicator), NullLogger<RIoTTriggerGrpcService>.Instance);
 
         var error = await Assert.ThrowsExactlyAsync<RpcException>(() =>
             service.Trigger(new TriggerRequest { Id = "report", MessageId = "m1" }, new DeadlineContext(DateTime.UtcNow.AddSeconds(-1))));

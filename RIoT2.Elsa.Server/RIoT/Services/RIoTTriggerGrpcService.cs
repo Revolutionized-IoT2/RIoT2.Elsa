@@ -1,27 +1,24 @@
 using System.Text.Json;
-using Elsa.Workflows.Runtime;
 using Grpc.Core;
 using RIoT2.Core.Utils;
-using RIoT2.Elsa.Server.RIoT.Endpoints;
 using RIoT2.Elsa.Server.RIoT.Grpc;
+using RIoT2.Elsa.Workflows.Services;
 
 namespace RIoT2.Elsa.Server.RIoT.Services
 {
     /// <summary>
     /// gRPC counterpart of the "POST /riot/trigger/{id}" HTTP endpoint, and the transport the
-    /// orchestrator's outbox uses. A request with a <c>message_id</c> seen in the last ten minutes is
-    /// answered with success and not run again (<see cref="TriggerDeduplicator"/>).
+    /// orchestrator's outbox uses in the remote workflow mode. A request with a <c>message_id</c> seen in
+    /// the last ten minutes is answered with success and not run again (<see cref="TriggerDeduplicator"/>).
     /// </summary>
     public class RIoTTriggerGrpcService : RIoTTriggerService.RIoTTriggerServiceBase
     {
-        private readonly IStimulusSender _stimulusSender;
-        private readonly TriggerDeduplicator _deduplicator;
+        private readonly RIoTTriggers _triggers;
         private readonly ILogger<RIoTTriggerGrpcService> _logger;
 
-        public RIoTTriggerGrpcService(IStimulusSender stimulusSender, TriggerDeduplicator deduplicator, ILogger<RIoTTriggerGrpcService> logger)
+        public RIoTTriggerGrpcService(RIoTTriggers triggers, ILogger<RIoTTriggerGrpcService> logger)
         {
-            _stimulusSender = stimulusSender;
-            _deduplicator = deduplicator;
+            _triggers = triggers;
             _logger = logger;
         }
 
@@ -48,9 +45,8 @@ namespace RIoT2.Elsa.Server.RIoT.Services
 
             // Everything logged while the workflow starts, Elsa's own lines included, carries the id.
             using var scope = _logger.BeginIdScope(LogScope.MessageId, request.MessageId);
-            var ran = await _deduplicator.RunOnceAsync(request.MessageId,
-                () => RIoTEndpoints.TriggerAsync(request.Id, data, _stimulusSender));
-            ElsaMetrics.Trigger(ran ? ElsaMetrics.Received : ElsaMetrics.Duplicate, "grpc");
+            // The call's cancellation is not passed on: a run whose caller timed out still completes and is remembered.
+            var ran = await _triggers.TriggerOnceAsync(request.MessageId, request.Id, data, "grpc");
             if (!ran)
                 _logger.LogInformation("Trigger {MessageId} for {Id} was already run; not run again", request.MessageId, request.Id);
 

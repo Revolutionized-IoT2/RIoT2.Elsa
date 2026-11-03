@@ -1,4 +1,5 @@
 using Elsa.Common.Models;
+using Elsa.Common.Serialization;
 using Elsa.Extensions;
 using Elsa.Workflows;
 using Elsa.Workflows.Activities.Flowchart.Activities;
@@ -7,7 +8,8 @@ using Elsa.Workflows.Management.Mappers;
 using Elsa.Workflows.Management.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using RIoT2.Elsa.Server.RIoT.Activities;
+using RIoT2.Elsa.Workflows.Activities;
+using RIoT2.Elsa.Workflows;
 
 namespace RIoT2.Elsa.Tests;
 
@@ -58,11 +60,30 @@ public class WorkflowTemplateTests
             Assert.IsNotNull(output.Command.Expression?.Value, "the selector's literal survives the import");
     }
 
+    [TestMethod]
+    public async Task TemplatesWithTheTypeNameOfElsa37StillImport()
+    {
+        await using var provider = await ServicesAsync();
+        var serializer = provider.GetRequiredService<IApiSerializer>();
+        var json = (await File.ReadAllTextAsync(Path.Combine(TemplateFolder(), "motion-light.json")))
+            .Replace($"\"{RIoTFeature.TemplateItemAlias}\"", $"\"{RIoTFeature.LegacyTemplateItemTypeName}\"", StringComparison.Ordinal);
+        Assert.Contains(RIoTFeature.LegacyTemplateItemTypeName, json);
+        var model = serializer.Deserialize<WorkflowDefinitionModel>(json);
+
+        var result = await provider.GetRequiredService<IWorkflowDefinitionImporter>().ImportAsync(new SaveWorkflowDefinitionRequest { Model = model, Publish = true });
+
+        Assert.IsTrue(result.Succeeded, string.Join("; ", result.ValidationErrors.Select(e => e.Message)));
+        var graph = await provider.GetRequiredService<IWorkflowDefinitionService>().FindWorkflowGraphAsync("riot2-template-motion-light", VersionOptions.Published);
+        foreach (var output in ((Flowchart)graph!.Workflow.Root).Activities.OfType<RIoTOutput>())
+            Assert.IsNotNull(output.Command.Expression?.Value, "the selector's literal survives the import");
+    }
+
     private static async Task<ServiceProvider> ServicesAsync()
     {
         var services = new ServiceCollection();
         services.AddLogging();
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.Configure<SerializationTypeOptions>(RIoTFeature.RegisterTypes);
         services.AddElsa(elsa => elsa
             .UseWorkflowManagement()
             .UseWorkflowRuntime()

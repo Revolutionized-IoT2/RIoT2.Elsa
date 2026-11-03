@@ -5,13 +5,12 @@ using Elsa.Workflows.Attributes;
 using Elsa.Workflows.Helpers;
 using Elsa.Workflows.Models;
 using Elsa.Workflows.UIHints;
-using RIoT2.Elsa.Server.RIoT.Automation;
-using RIoT2.Elsa.Server.RIoT.Models;
-using RIoT2.Elsa.Server.RIoT.Services.Interfaces;
-using RIoT2.Elsa.Server.RIoT.UIHints;
-using RIoT2.Elsa.Studio.Models;
+using RIoT2.Elsa.Workflows.Automation;
+using RIoT2.Elsa.Workflows.Models;
+using RIoT2.Elsa.Workflows.Services;
+using RIoT2.Elsa.Workflows.UIHints;
 
-namespace RIoT2.Elsa.Server.RIoT.Activities
+namespace RIoT2.Elsa.Workflows.Activities
 {
     /// <summary>
     /// Waits until a report has a value: continues on <c>Done</c> at once when its latest value already matches, or when a
