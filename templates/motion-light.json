@@ -1,0 +1,221 @@
+{
+  "id": "riot2-template-motion-light:1",
+  "definitionId": "riot2-template-motion-light",
+  "name": "Template: motion light",
+  "description": "Motion turns the light on, and it goes off five minutes after the last motion. Choose the motion report in Motion and the light's command in LightOn and LightOff, then publish.",
+  "createdAt": "2026-11-03T00:00:00+00:00",
+  "version": 1,
+  "variables": [],
+  "inputs": [],
+  "outputs": [],
+  "outcomes": [],
+  "customProperties": {},
+  "isReadonly": false,
+  "isSystem": false,
+  "isLatest": true,
+  "isPublished": false,
+  "options": {
+    "autoUpdateConsumingWorkflows": false
+  },
+  "root": {
+    "id": "flowchart",
+    "type": "Elsa.Flowchart",
+    "version": 1,
+    "customProperties": {},
+    "metadata": {},
+    "activities": [
+      {
+        "selectedTrigger": {
+          "typeName": "RIoT2.Elsa.Studio.Models.RIoTTemplateItem, RIoT2.Elsa.Studio",
+          "expression": {
+            "type": "Literal",
+            "value": "{\"Id\":\"\",\"Name\":\"Choose the motion report\",\"Type\":0,\"Node\":null,\"Device\":null,\"Value\":null,\"Model\":null,\"TemplateType\":2}"
+          }
+        },
+        "eventData": null,
+        "id": "motion",
+        "nodeId": null,
+        "name": "Motion",
+        "type": "RIoT2.RIoTTrigger",
+        "version": 1,
+        "customProperties": {},
+        "metadata": {
+          "designer": {
+            "position": {
+              "x": 0,
+              "y": 0
+            },
+            "size": {
+              "width": 220,
+              "height": 60
+            }
+          }
+        }
+      },
+      {
+        "value": null,
+        "operator": {
+          "typeName": "String",
+          "expression": {
+            "type": "Literal",
+            "value": "equals"
+          }
+        },
+        "expected": {
+          "typeName": "String",
+          "expression": {
+            "type": "Literal",
+            "value": "true"
+          }
+        },
+        "id": "detected",
+        "nodeId": null,
+        "name": "MotionDetected",
+        "type": "RIoT2.RIoTCompare",
+        "version": 1,
+        "customProperties": {},
+        "metadata": {
+          "designer": {
+            "position": {
+              "x": 300,
+              "y": 0
+            },
+            "size": {
+              "width": 220,
+              "height": 60
+            }
+          }
+        }
+      },
+      {
+        "command": {
+          "typeName": "RIoT2.Elsa.Studio.Models.RIoTTemplateItem, RIoT2.Elsa.Studio",
+          "expression": {
+            "type": "Literal",
+            "value": "{\"Id\":\"\",\"Name\":\"Choose the light's command\",\"Type\":0,\"Node\":null,\"Device\":null,\"Value\":\"return true;\",\"Model\":null,\"TemplateType\":1}"
+          }
+        },
+        "id": "lightOn",
+        "nodeId": null,
+        "name": "LightOn",
+        "type": "RIoT2.RIoTOutput",
+        "version": 1,
+        "customProperties": {},
+        "metadata": {
+          "designer": {
+            "position": {
+              "x": 600,
+              "y": -100
+            },
+            "size": {
+              "width": 220,
+              "height": 60
+            }
+          }
+        }
+      },
+      {
+        "windowSeconds": {
+          "typeName": "Int32",
+          "expression": {
+            "type": "Literal",
+            "value": 300
+          }
+        },
+        "key": null,
+        "id": "quiet",
+        "nodeId": null,
+        "name": "NoMotionFor5Minutes",
+        "type": "RIoT2.RIoTDebounce",
+        "version": 1,
+        "customProperties": {},
+        "metadata": {
+          "designer": {
+            "position": {
+              "x": 600,
+              "y": 100
+            },
+            "size": {
+              "width": 220,
+              "height": 60
+            }
+          }
+        }
+      },
+      {
+        "command": {
+          "typeName": "RIoT2.Elsa.Studio.Models.RIoTTemplateItem, RIoT2.Elsa.Studio",
+          "expression": {
+            "type": "Literal",
+            "value": "{\"Id\":\"\",\"Name\":\"Choose the light's command\",\"Type\":0,\"Node\":null,\"Device\":null,\"Value\":\"return false;\",\"Model\":null,\"TemplateType\":1}"
+          }
+        },
+        "id": "lightOff",
+        "nodeId": null,
+        "name": "LightOff",
+        "type": "RIoT2.RIoTOutput",
+        "version": 1,
+        "customProperties": {},
+        "metadata": {
+          "designer": {
+            "position": {
+              "x": 900,
+              "y": 100
+            },
+            "size": {
+              "width": 220,
+              "height": 60
+            }
+          }
+        }
+      }
+    ],
+    "variables": [],
+    "connections": [
+      {
+        "source": {
+          "activity": "motion",
+          "port": "Done"
+        },
+        "target": {
+          "activity": "detected",
+          "port": "In"
+        },
+        "vertices": []
+      },
+      {
+        "source": {
+          "activity": "detected",
+          "port": "True"
+        },
+        "target": {
+          "activity": "lightOn",
+          "port": "In"
+        },
+        "vertices": []
+      },
+      {
+        "source": {
+          "activity": "detected",
+          "port": "True"
+        },
+        "target": {
+          "activity": "quiet",
+          "port": "In"
+        },
+        "vertices": []
+      },
+      {
+        "source": {
+          "activity": "quiet",
+          "port": "Done"
+        },
+        "target": {
+          "activity": "lightOff",
+          "port": "In"
+        },
+        "vertices": []
+      }
+    ]
+  }
+}

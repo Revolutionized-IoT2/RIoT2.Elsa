@@ -3,7 +3,10 @@ using Elsa.Features.Abstractions;
 using Elsa.Features.Services;
 using Elsa.Workflows;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using RIoT2.Core.Security;
+using RIoT2.Elsa.Server.RIoT.Activities;
+using RIoT2.Elsa.Server.RIoT.Automation;
 using RIoT2.Elsa.Server.RIoT.Services;
 using RIoT2.Elsa.Server.RIoT.Services.Interfaces;
 using RIoT2.Elsa.Server.RIoT.UIHints;
@@ -33,6 +36,8 @@ namespace RIoT2.Elsa.Server.RIoT.Features
             Services.AddScoped<IPropertyUIHandler, RIoTTriggerOptionsProvider>();
             Services.AddScoped<IPropertyUIHandler, RIoTDataOptionsProvider>();
             Services.AddScoped<IPropertyUIHandler, RIoTOutputOptionsProvider>();
+            Services.AddScoped<IPropertyUIHandler, RIoTCommandOptionsProvider>();
+            Services.AddScoped<IPropertyUIHandler, RIoTReportOptionsProvider>();
             //Services.AddScoped<IUIHintHandler, RIoTOutputSelectorUIHintHandler>();
             // Calls to the orchestrator send X-RIoT2-Key when RIOT2_API_KEY is set, and pass the outbound
             // URL policy (design 7.5).
@@ -40,7 +45,14 @@ namespace RIoT2.Elsa.Server.RIoT.Features
                 .AddHttpMessageHandler(services => new ApiKeyHandler(services.GetService<IOptions<WorkflowOptions>>()?.Value.Security.ApiKey))
                 .AddHttpMessageHandler(services => new OutboundUrlPolicyHandler(
                     services.GetService<IOutboundUrlPolicy>() ?? AllowAllOutboundUrlPolicy.Instance, OutboundPurposes.Orchestrator));
+            // The activity pack (I48): state shared between runs, the webhook client and the schedules.
+            Services.TryAddSingleton(TimeProvider.System);
+            Services.AddSingleton<AutomationStateStore>();
+            Services.AddHttpClient(RIoTWebhook.HttpClientName)
+                .AddHttpMessageHandler(services => new OutboundUrlPolicyHandler(
+                    services.GetService<IOutboundUrlPolicy>() ?? AllowAllOutboundUrlPolicy.Instance, RIoTWebhook.OutboundPurpose));
             Services.AddHostedService<MqttBackgroundService>();
+            Services.AddHostedService<ScheduleService>();
         }
 
         /// <summary>

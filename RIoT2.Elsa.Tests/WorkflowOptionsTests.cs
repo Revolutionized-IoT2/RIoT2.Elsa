@@ -69,6 +69,30 @@ public class WorkflowOptionsTests
         CollectionAssert.AreEqual(new[] { "RIOT2_WORKFLOW_GRPC_URL must be an absolute http or https URL" }, error.Errors.ToArray());
     }
 
+    [TestMethod]
+    public void TheLocationIsReadInInvariantDegreesAndBothAreNeeded()
+    {
+        var values = ValidSettings();
+        Assert.IsNull(WorkflowOptions.Load(Settings(values), isDevelopment: false).Location);
+        values[WorkflowOptions.LatitudeVariable] = "60.17";
+        values[WorkflowOptions.LongitudeVariable] = "-24.94";
+        Assert.AreEqual(new RIoT2.Elsa.Server.RIoT.Automation.GeoLocation(60.17, -24.94), WorkflowOptions.Load(Settings(values), isDevelopment: false).Location);
+
+        values[WorkflowOptions.LatitudeVariable] = "60,17";
+        values[WorkflowOptions.LongitudeVariable] = "181";
+        var error = Assert.ThrowsExactly<ConfigurationValidationException>(() => WorkflowOptions.Load(Settings(values), isDevelopment: false));
+        CollectionAssert.AreEqual(new[]
+        {
+            "RIOT2_LATITUDE must be a number of degrees from -90 to 90, with a decimal point",
+            "RIOT2_LONGITUDE must be a number of degrees from -180 to 180, with a decimal point"
+        }, error.Errors.ToArray());
+
+        values.Remove(WorkflowOptions.LongitudeVariable);
+        values[WorkflowOptions.LatitudeVariable] = "60";
+        error = Assert.ThrowsExactly<ConfigurationValidationException>(() => WorkflowOptions.Load(Settings(values), isDevelopment: false));
+        CollectionAssert.AreEqual(new[] { "RIOT2_LATITUDE and RIOT2_LONGITUDE must be set together" }, error.Errors.ToArray());
+    }
+
     private static IConfiguration Settings(Dictionary<string, string?> values) =>
         new ConfigurationBuilder().AddInMemoryCollection(values).Build();
 

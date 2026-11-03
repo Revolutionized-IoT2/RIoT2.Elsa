@@ -17,10 +17,12 @@ Elsa is the only RIoT2 automation engine: [ADR 0003](https://github.com/Revoluti
 | Path | Contents |
 | --- | --- |
 | `RIoT2.Elsa.Server/` | ASP.NET Core host for Elsa Workflows, Studio assets, RIoT endpoints and services |
-| `RIoT2.Elsa.Server/RIoT/Activities/` | `RIoTTrigger`, `RIoTData`, `RIoTOutput` and `RIoTConfirmedCommand` |
+| `RIoT2.Elsa.Server/RIoT/Activities/` | The RIoT activities: trigger, schedule, data, compare, threshold, debounce, throttle, wait for state, output, command with confirmation, notification, webhook |
+| `RIoT2.Elsa.Server/RIoT/Automation/` | What the activities share: value comparison, hysteresis, the state store, schedules and sunrise/sunset, `ScheduleService` |
 | `RIoT2.Elsa.Server/RIoT/Protos/riot.proto` | gRPC trigger contract used by the orchestrator |
 | `RIoT2.Elsa.Studio/` | Blazor WebAssembly Elsa Studio client and RIoT picker UI |
-| `RIoT2.Elsa.Tests/` | MSTest coverage for activities, split ports, command failures, gRPC behaviour and trigger deduplication |
+| `RIoT2.Elsa.Tests/` | MSTest coverage for activities, schedules, the templates, split ports, command failures, gRPC behaviour and trigger deduplication |
+| `templates/` | Workflow templates to import into Elsa Studio ([templates/README.md](templates/README.md)) |
 | `Dockerfile` | Production image, web/Studio port 8080 and gRPC port 5003 |
 
 ## RIoT integration
@@ -34,6 +36,10 @@ Elsa stores the orchestrator base URL and uses it for workflow activities:
 - "RIoT Command with confirmation" (`RIoTConfirmedCommand`) does the same with
   `POST /api/v2/commands` and `"wait": true`, and continues on `Done` or `Failed` once the device
   answered or the timeout (1 to 50 s) passed; `Status` and `Error` are its outputs.
+- The activity pack (1.11.0): `RIoTSchedule` (a time of day, sunrise or sunset), `RIoTCompare`,
+  `RIoTThreshold` (hysteresis), `RIoTDebounce`, `RIoTThrottle`, `RIoTWaitForState`,
+  `RIoTNotification` (through a Messaging device) and `RIoTWebhook`. How to use them, and the
+  templates: the [automation guide](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/guides/automation.md).
 
 The externally visible contracts are documented in the hub:
 
@@ -55,6 +61,8 @@ Set these variables when running the server outside a local Development profile:
 - `RIOT2_SECURITY_MODE` (optional, only `off` yet), `RIOT2_SECURITY_FEATURES`, `RIOT2_API_KEY` (sent
   to the orchestrator) and `RIOT2_CORS_ORIGINS`: the optional security mode ({D75})
 - `ELSA_IDENTITY_SIGNING_KEY` (required outside Development)
+- `RIOT2_LATITUDE` and `RIOT2_LONGITUDE` (optional, both or neither; decimal degrees): where
+  `RIoTSchedule` calculates sunrise and sunset. Schedules use the time zone `TZ`.
 - `RIOT2_LOG_FORMAT` (optional, `text` or `json`) and `RIOT2_LOG_LEVEL` (optional, default
   `Information`)
 - `OTEL_EXPORTER_OTLP_ENDPOINT` (optional; the OTLP collector for metrics, such as

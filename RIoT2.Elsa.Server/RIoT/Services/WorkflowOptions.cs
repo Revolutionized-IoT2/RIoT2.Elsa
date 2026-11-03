@@ -1,4 +1,6 @@
+using System.Globalization;
 using RIoT2.Core.Configuration;
+using RIoT2.Elsa.Server.RIoT.Automation;
 
 namespace RIoT2.Elsa.Server.RIoT.Services;
 
@@ -13,6 +15,8 @@ public sealed class WorkflowOptions
     public const string GrpcUrlVariable = "RIOT2_WORKFLOW_GRPC_URL";
     public const string GrpcPortVariable = "RIOT2_WORKFLOW_GRPC_PORT";
     public const string IdentitySigningKeyVariable = "ELSA_IDENTITY_SIGNING_KEY";
+    public const string LatitudeVariable = "RIOT2_LATITUDE";
+    public const string LongitudeVariable = "RIOT2_LONGITUDE";
     public const int DefaultGrpcPort = 5003;
 
     /// <summary>Unique id; also the MQTT client id.</summary>
@@ -29,6 +33,12 @@ public sealed class WorkflowOptions
 
     /// <summary>Signing key for Elsa identity tokens; <c>null</c> only in Development.</summary>
     public string? IdentitySigningKey { get; set; }
+
+    /// <summary>
+    /// <c>RIOT2_LATITUDE</c> and <c>RIOT2_LONGITUDE</c>, both or neither: where <c>RIoT Schedule</c> calculates sunrise and
+    /// sunset. <c>null</c> when unset; sun-based schedules then don't fire.
+    /// </summary>
+    public GeoLocation? Location { get; set; }
 
     public MqttOptions Mqtt { get; set; } = new();
 
@@ -64,11 +74,37 @@ public sealed class WorkflowOptions
             Mqtt = MqttOptions.Read(settings),
             Logging = LoggingOptions.Read(settings),
             Telemetry = TelemetryOptions.Read(settings),
-            Security = SecurityOptions.Read(settings)
+            Security = SecurityOptions.Read(settings),
+            Location = ReadLocation(settings)
         };
         if (!isDevelopment && string.IsNullOrWhiteSpace(options.IdentitySigningKey))
             settings.AddError($"{IdentitySigningKeyVariable} is required outside Development");
         settings.ThrowIfInvalid("workflow", logger);
         return options;
+    }
+
+    private static GeoLocation? ReadLocation(SettingsReader settings)
+    {
+        var latitude = Degrees(settings, LatitudeVariable, 90);
+        var longitude = Degrees(settings, LongitudeVariable, 180);
+        if (latitude.Set != longitude.Set)
+        {
+            settings.AddError($"{LatitudeVariable} and {LongitudeVariable} must be set together");
+            return null;
+        }
+        return latitude.Value is { } lat && longitude.Value is { } lon ? new GeoLocation(lat, lon) : null;
+    }
+
+    private static (bool Set, double? Value) Degrees(SettingsReader settings, string name, double limit)
+    {
+        var text = settings.Optional(name);
+        if (string.IsNullOrWhiteSpace(text))
+            return (false, null);
+        if (!double.TryParse(text, NumberStyles.Float, CultureInfo.InvariantCulture, out var value) || Math.Abs(value) > limit)
+        {
+            settings.AddError($"{name} must be a number of degrees from -{limit} to {limit}, with a decimal point");
+            return (true, null);
+        }
+        return (true, value);
     }
 }

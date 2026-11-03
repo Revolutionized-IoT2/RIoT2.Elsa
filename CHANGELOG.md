@@ -5,6 +5,23 @@ pushes the Docker image to GitHub Container Registry.
 
 ## [Unreleased]
 
+## [1.11.0] - 2026-11-03
+
+The activity pack ([I48](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/increments/phase-3-4.md#i48-elsa-activity-pack-m), [automation guide](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/guides/automation.md)).
+No port, user or volume changes; existing workflows are unchanged.
+
+- Added: `RIoT Schedule`, a trigger at a local time of day or at sunrise or sunset (with an offset),
+  on chosen days, fired by the new `ScheduleService`. New optional settings `RIOT2_LATITUDE` and
+  `RIOT2_LONGITUDE` for sunrise and sunset.
+- Added: `RIoT Compare` and `RIoT Threshold` (hysteresis), which use the triggering report when no
+  value is given; `RIoT Debounce` and `RIoT Throttle`, with state kept between runs by key (in memory).
+- Added: `RIoT Wait for state`, which suspends the workflow until a report has a value, or times out;
+  it resumes on the same stimulus as `RIoT Trigger`.
+- Added: `RIoT Notification` (a push or a mail through a Messaging device's command) and
+  `RIoT Webhook` (outbound policy purpose `webhook`).
+- Added: the workflow templates `templates/motion-light.json` and `templates/price-based-heater.json`,
+  generated from code and tested to import like Elsa Studio's import.
+
 ## [1.10.0] - 2026-11-03
 
 - Changed: built on `RIoT2.Core.Contracts`, `.Mqtt` and `.Hosting` 2.0.0 ([I45](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/increments/phase-3-4.md#i45-core-20-remove-compatibility-layers-m)): no Newtonsoft.Json
