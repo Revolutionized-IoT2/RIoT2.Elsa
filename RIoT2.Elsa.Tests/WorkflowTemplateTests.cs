@@ -41,6 +41,8 @@ public class WorkflowTemplateTests
     [TestMethod]
     [DataRow("motion-light.json", "riot2-template-motion-light", new[] { "RIoTTrigger", "RIoTCompare", "RIoTOutput", "RIoTDebounce", "RIoTOutput" })]
     [DataRow("price-based-heater.json", "riot2-template-price-based-heater", new[] { "RIoTTrigger", "RIoTThreshold", "RIoTOutput", "RIoTOutput" })]
+    [DataRow("forecast-preheat.json", "riot2-template-forecast-preheat", new[] { "RIoTTrigger", "RIoTForecast", "RIoTCompare", "RIoTForecast", "RIoTForecast", "RIoTCompare", "RIoTData", "RIoTCompare", "RIoTForecast", "RIoTCommandPlan" })]
+    [DataRow("llm-heat-schedule.json", "riot2-template-llm-heat-schedule", new[] { "RIoTTrigger", "RIoTForecast", "RIoTThreshold", "RIoTForecast", "RIoTData", "RIoTRunLlm", "RIoTCommandPlan" })]
     public async Task TheTemplatesImportAndPublishLikeAStudioImport(string file, string definitionId, string[] activities)
     {
         await using var provider = await ServicesAsync();
@@ -58,6 +60,8 @@ public class WorkflowTemplateTests
         Assert.IsNotEmpty(flowchart.Connections);
         foreach (var output in flowchart.Activities.OfType<RIoTOutput>())
             Assert.IsNotNull(output.Command.Expression?.Value, "the selector's literal survives the import");
+        foreach (var plan in flowchart.Activities.OfType<RIoTCommandPlan>())
+            Assert.AreEqual("JavaScript", plan.Steps.Expression?.Type, "the steps stay a script");
     }
 
     [TestMethod]

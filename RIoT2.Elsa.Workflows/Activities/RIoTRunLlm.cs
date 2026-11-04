@@ -57,14 +57,14 @@ namespace RIoT2.Elsa.Workflows.Activities
         [Input(Description = "With Json: the JSON schema of the answer; empty for any JSON.", UIHint = JsonSchemaUIHint)]
         public Input<string?> JsonSchema { get; set; } = default!;
 
-        [Input(Description = "The tools the model may use: ReadValues (list and read reports, commands and variables), SendCommands (send the allowed commands). Comma-separated; empty for none.",
+        [Input(Description = "The tools the model may use: ReadValues (list and read reports, commands, variables and forecasts), SendCommands (send the allowed commands), PlanCommands (plan values of the allowed commands at future times). Comma-separated; empty for none.",
             UIHint = ToolsUIHint)]
         public Input<string?> Tools { get; set; } = default!;
 
-        [Input(Description = "With SendCommands: the command ids the model may send, comma-separated or one per line.", UIHint = CommandListUIHint)]
+        [Input(Description = "With SendCommands or PlanCommands: the command ids the model may send or plan, comma-separated or one per line.", UIHint = CommandListUIHint)]
         public Input<string?> AllowedCommands { get; set; } = default!;
 
-        [Input(Description = "Most commands the model may send.", DefaultValue = LlmRunRequest.DefaultMaxCommands)]
+        [Input(Description = "Most commands the model may send or plan.", DefaultValue = LlmRunRequest.DefaultMaxCommands)]
         public Input<int> MaxCommands { get; set; } = new(LlmRunRequest.DefaultMaxCommands);
 
         [Input(Description = "Most tool calls the model may make.", DefaultValue = LlmRunRequest.DefaultMaxToolCalls)]

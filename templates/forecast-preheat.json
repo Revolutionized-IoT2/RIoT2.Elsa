@@ -1,0 +1,643 @@
+{
+  "id": "riot2-template-forecast-preheat:1",
+  "definitionId": "riot2-template-forecast-preheat",
+  "name": "Template: preheat before a cold day",
+  "description": "When tomorrow's electricity prices arrive: if tomorrow's lowest outside temperature is below 3 °C, today's prices are lower on average than tomorrow's, and it is at most 20 °C inside, the heat pump is set to 22 °C in today's 8 remaining cheapest price slots and back to 20 °C after each. Choose the reports in PricesPublished, TomorrowTemperature, PricesToday, PricesTomorrow, InsideTemperature and CheapestSlotsLeftToday, and the heat pump's command in Preheat, then publish.",
+  "createdAt": "2026-11-03T00:00:00+00:00",
+  "version": 1,
+  "variables": [],
+  "inputs": [],
+  "outputs": [],
+  "outcomes": [],
+  "customProperties": {},
+  "isReadonly": false,
+  "isSystem": false,
+  "isLatest": true,
+  "isPublished": false,
+  "options": {
+    "autoUpdateConsumingWorkflows": false
+  },
+  "root": {
+    "id": "flowchart",
+    "type": "Elsa.Flowchart",
+    "version": 1,
+    "customProperties": {},
+    "metadata": {},
+    "activities": [
+      {
+        "selectedTrigger": {
+          "typeName": "RIoT2.RIoTTemplateItem",
+          "expression": {
+            "type": "Literal",
+            "value": "{\"Id\":\"\",\"Name\":\"Choose the electricity prices (forecast) report\",\"Type\":0,\"Node\":null,\"Device\":null,\"Value\":null,\"Model\":null,\"TemplateType\":2}"
+          }
+        },
+        "eventData": null,
+        "id": "prices",
+        "nodeId": null,
+        "name": "PricesPublished",
+        "type": "RIoT2.RIoTTrigger",
+        "version": 1,
+        "customProperties": {
+          "canStartWorkflow": true
+        },
+        "metadata": {
+          "designer": {
+            "position": {
+              "x": 0,
+              "y": 0
+            },
+            "size": {
+              "width": 220,
+              "height": 60
+            }
+          }
+        }
+      },
+      {
+        "forecast": {
+          "typeName": "RIoT2.RIoTTemplateItem",
+          "expression": {
+            "type": "Literal",
+            "value": "{\"Id\":\"\",\"Name\":\"Choose the outside temperature forecast\",\"Type\":0,\"Node\":null,\"Device\":null,\"Value\":null,\"Model\":null,\"TemplateType\":2}"
+          }
+        },
+        "window": {
+          "typeName": "String",
+          "expression": {
+            "type": "Literal",
+            "value": "tomorrow"
+          }
+        },
+        "hours": {
+          "typeName": "Int32",
+          "expression": {
+            "type": "Literal",
+            "value": 24
+          }
+        },
+        "from": null,
+        "to": null,
+        "rank": {
+          "typeName": "Int32",
+          "expression": {
+            "type": "Literal",
+            "value": 0
+          }
+        },
+        "requireComplete": {
+          "typeName": "Boolean",
+          "expression": {
+            "type": "Literal",
+            "value": true
+          }
+        },
+        "min": null,
+        "max": null,
+        "average": null,
+        "sum": null,
+        "current": null,
+        "complete": null,
+        "points": null,
+        "lowest": null,
+        "highest": null,
+        "summary": null,
+        "id": "tomorrowTemperature",
+        "nodeId": null,
+        "name": "TomorrowTemperature",
+        "type": "RIoT2.RIoTForecast",
+        "version": 1,
+        "customProperties": {},
+        "metadata": {
+          "designer": {
+            "position": {
+              "x": 300,
+              "y": 0
+            },
+            "size": {
+              "width": 220,
+              "height": 60
+            }
+          }
+        }
+      },
+      {
+        "value": {
+          "typeName": "Object",
+          "expression": {
+            "type": "JavaScript",
+            "value": "return getOutputFrom('TomorrowTemperature', 'Min');"
+          }
+        },
+        "operator": {
+          "typeName": "String",
+          "expression": {
+            "type": "Literal",
+            "value": "less than"
+          }
+        },
+        "expected": {
+          "typeName": "String",
+          "expression": {
+            "type": "Literal",
+            "value": "3"
+          }
+        },
+        "id": "coldTomorrow",
+        "nodeId": null,
+        "name": "ColdTomorrow",
+        "type": "RIoT2.RIoTCompare",
+        "version": 1,
+        "customProperties": {},
+        "metadata": {
+          "designer": {
+            "position": {
+              "x": 600,
+              "y": 0
+            },
+            "size": {
+              "width": 220,
+              "height": 60
+            }
+          }
+        }
+      },
+      {
+        "forecast": {
+          "typeName": "RIoT2.RIoTTemplateItem",
+          "expression": {
+            "type": "Literal",
+            "value": "{\"Id\":\"\",\"Name\":\"Choose the electricity prices (forecast) report\",\"Type\":0,\"Node\":null,\"Device\":null,\"Value\":null,\"Model\":null,\"TemplateType\":2}"
+          }
+        },
+        "window": {
+          "typeName": "String",
+          "expression": {
+            "type": "Literal",
+            "value": "today"
+          }
+        },
+        "hours": {
+          "typeName": "Int32",
+          "expression": {
+            "type": "Literal",
+            "value": 24
+          }
+        },
+        "from": null,
+        "to": null,
+        "rank": {
+          "typeName": "Int32",
+          "expression": {
+            "type": "Literal",
+            "value": 0
+          }
+        },
+        "requireComplete": {
+          "typeName": "Boolean",
+          "expression": {
+            "type": "Literal",
+            "value": true
+          }
+        },
+        "min": null,
+        "max": null,
+        "average": null,
+        "sum": null,
+        "current": null,
+        "complete": null,
+        "points": null,
+        "lowest": null,
+        "highest": null,
+        "summary": null,
+        "id": "pricesToday",
+        "nodeId": null,
+        "name": "PricesToday",
+        "type": "RIoT2.RIoTForecast",
+        "version": 1,
+        "customProperties": {},
+        "metadata": {
+          "designer": {
+            "position": {
+              "x": 900,
+              "y": 0
+            },
+            "size": {
+              "width": 220,
+              "height": 60
+            }
+          }
+        }
+      },
+      {
+        "forecast": {
+          "typeName": "RIoT2.RIoTTemplateItem",
+          "expression": {
+            "type": "Literal",
+            "value": "{\"Id\":\"\",\"Name\":\"Choose the electricity prices (forecast) report\",\"Type\":0,\"Node\":null,\"Device\":null,\"Value\":null,\"Model\":null,\"TemplateType\":2}"
+          }
+        },
+        "window": {
+          "typeName": "String",
+          "expression": {
+            "type": "Literal",
+            "value": "tomorrow"
+          }
+        },
+        "hours": {
+          "typeName": "Int32",
+          "expression": {
+            "type": "Literal",
+            "value": 24
+          }
+        },
+        "from": null,
+        "to": null,
+        "rank": {
+          "typeName": "Int32",
+          "expression": {
+            "type": "Literal",
+            "value": 0
+          }
+        },
+        "requireComplete": {
+          "typeName": "Boolean",
+          "expression": {
+            "type": "Literal",
+            "value": true
+          }
+        },
+        "min": null,
+        "max": null,
+        "average": null,
+        "sum": null,
+        "current": null,
+        "complete": null,
+        "points": null,
+        "lowest": null,
+        "highest": null,
+        "summary": null,
+        "id": "pricesTomorrow",
+        "nodeId": null,
+        "name": "PricesTomorrow",
+        "type": "RIoT2.RIoTForecast",
+        "version": 1,
+        "customProperties": {},
+        "metadata": {
+          "designer": {
+            "position": {
+              "x": 1200,
+              "y": 0
+            },
+            "size": {
+              "width": 220,
+              "height": 60
+            }
+          }
+        }
+      },
+      {
+        "value": {
+          "typeName": "Object",
+          "expression": {
+            "type": "JavaScript",
+            "value": "return getOutputFrom('PricesToday', 'Average') - getOutputFrom('PricesTomorrow', 'Average');"
+          }
+        },
+        "operator": {
+          "typeName": "String",
+          "expression": {
+            "type": "Literal",
+            "value": "less than"
+          }
+        },
+        "expected": {
+          "typeName": "String",
+          "expression": {
+            "type": "Literal",
+            "value": "0"
+          }
+        },
+        "id": "todayCheaper",
+        "nodeId": null,
+        "name": "TodayCheaper",
+        "type": "RIoT2.RIoTCompare",
+        "version": 1,
+        "customProperties": {},
+        "metadata": {
+          "designer": {
+            "position": {
+              "x": 1500,
+              "y": 0
+            },
+            "size": {
+              "width": 220,
+              "height": 60
+            }
+          }
+        }
+      },
+      {
+        "selectedDataSource": {
+          "typeName": "RIoT2.RIoTTemplateItem",
+          "expression": {
+            "type": "Literal",
+            "value": "{\"Id\":\"\",\"Name\":\"Choose the inside temperature report\",\"Type\":0,\"Node\":null,\"Device\":null,\"Value\":null,\"Model\":null,\"TemplateType\":2}"
+          }
+        },
+        "dataObject": null,
+        "id": "insideTemperature",
+        "nodeId": null,
+        "name": "InsideTemperature",
+        "type": "RIoT2.RIoTData",
+        "version": 1,
+        "customProperties": {},
+        "metadata": {
+          "designer": {
+            "position": {
+              "x": 1800,
+              "y": 0
+            },
+            "size": {
+              "width": 220,
+              "height": 60
+            }
+          }
+        }
+      },
+      {
+        "value": {
+          "typeName": "Object",
+          "expression": {
+            "type": "JavaScript",
+            "value": "return getOutputFrom('InsideTemperature', 'DataObject');"
+          }
+        },
+        "operator": {
+          "typeName": "String",
+          "expression": {
+            "type": "Literal",
+            "value": "at most"
+          }
+        },
+        "expected": {
+          "typeName": "String",
+          "expression": {
+            "type": "Literal",
+            "value": "20"
+          }
+        },
+        "id": "insideAtMost20",
+        "nodeId": null,
+        "name": "InsideAtMost20",
+        "type": "RIoT2.RIoTCompare",
+        "version": 1,
+        "customProperties": {},
+        "metadata": {
+          "designer": {
+            "position": {
+              "x": 2100,
+              "y": 0
+            },
+            "size": {
+              "width": 220,
+              "height": 60
+            }
+          }
+        }
+      },
+      {
+        "forecast": {
+          "typeName": "RIoT2.RIoTTemplateItem",
+          "expression": {
+            "type": "Literal",
+            "value": "{\"Id\":\"\",\"Name\":\"Choose the electricity prices (forecast) report\",\"Type\":0,\"Node\":null,\"Device\":null,\"Value\":null,\"Model\":null,\"TemplateType\":2}"
+          }
+        },
+        "window": {
+          "typeName": "String",
+          "expression": {
+            "type": "Literal",
+            "value": "range"
+          }
+        },
+        "hours": {
+          "typeName": "Int32",
+          "expression": {
+            "type": "Literal",
+            "value": 24
+          }
+        },
+        "from": {
+          "typeName": "String",
+          "expression": {
+            "type": "JavaScript",
+            "value": "return new Date().toISOString();"
+          }
+        },
+        "to": {
+          "typeName": "String",
+          "expression": {
+            "type": "JavaScript",
+            "value": "const end = new Date(); end.setHours(24, 0, 0, 0); return end.toISOString();"
+          }
+        },
+        "rank": {
+          "typeName": "Int32",
+          "expression": {
+            "type": "Literal",
+            "value": 8
+          }
+        },
+        "requireComplete": {
+          "typeName": "Boolean",
+          "expression": {
+            "type": "Literal",
+            "value": false
+          }
+        },
+        "min": null,
+        "max": null,
+        "average": null,
+        "sum": null,
+        "current": null,
+        "complete": null,
+        "points": null,
+        "lowest": null,
+        "highest": null,
+        "summary": null,
+        "id": "cheapestToday",
+        "nodeId": null,
+        "name": "CheapestSlotsLeftToday",
+        "type": "RIoT2.RIoTForecast",
+        "version": 1,
+        "customProperties": {},
+        "metadata": {
+          "designer": {
+            "position": {
+              "x": 2400,
+              "y": 0
+            },
+            "size": {
+              "width": 220,
+              "height": 60
+            }
+          }
+        }
+      },
+      {
+        "command": {
+          "typeName": "RIoT2.RIoTTemplateItem",
+          "expression": {
+            "type": "Literal",
+            "value": "{\"Id\":\"\",\"Name\":\"Choose the heat pump's temperature command\",\"Type\":0,\"Node\":null,\"Device\":null,\"Value\":null,\"Model\":null,\"TemplateType\":1}"
+          }
+        },
+        "steps": {
+          "typeName": "Object",
+          "expression": {
+            "type": "JavaScript",
+            "value": "// 22 °C in each run of cheap slots, 20 °C after it.\nconst cheap = Array.from(getOutputFrom('CheapestSlotsLeftToday', 'Lowest') || []).sort((a, b) => a.start < b.start ? -1 : 1);\nconst steps = [];\nfor (const slot of cheap) {\n  const last = steps[steps.length - 1];\n  if (last && last.at === slot.start) { last.at = slot.end; continue; }\n  steps.push({ at: slot.start, value: 22 }, { at: slot.end, value: 20 });\n}\nreturn steps;"
+          }
+        },
+        "planName": {
+          "typeName": "String",
+          "expression": {
+            "type": "Literal",
+            "value": "Preheat before a cold day"
+          }
+        },
+        "catchUp": {
+          "typeName": "String",
+          "expression": {
+            "type": "Literal",
+            "value": "latest"
+          }
+        },
+        "planId": null,
+        "stepCount": null,
+        "error": null,
+        "id": "preheat",
+        "nodeId": null,
+        "name": "Preheat",
+        "type": "RIoT2.RIoTCommandPlan",
+        "version": 1,
+        "customProperties": {},
+        "metadata": {
+          "designer": {
+            "position": {
+              "x": 2700,
+              "y": 0
+            },
+            "size": {
+              "width": 220,
+              "height": 60
+            }
+          }
+        }
+      }
+    ],
+    "variables": [],
+    "connections": [
+      {
+        "source": {
+          "activity": "prices",
+          "port": "Done"
+        },
+        "target": {
+          "activity": "tomorrowTemperature",
+          "port": "In"
+        },
+        "vertices": []
+      },
+      {
+        "source": {
+          "activity": "tomorrowTemperature",
+          "port": "Done"
+        },
+        "target": {
+          "activity": "coldTomorrow",
+          "port": "In"
+        },
+        "vertices": []
+      },
+      {
+        "source": {
+          "activity": "coldTomorrow",
+          "port": "True"
+        },
+        "target": {
+          "activity": "pricesToday",
+          "port": "In"
+        },
+        "vertices": []
+      },
+      {
+        "source": {
+          "activity": "pricesToday",
+          "port": "Done"
+        },
+        "target": {
+          "activity": "pricesTomorrow",
+          "port": "In"
+        },
+        "vertices": []
+      },
+      {
+        "source": {
+          "activity": "pricesTomorrow",
+          "port": "Done"
+        },
+        "target": {
+          "activity": "todayCheaper",
+          "port": "In"
+        },
+        "vertices": []
+      },
+      {
+        "source": {
+          "activity": "todayCheaper",
+          "port": "True"
+        },
+        "target": {
+          "activity": "insideTemperature",
+          "port": "In"
+        },
+        "vertices": []
+      },
+      {
+        "source": {
+          "activity": "insideTemperature",
+          "port": "Done"
+        },
+        "target": {
+          "activity": "insideAtMost20",
+          "port": "In"
+        },
+        "vertices": []
+      },
+      {
+        "source": {
+          "activity": "insideAtMost20",
+          "port": "True"
+        },
+        "target": {
+          "activity": "cheapestToday",
+          "port": "In"
+        },
+        "vertices": []
+      },
+      {
+        "source": {
+          "activity": "cheapestToday",
+          "port": "Done"
+        },
+        "target": {
+          "activity": "preheat",
+          "port": "In"
+        },
+        "vertices": []
+      }
+    ]
+  }
+}

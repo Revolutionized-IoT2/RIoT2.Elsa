@@ -61,6 +61,7 @@ namespace RIoT2.Elsa.Workflows
             Services.AddScoped<IPropertyUIHandler, RIoTOutputOptionsProvider>();
             Services.AddScoped<IPropertyUIHandler, RIoTCommandOptionsProvider>();
             Services.AddScoped<IPropertyUIHandler, RIoTReportOptionsProvider>();
+            Services.AddScoped<IPropertyUIHandler, RIoTForecastOptionsProvider>();
 
             // The activity pack (I48): state shared between runs, the webhook client and the schedules.
             Services.TryAddSingleton(TimeProvider.System);

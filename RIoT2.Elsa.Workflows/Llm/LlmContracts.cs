@@ -15,7 +15,13 @@ namespace RIoT2.Elsa.Workflows.Llm
         /// <summary>Sends the allowed commands, at most <see cref="LlmRunRequest.MaxCommands"/> of them.</summary>
         public const string SendCommands = "SendCommands";
 
-        public static readonly IReadOnlyList<string> All = [ReadValues, SendCommands];
+        /// <summary>
+        /// Plans values for the allowed commands at future times (ADR 0019, 2.1.0): each plan replaces the command's active plan
+        /// and counts against <see cref="LlmRunRequest.MaxCommands"/>.
+        /// </summary>
+        public const string PlanCommands = "PlanCommands";
+
+        public static readonly IReadOnlyList<string> All = [ReadValues, SendCommands, PlanCommands];
     }
 
     /// <summary>The answer formats of a Run LLM step.</summary>
@@ -66,7 +72,7 @@ namespace RIoT2.Elsa.Workflows.Llm
         /// <summary>The <see cref="LlmTools"/> the model may use.</summary>
         public IReadOnlyList<string> Tools { get; init; } = [];
 
-        /// <summary>With <see cref="LlmTools.SendCommands"/>: the command ids the model may send.</summary>
+        /// <summary>With <see cref="LlmTools.SendCommands"/> or <see cref="LlmTools.PlanCommands"/>: the command ids the model may send or plan.</summary>
         public IReadOnlyList<string> AllowedCommands { get; init; } = [];
 
         public int MaxCommands { get; init; } = DefaultMaxCommands;

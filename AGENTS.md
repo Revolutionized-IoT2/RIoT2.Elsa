@@ -54,7 +54,7 @@ dotnet run --project .\RIoT2.Elsa\RIoT2.Elsa.Server\RIoT2.Elsa.Server.csproj
 |---|---|
 | `RIoT2.Elsa.Workflows/WorkflowsServiceCollectionExtensions.cs`, `RIoT2WorkflowsOptions.cs` | `AddRIoT2Workflows()`: Elsa with SQLite (migrations run at start), JavaScript and Liquid, HTTP activities (base path `/workflows` unless the host sets it), retention, the RIoT feature and the management service |
 | `RIoT2.Elsa.Workflows/RIoTFeature.cs` | Registers the activities, `RIoTTriggers`, `TriggerDeduplicator`, the schedule service, and the serialization aliases saved workflows need |
-| `RIoT2.Elsa.Workflows/Activities/` | `RIoTTrigger`, `RIoTSchedule`, `RIoTData`, `RIoTCompare`, `RIoTThreshold`, `RIoTDebounce`, `RIoTThrottle`, `RIoTWaitForState`, `RIoTOutput`, `RIoTConfirmedCommand`, `RIoTNotification`, `RIoTWebhook`, `RIoTRunLlm` |
+| `RIoT2.Elsa.Workflows/Activities/` | `RIoTTrigger`, `RIoTSchedule`, `RIoTData`, `RIoTCompare`, `RIoTThreshold`, `RIoTDebounce`, `RIoTThrottle`, `RIoTWaitForState`, `RIoTOutput`, `RIoTConfirmedCommand`, `RIoTNotification`, `RIoTWebhook`, `RIoTRunLlm`, `RIoTForecast`, `RIoTCommandPlan` |
 | `RIoT2.Elsa.Workflows/Automation/` | `AutomationValues` (reading and comparing values, `Hysteresis`), `AutomationStateStore`, `Schedule.cs` (`ScheduleSpec`, `SunCalculator`, `GeoLocation`), `ScheduleService` |
 | `RIoT2.Elsa.Workflows/Management/` | `WorkflowManagementService` (the `/riot/workflows` and `/api/workflows` API), `WorkflowCatalogBuilder` (the designer's activity catalog) and their messages |
 | `RIoT2.Elsa.Workflows/Llm/LlmContracts.cs` | `LlmRunRequest`, `LlmRunResult`, `ILlmRunner`, the tools and error codes |

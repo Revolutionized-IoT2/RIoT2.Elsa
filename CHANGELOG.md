@@ -5,6 +5,28 @@ pushes the Docker image to GitHub Container Registry.
 
 ## [Unreleased]
 
+## [2.1.0] - 2026-11-04
+
+Forecasts and command plans ([ADR 0019](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/adr/0019-forecasts-and-command-plans.md)).
+Built on `RIoT2.Core.Contracts` 2.3.0. Needs Orchestrator 1.23.0 for the new activities; existing workflows are unchanged.
+
+- Added: **RIoT Forecast** (`RIoT2.RIoTForecast`). It reads a window (`all`, `today`, `tomorrow`, `next` hours,
+  `range`) of a forecast report and gives `Min`, `Max`, `Average`, `Sum`, `Current`, `Complete`, `Points`, the `Rank`
+  `Lowest` and `Highest` points, and the whole `Summary`. It continues on `Done`, or on `Unavailable` when there is no
+  forecast yet or, with `RequireComplete` (the default), it doesn't cover the window.
+- Added: **RIoT Command Plan** (`RIoT2.RIoTCommandPlan`). It gives the orchestrator a list of `{ at, value }` steps for a
+  command, also as Run LLM's JSON answer (`{ "steps": [...] }`) or forecast points (`start`). The plan replaces the
+  command's previous one, and empty steps end it. It continues on `Done` with `PlanId` and `StepCount`, or on
+  `Failed` with `Error`.
+- Added: `IRIoTDataService.GetForecastAsync`, `SubmitCommandPlanAsync` and `CancelCommandPlanAsync`, with default
+  implementations, so other implementations still compile. The remote host calls `GET /api/v2/forecasts/{id}` and
+  `/api/v2/command-plans`.
+- Added: Run LLM's `PlanCommands` tool (`LlmTools.PlanCommands`), which plans values of the allowed commands.
+- Added: the selector setting `forecastOnly` (`RIoTForecastOptionsProvider`); the designer then lists only forecast
+  reports.
+- Added: the templates `forecast-preheat.json` (preheat before a cold day in today's cheapest price slots) and
+  `llm-heat-schedule.json` (a language model plans the heat pump when the forecast drops below 3 °C).
+
 ## [2.0.0] - 2026-11-03
 
 The integrated designer, the embedded mode and Run LLM ([I55](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/increments/phase-3-4.md#i55-integrated-workflows-and-run-llm-m),

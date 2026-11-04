@@ -22,7 +22,7 @@ Elsa is the only RIoT2 automation engine: [ADR 0003](https://github.com/Revoluti
 | Path | Contents |
 | --- | --- |
 | `RIoT2.Elsa.Workflows/` | The library both hosts use (NuGet `RIoT2.Elsa.Workflows`): `AddRIoT2Workflows()` sets up Elsa with SQLite, the expression languages, the HTTP activities and the RIoT feature |
-| `RIoT2.Elsa.Workflows/Activities/` | The RIoT activities: trigger, schedule, data, compare, threshold, debounce, throttle, wait for state, output, command with confirmation, notification, webhook, Run LLM |
+| `RIoT2.Elsa.Workflows/Activities/` | The RIoT activities: trigger, schedule, data, compare, threshold, debounce, throttle, wait for state, output, command with confirmation, notification, webhook, Run LLM, forecast, command plan |
 | `RIoT2.Elsa.Workflows/Automation/` | What the activities share: value comparison, hysteresis, the state store, schedules and sunrise/sunset, `ScheduleService` |
 | `RIoT2.Elsa.Workflows/Management/` | `WorkflowManagementService` (list, save, import, export, publish, runs) and the activity catalog the designer shows |
 | `RIoT2.Elsa.Workflows/Llm/` | The Run LLM contract: `LlmRunRequest`, `LlmRunResult`, `ILlmRunner` (implemented by the orchestrator) |
@@ -53,6 +53,13 @@ orchestrator base URL and uses it for the activities:
   orchestrator keeps, and continues on `Done` with the answer (text, or JSON checked against a
   schema) or on `Failed`. It may read values and send allowed commands within limits. The host calls
   `ILlmRunner`: in process in the orchestrator, `POST /api/llm/run` from the container.
+- `RIoTForecast` (2.1.0) reads a window of a forecast report (`GET /api/v2/forecasts/{id}` from the
+  container): its minimum, maximum, average, sum, current value, points and the lowest and highest
+  N points, and continues on `Done`, or on `Unavailable` without a forecast or (by default) when it
+  doesn't cover the window. `RIoTCommandPlan` (2.1.0) gives the orchestrator a schedule of a
+  command's values (`POST /api/v2/command-plans`), which replaces the command's previous plan; empty
+  steps end it. Run LLM's `PlanCommands` tool does the same for the model
+  ([ADR 0019](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/adr/0019-forecasts-and-command-plans.md)).
 
 The externally visible contracts are documented in the hub:
 

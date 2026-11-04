@@ -1,0 +1,475 @@
+{
+  "id": "riot2-template-llm-heat-schedule:1",
+  "definitionId": "riot2-template-llm-heat-schedule",
+  "name": "Template: language model heat schedule",
+  "description": "When the lowest outside temperature of the next 24 hours drops below 3 °C (again above 4 °C resets it), a language model plans the heat pump's temperatures between 18 and 22 °C from the electricity prices, the weather forecast and the inside temperature, and the plan replaces the heat pump's previous one. Choose the reports in TemperatureForecast, NextDayTemperature, Prices and InsideTemperature, the model connection in PlanWithLlm and the heat pump's command in HeatPumpPlan, then publish.",
+  "createdAt": "2026-11-03T00:00:00+00:00",
+  "version": 1,
+  "variables": [],
+  "inputs": [],
+  "outputs": [],
+  "outcomes": [],
+  "customProperties": {},
+  "isReadonly": false,
+  "isSystem": false,
+  "isLatest": true,
+  "isPublished": false,
+  "options": {
+    "autoUpdateConsumingWorkflows": false
+  },
+  "root": {
+    "id": "flowchart",
+    "type": "Elsa.Flowchart",
+    "version": 1,
+    "customProperties": {},
+    "metadata": {},
+    "activities": [
+      {
+        "selectedTrigger": {
+          "typeName": "RIoT2.RIoTTemplateItem",
+          "expression": {
+            "type": "Literal",
+            "value": "{\"Id\":\"\",\"Name\":\"Choose the outside temperature forecast\",\"Type\":0,\"Node\":null,\"Device\":null,\"Value\":null,\"Model\":null,\"TemplateType\":2}"
+          }
+        },
+        "eventData": null,
+        "id": "temperatureForecast",
+        "nodeId": null,
+        "name": "TemperatureForecast",
+        "type": "RIoT2.RIoTTrigger",
+        "version": 1,
+        "customProperties": {
+          "canStartWorkflow": true
+        },
+        "metadata": {
+          "designer": {
+            "position": {
+              "x": 0,
+              "y": 0
+            },
+            "size": {
+              "width": 220,
+              "height": 60
+            }
+          }
+        }
+      },
+      {
+        "forecast": {
+          "typeName": "RIoT2.RIoTTemplateItem",
+          "expression": {
+            "type": "Literal",
+            "value": "{\"Id\":\"\",\"Name\":\"Choose the outside temperature forecast\",\"Type\":0,\"Node\":null,\"Device\":null,\"Value\":null,\"Model\":null,\"TemplateType\":2}"
+          }
+        },
+        "window": {
+          "typeName": "String",
+          "expression": {
+            "type": "Literal",
+            "value": "next"
+          }
+        },
+        "hours": {
+          "typeName": "Int32",
+          "expression": {
+            "type": "Literal",
+            "value": 24
+          }
+        },
+        "from": null,
+        "to": null,
+        "rank": {
+          "typeName": "Int32",
+          "expression": {
+            "type": "Literal",
+            "value": 0
+          }
+        },
+        "requireComplete": {
+          "typeName": "Boolean",
+          "expression": {
+            "type": "Literal",
+            "value": true
+          }
+        },
+        "min": null,
+        "max": null,
+        "average": null,
+        "sum": null,
+        "current": null,
+        "complete": null,
+        "points": null,
+        "lowest": null,
+        "highest": null,
+        "summary": null,
+        "id": "nextDay",
+        "nodeId": null,
+        "name": "NextDayTemperature",
+        "type": "RIoT2.RIoTForecast",
+        "version": 1,
+        "customProperties": {},
+        "metadata": {
+          "designer": {
+            "position": {
+              "x": 300,
+              "y": 0
+            },
+            "size": {
+              "width": 220,
+              "height": 60
+            }
+          }
+        }
+      },
+      {
+        "value": {
+          "typeName": "Object",
+          "expression": {
+            "type": "JavaScript",
+            "value": "return getOutputFrom('NextDayTemperature', 'Min');"
+          }
+        },
+        "upper": {
+          "typeName": "Double",
+          "expression": {
+            "type": "Literal",
+            "value": 4
+          }
+        },
+        "lower": {
+          "typeName": "Double",
+          "expression": {
+            "type": "Literal",
+            "value": 3
+          }
+        },
+        "key": null,
+        "state": null,
+        "id": "dropsBelow3",
+        "nodeId": null,
+        "name": "DropsBelow3",
+        "type": "RIoT2.RIoTThreshold",
+        "version": 1,
+        "customProperties": {},
+        "metadata": {
+          "designer": {
+            "position": {
+              "x": 600,
+              "y": 0
+            },
+            "size": {
+              "width": 220,
+              "height": 60
+            }
+          }
+        }
+      },
+      {
+        "forecast": {
+          "typeName": "RIoT2.RIoTTemplateItem",
+          "expression": {
+            "type": "Literal",
+            "value": "{\"Id\":\"\",\"Name\":\"Choose the electricity prices (forecast) report\",\"Type\":0,\"Node\":null,\"Device\":null,\"Value\":null,\"Model\":null,\"TemplateType\":2}"
+          }
+        },
+        "window": {
+          "typeName": "String",
+          "expression": {
+            "type": "Literal",
+            "value": "all"
+          }
+        },
+        "hours": {
+          "typeName": "Int32",
+          "expression": {
+            "type": "Literal",
+            "value": 24
+          }
+        },
+        "from": null,
+        "to": null,
+        "rank": {
+          "typeName": "Int32",
+          "expression": {
+            "type": "Literal",
+            "value": 0
+          }
+        },
+        "requireComplete": {
+          "typeName": "Boolean",
+          "expression": {
+            "type": "Literal",
+            "value": false
+          }
+        },
+        "min": null,
+        "max": null,
+        "average": null,
+        "sum": null,
+        "current": null,
+        "complete": null,
+        "points": null,
+        "lowest": null,
+        "highest": null,
+        "summary": null,
+        "id": "prices",
+        "nodeId": null,
+        "name": "Prices",
+        "type": "RIoT2.RIoTForecast",
+        "version": 1,
+        "customProperties": {},
+        "metadata": {
+          "designer": {
+            "position": {
+              "x": 900,
+              "y": 0
+            },
+            "size": {
+              "width": 220,
+              "height": 60
+            }
+          }
+        }
+      },
+      {
+        "selectedDataSource": {
+          "typeName": "RIoT2.RIoTTemplateItem",
+          "expression": {
+            "type": "Literal",
+            "value": "{\"Id\":\"\",\"Name\":\"Choose the inside temperature report\",\"Type\":0,\"Node\":null,\"Device\":null,\"Value\":null,\"Model\":null,\"TemplateType\":2}"
+          }
+        },
+        "dataObject": null,
+        "id": "insideTemperature",
+        "nodeId": null,
+        "name": "InsideTemperature",
+        "type": "RIoT2.RIoTData",
+        "version": 1,
+        "customProperties": {},
+        "metadata": {
+          "designer": {
+            "position": {
+              "x": 1200,
+              "y": 0
+            },
+            "size": {
+              "width": 220,
+              "height": 60
+            }
+          }
+        }
+      },
+      {
+        "connection": {
+          "typeName": "String",
+          "expression": {
+            "type": "Literal",
+            "value": ""
+          }
+        },
+        "instructions": {
+          "typeName": "String",
+          "expression": {
+            "type": "Literal",
+            "value": "Plan the heat pump's target temperature for the next 24 hours, from now. Keep it between 18 and 22 °C. Heat more while electricity is cheap and before the coldest hours, and less while it is expensive, so the house stays comfortable (about 20 °C) for the least cost. The input has the electricity prices (c/kWh), the outside temperature forecast (°C) and the inside temperature. Answer with the steps: each step's time (ISO 8601, a price slot's start) and the temperature from then on. Use at most 12 steps."
+          }
+        },
+        "inputData": {
+          "typeName": "Object",
+          "expression": {
+            "type": "JavaScript",
+            "value": "return {\n  now: new Date().toISOString(),\n  prices: getOutputFrom('Prices', 'Points'),\n  outsideTemperature: getOutputFrom('NextDayTemperature', 'Points'),\n  insideTemperature: getOutputFrom('InsideTemperature', 'DataObject')\n};"
+          }
+        },
+        "responseFormat": {
+          "typeName": "String",
+          "expression": {
+            "type": "Literal",
+            "value": "Json"
+          }
+        },
+        "jsonSchema": {
+          "typeName": "String",
+          "expression": {
+            "type": "Literal",
+            "value": "{\"type\":\"object\",\"properties\":{\"steps\":{\"type\":\"array\",\"minItems\":1,\"maxItems\":12,\"items\":{\"type\":\"object\",\"properties\":{\"at\":{\"type\":\"string\"},\"value\":{\"type\":\"number\",\"minimum\":18,\"maximum\":22}},\"required\":[\"at\",\"value\"]}},\"reason\":{\"type\":\"string\"}},\"required\":[\"steps\"]}"
+          }
+        },
+        "tools": {
+          "typeName": "String",
+          "expression": {
+            "type": "Literal",
+            "value": "ReadValues"
+          }
+        },
+        "allowedCommands": null,
+        "maxCommands": {
+          "typeName": "Int32",
+          "expression": {
+            "type": "Literal",
+            "value": 3
+          }
+        },
+        "maxToolCalls": {
+          "typeName": "Int32",
+          "expression": {
+            "type": "Literal",
+            "value": 10
+          }
+        },
+        "timeoutSeconds": {
+          "typeName": "Int32",
+          "expression": {
+            "type": "Literal",
+            "value": 60
+          }
+        },
+        "text": null,
+        "json": null,
+        "commandsSent": null,
+        "toolCalls": null,
+        "totalTokens": null,
+        "errorCode": null,
+        "error": null,
+        "id": "planWithLlm",
+        "nodeId": null,
+        "name": "PlanWithLlm",
+        "type": "RIoT2.RIoTRunLlm",
+        "version": 1,
+        "customProperties": {},
+        "metadata": {
+          "designer": {
+            "position": {
+              "x": 1500,
+              "y": 0
+            },
+            "size": {
+              "width": 220,
+              "height": 60
+            }
+          }
+        }
+      },
+      {
+        "command": {
+          "typeName": "RIoT2.RIoTTemplateItem",
+          "expression": {
+            "type": "Literal",
+            "value": "{\"Id\":\"\",\"Name\":\"Choose the heat pump's temperature command\",\"Type\":0,\"Node\":null,\"Device\":null,\"Value\":null,\"Model\":null,\"TemplateType\":1}"
+          }
+        },
+        "steps": {
+          "typeName": "Object",
+          "expression": {
+            "type": "JavaScript",
+            "value": "return getOutputFrom('PlanWithLlm', 'Json');"
+          }
+        },
+        "planName": {
+          "typeName": "String",
+          "expression": {
+            "type": "Literal",
+            "value": "Language model heat plan"
+          }
+        },
+        "catchUp": {
+          "typeName": "String",
+          "expression": {
+            "type": "Literal",
+            "value": "latest"
+          }
+        },
+        "planId": null,
+        "stepCount": null,
+        "error": null,
+        "id": "heatPumpPlan",
+        "nodeId": null,
+        "name": "HeatPumpPlan",
+        "type": "RIoT2.RIoTCommandPlan",
+        "version": 1,
+        "customProperties": {},
+        "metadata": {
+          "designer": {
+            "position": {
+              "x": 1800,
+              "y": 0
+            },
+            "size": {
+              "width": 220,
+              "height": 60
+            }
+          }
+        }
+      }
+    ],
+    "variables": [],
+    "connections": [
+      {
+        "source": {
+          "activity": "temperatureForecast",
+          "port": "Done"
+        },
+        "target": {
+          "activity": "nextDay",
+          "port": "In"
+        },
+        "vertices": []
+      },
+      {
+        "source": {
+          "activity": "nextDay",
+          "port": "Done"
+        },
+        "target": {
+          "activity": "dropsBelow3",
+          "port": "In"
+        },
+        "vertices": []
+      },
+      {
+        "source": {
+          "activity": "dropsBelow3",
+          "port": "Below"
+        },
+        "target": {
+          "activity": "prices",
+          "port": "In"
+        },
+        "vertices": []
+      },
+      {
+        "source": {
+          "activity": "prices",
+          "port": "Done"
+        },
+        "target": {
+          "activity": "insideTemperature",
+          "port": "In"
+        },
+        "vertices": []
+      },
+      {
+        "source": {
+          "activity": "insideTemperature",
+          "port": "Done"
+        },
+        "target": {
+          "activity": "planWithLlm",
+          "port": "In"
+        },
+        "vertices": []
+      },
+      {
+        "source": {
+          "activity": "planWithLlm",
+          "port": "Done"
+        },
+        "target": {
+          "activity": "heatPumpPlan",
+          "port": "In"
+        },
+        "vertices": []
+      }
+    ]
+  }
+}

@@ -117,6 +117,65 @@ namespace RIoT2.Elsa.Server.RIoT.Services
             return v;
         }
 
+        public async Task<ForecastSummary?> GetForecastAsync(string reportId, ForecastRequest request, CancellationToken cancellationToken = default)
+        {
+            ArgumentException.ThrowIfNullOrWhiteSpace(reportId);
+            ArgumentNullException.ThrowIfNull(request);
+            var query = new List<string> { "window=" + Uri.EscapeDataString(request.Window), "rank=" + request.Rank.ToString(System.Globalization.CultureInfo.InvariantCulture) };
+            if (request.Hours != null)
+                query.Add("hours=" + request.Hours.Value.ToString(System.Globalization.CultureInfo.InvariantCulture));
+            if (request.From != null)
+                query.Add("from=" + Uri.EscapeDataString(request.From.Value.UtcDateTime.ToString("O", System.Globalization.CultureInfo.InvariantCulture)));
+            if (request.To != null)
+                query.Add("to=" + Uri.EscapeDataString(request.To.Value.UtcDateTime.ToString("O", System.Globalization.CultureInfo.InvariantCulture)));
+            using var response = await _httpClient.GetAsync(BuildUrl($"/api/v2/forecasts/{Uri.EscapeDataString(reportId)}?{string.Join("&", query)}"), cancellationToken);
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                return null;
+            var json = await response.Content.ReadAsStringAsync(cancellationToken);
+            if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+                throw new ArgumentException(json);
+            response.EnsureSuccessStatusCode();
+            return RIoT2.Core.Utils.Json.Deserialize<ForecastSummary>(json);
+        }
+
+        public async Task<CommandPlanReceipt> SubmitCommandPlanAsync(CommandPlanSubmission plan, CancellationToken cancellationToken = default)
+        {
+            ArgumentNullException.ThrowIfNull(plan);
+            var body = new
+            {
+                commandId = plan.CommandId,
+                name = plan.Name,
+                source = plan.Source,
+                catchUp = plan.CatchUp,
+                steps = plan.Steps.Select(x => new { at = x.At, value = new ValueModel(x.Value) }).ToList()
+            };
+            using var content = new StringContent(RIoT2.Core.Utils.Json.Serialize(body), System.Text.Encoding.UTF8, "application/json");
+            using var response = await _httpClient.PostAsync(BuildUrl("/api/v2/command-plans"), content, cancellationToken);
+            var json = await response.Content.ReadAsStringAsync(cancellationToken);
+            if (response.StatusCode is System.Net.HttpStatusCode.BadRequest or System.Net.HttpStatusCode.NotFound)
+                return CommandPlanReceipt.Failure(string.IsNullOrWhiteSpace(json) ? $"The orchestrator refused the plan ({(int)response.StatusCode})." : json.Trim('"'));
+            response.EnsureSuccessStatusCode();
+            using var document = JsonDocument.Parse(json);
+            var root = document.RootElement;
+            return new CommandPlanReceipt
+            {
+                Succeeded = true,
+                PlanId = root.TryGetProperty("id", out var id) ? id.GetString() : null,
+                StepCount = root.TryGetProperty("steps", out var steps) && steps.ValueKind == JsonValueKind.Array ? steps.GetArrayLength() : 0
+            };
+        }
+
+        public async Task<string?> CancelCommandPlanAsync(string commandId, CancellationToken cancellationToken = default)
+        {
+            ArgumentException.ThrowIfNullOrWhiteSpace(commandId);
+            using var response = await _httpClient.DeleteAsync(BuildUrl($"/api/v2/command-plans?commandId={Uri.EscapeDataString(commandId)}"), cancellationToken);
+            if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
+                return null;
+            response.EnsureSuccessStatusCode();
+            using var document = JsonDocument.Parse(await response.Content.ReadAsStringAsync(cancellationToken));
+            return document.RootElement.TryGetProperty("id", out var id) ? id.GetString() : null;
+        }
+
         private string BuildUrl(string path)
         {
             if (string.IsNullOrWhiteSpace(_configuration.OrchestratorBaseUrl))

@@ -19,10 +19,10 @@
   <ItemGroup>
     <PackageVersion Include="Grpc.AspNetCore" Version="2.84.0" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.12" />
-    <PackageVersion Include="RIoT2.Core.Contracts" Version="2.0.0" />
-    <PackageVersion Include="RIoT2.Core.Hosting" Version="2.0.0" />
-    <PackageVersion Include="RIoT2.Core.Http" Version="2.0.0" />
-    <PackageVersion Include="RIoT2.Core.Mqtt" Version="2.0.0" />
+    <PackageVersion Include="RIoT2.Core.Contracts" Version="2.3.0" />
+    <PackageVersion Include="RIoT2.Core.Hosting" Version="2.3.0" />
+    <PackageVersion Include="RIoT2.Core.Http" Version="2.3.0" />
+    <PackageVersion Include="RIoT2.Core.Mqtt" Version="2.3.0" />
     <PackageVersion Include="SQLitePCLRaw.lib.e_sqlite3" Version="2.1.12" />
   </ItemGroup>
 </Project>
