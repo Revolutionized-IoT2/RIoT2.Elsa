@@ -43,6 +43,7 @@ public class WorkflowTemplateTests
     [DataRow("price-based-heater.json", "riot2-template-price-based-heater", new[] { "RIoTTrigger", "RIoTThreshold", "RIoTOutput", "RIoTOutput" })]
     [DataRow("forecast-preheat.json", "riot2-template-forecast-preheat", new[] { "RIoTTrigger", "RIoTForecast", "RIoTCompare", "RIoTForecast", "RIoTForecast", "RIoTCompare", "RIoTData", "RIoTCompare", "RIoTForecast", "RIoTCommandPlan" })]
     [DataRow("llm-heat-schedule.json", "riot2-template-llm-heat-schedule", new[] { "RIoTTrigger", "RIoTForecast", "RIoTThreshold", "RIoTForecast", "RIoTData", "RIoTRunLlm", "RIoTCommandPlan" })]
+    [DataRow("sauna-ready-announcement.json", "riot2-template-sauna-ready-announcement", new[] { "RIoTTrigger", "RIoTThreshold", "RIoTOutput" })]
     public async Task TheTemplatesImportAndPublishLikeAStudioImport(string file, string definitionId, string[] activities)
     {
         await using var provider = await ServicesAsync();

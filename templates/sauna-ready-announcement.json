@@ -1,0 +1,148 @@
+{
+  "id": "riot2-template-sauna-ready-announcement:1",
+  "definitionId": "riot2-template-sauna-ready-announcement",
+  "name": "Template: sauna ready announcement",
+  "description": "When the sauna temperature rises above 80 °C, a Google Cast speaker says \"Sauna is ready\". It speaks again only after the sauna has cooled below 60 °C. Choose the sauna temperature report in SaunaTemperature and a Google Cast speaker's Speak command in SaySaunaReady, adjust the limits in SaunaReady, then publish.",
+  "createdAt": "2026-11-03T00:00:00+00:00",
+  "version": 1,
+  "variables": [],
+  "inputs": [],
+  "outputs": [],
+  "outcomes": [],
+  "customProperties": {},
+  "isReadonly": false,
+  "isSystem": false,
+  "isLatest": true,
+  "isPublished": false,
+  "options": {
+    "autoUpdateConsumingWorkflows": false
+  },
+  "root": {
+    "id": "flowchart",
+    "type": "Elsa.Flowchart",
+    "version": 1,
+    "customProperties": {},
+    "metadata": {},
+    "activities": [
+      {
+        "selectedTrigger": {
+          "typeName": "RIoT2.RIoTTemplateItem",
+          "expression": {
+            "type": "Literal",
+            "value": "{\"Id\":\"\",\"Name\":\"Choose the sauna temperature report\",\"Type\":0,\"Node\":null,\"Device\":null,\"Value\":null,\"Model\":null,\"TemplateType\":2}"
+          }
+        },
+        "eventData": null,
+        "id": "saunaTemperature",
+        "nodeId": null,
+        "name": "SaunaTemperature",
+        "type": "RIoT2.RIoTTrigger",
+        "version": 1,
+        "customProperties": {
+          "canStartWorkflow": true
+        },
+        "metadata": {
+          "designer": {
+            "position": {
+              "x": 0,
+              "y": 0
+            },
+            "size": {
+              "width": 220,
+              "height": 60
+            }
+          }
+        }
+      },
+      {
+        "value": null,
+        "upper": {
+          "typeName": "Double",
+          "expression": {
+            "type": "Literal",
+            "value": 80
+          }
+        },
+        "lower": {
+          "typeName": "Double",
+          "expression": {
+            "type": "Literal",
+            "value": 60
+          }
+        },
+        "key": null,
+        "state": null,
+        "id": "saunaReady",
+        "nodeId": null,
+        "name": "SaunaReady",
+        "type": "RIoT2.RIoTThreshold",
+        "version": 1,
+        "customProperties": {},
+        "metadata": {
+          "designer": {
+            "position": {
+              "x": 300,
+              "y": 0
+            },
+            "size": {
+              "width": 220,
+              "height": 60
+            }
+          }
+        }
+      },
+      {
+        "command": {
+          "typeName": "RIoT2.RIoTTemplateItem",
+          "expression": {
+            "type": "Literal",
+            "value": "{\"Id\":\"\",\"Name\":\"Choose a Google Cast speaker's Speak command\",\"Type\":0,\"Node\":null,\"Device\":null,\"Value\":\"return 'Sauna is ready';\",\"Model\":null,\"TemplateType\":1}"
+          }
+        },
+        "id": "saySaunaReady",
+        "nodeId": null,
+        "name": "SaySaunaReady",
+        "type": "RIoT2.RIoTOutput",
+        "version": 1,
+        "customProperties": {},
+        "metadata": {
+          "designer": {
+            "position": {
+              "x": 600,
+              "y": 0
+            },
+            "size": {
+              "width": 220,
+              "height": 60
+            }
+          }
+        }
+      }
+    ],
+    "variables": [],
+    "connections": [
+      {
+        "source": {
+          "activity": "saunaTemperature",
+          "port": "Done"
+        },
+        "target": {
+          "activity": "saunaReady",
+          "port": "In"
+        },
+        "vertices": []
+      },
+      {
+        "source": {
+          "activity": "saunaReady",
+          "port": "Above"
+        },
+        "target": {
+          "activity": "saySaunaReady",
+          "port": "In"
+        },
+        "vertices": []
+      }
+    ]
+  }
+}

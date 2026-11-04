@@ -5,6 +5,10 @@ pushes the Docker image to GitHub Container Registry.
 
 ## [Unreleased]
 
+- Added: the template `sauna-ready-announcement.json`. When the sauna gets above 80 °C, a Google Cast speaker says
+  "Sauna is ready" (RIoT Trigger, RIoT Threshold, RIoT Output to the Speak command of a Google Cast speaker device,
+  RIoT2.Net.Devices 3.0.0). It speaks again after the sauna has cooled below 60 °C.
+
 ## [2.1.0] - 2026-11-04
 
 Forecasts and command plans ([ADR 0019](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/adr/0019-forecasts-and-command-plans.md)).

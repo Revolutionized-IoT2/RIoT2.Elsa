@@ -30,8 +30,25 @@ internal static class WorkflowTemplates
         ("motion-light.json", MotionLight()),
         ("price-based-heater.json", PriceBasedHeater()),
         ("forecast-preheat.json", ForecastPreheat()),
-        ("llm-heat-schedule.json", LlmHeatSchedule())
+        ("llm-heat-schedule.json", LlmHeatSchedule()),
+        ("sauna-ready-announcement.json", SaunaReadyAnnouncement())
     ];
+
+    /// <summary>
+    /// A Google Cast speaker says "Sauna is ready" when the sauna gets above 80 °C; it speaks again after the sauna has
+    /// cooled below 60 °C (hysteresis).
+    /// </summary>
+    public static Workflow SaunaReadyAnnouncement()
+    {
+        var temperature = At(new RIoTTrigger { Id = "saunaTemperature", Name = "SaunaTemperature", CanStartWorkflow = true, SelectedTrigger = Selection("Choose the sauna temperature report", TemplateType.Report, null) }, 0, 0);
+        var ready = At(new RIoTThreshold { Id = "saunaReady", Name = "SaunaReady", Upper = new Input<double>(80d), Lower = new Input<double>(60d) }, 300, 0);
+        var announce = At(new RIoTOutput { Id = "saySaunaReady", Name = "SaySaunaReady", Command = Selection("Choose a Google Cast speaker's Speak command", TemplateType.Command, "return 'Sauna is ready';") }, 600, 0);
+        return Workflow("riot2-template-sauna-ready-announcement", "Template: sauna ready announcement",
+            "When the sauna temperature rises above 80 °C, a Google Cast speaker says \"Sauna is ready\". It speaks again only after the sauna has cooled below 60 °C. Choose the sauna temperature report in SaunaTemperature and a Google Cast speaker's Speak command in SaySaunaReady, adjust the limits in SaunaReady, then publish.",
+            Flowchart(temperature, [temperature, ready, announce],
+                Connect(temperature, "Done", ready),
+                Connect(ready, Hysteresis.Above, announce)));
+    }
 
     /// <summary>
     /// When tomorrow's prices arrive: if tomorrow is cold (below 3 °C), today is cheaper than tomorrow and it is at most 20 °C
