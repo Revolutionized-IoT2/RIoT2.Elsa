@@ -8,6 +8,14 @@ pushes the Docker image to GitHub Container Registry.
 - Added: the template `sauna-ready-announcement.json`. When the sauna gets above 80 °C, a Google Cast speaker says
   "Sauna is ready" (RIoT Trigger, RIoT Threshold, RIoT Output to the Speak command of a Google Cast speaker device,
   RIoT2.Net.Devices 3.0.0). It speaks again after the sauna has cooled below 60 °C.
+- Changed: Elsa 3.9.0 → 3.10.1; the database is migrated on the first start (new bookmark queue dead-letter and
+  workflow inbox tables). Existing workflows and runs read back unchanged.
+- Changed: `RIoT2.Core.*` 2.3.0 → 2.4.2 (includes the MQTT fix that holds the connected handlers until the
+  subscriptions are in place), `Grpc.AspNetCore` 2.84.0 → 2.85.0, `Microsoft.EntityFrameworkCore.Sqlite`
+  10.0.12 → 10.0.15 (11.x needs .NET 11), `MSTest.Sdk` 4.4.1 → 4.5.3 with `Microsoft.NET.Test.Sdk` 18.12.0.
+- Changed: SQLitePCLRaw 3 (brought by Elsa 3.10) ships the native SQLite itself, so the old
+  `SQLitePCLRaw.lib.e_sqlite3` 2.1.12 pin, which would add a second copy, is replaced by
+  `SQLitePCLRaw.bundle_e_sqlite3` 3.0.5 (SQLite 3.53.4).
 
 ## [2.1.0] - 2026-11-04
 

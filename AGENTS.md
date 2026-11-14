@@ -96,7 +96,7 @@ repositories.
   `RIoT2.Elsa.Workflows.*`; the type names don't follow them.
 - Every type a workflow stores in a variable or input must be registered in `RIoTFeature`
   (`RegisterTypeAlias`, plus `RegisterLegacyTypeName` for names Studio or 1.x wrote, such as
-  `RIoT2.Elsa.Studio.Models.RIoTTemplateItem, RIoT2.Elsa.Studio`). Elsa 3.9 writes an unregistered type
+  `RIoT2.Elsa.Studio.Models.RIoTTemplateItem, RIoT2.Elsa.Studio`). Elsa (3.9 and later) writes an unregistered type
   as `UnregisteredClrType:…` and reads it back as an exception. `RIoTConfirmedCommand`'s
   timeout stays below the orchestrator client's 60 s (`MaxTimeoutSeconds`).
 - `RIoTWaitForState` waits on the same bookmark name and stimulus as `RIoTTrigger` (the report id,

@@ -10,7 +10,7 @@ default the orchestrator runs them itself with this library (`RIOT2_WORKFLOW_MOD
 container is for `RIOT2_WORKFLOW_MODE=remote` ([ADR 0016](https://github.com/Revolutionized-IoT2/.github/blob/main/docs/adr/0016-integrated-workflows-and-llm.md)).
 
 - Type: .NET class library (NuGet `RIoT2.Elsa.Workflows`) and ASP.NET Core application
-- Target framework: .NET 10; Elsa 3.9
+- Target framework: .NET 10; Elsa 3.10
 - Default branch: `master`
 - Image: `ghcr.io/revolutionized-iot2/riot2-elsa`
 
