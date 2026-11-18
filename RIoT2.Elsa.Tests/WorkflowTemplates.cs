@@ -31,8 +31,37 @@ internal static class WorkflowTemplates
         ("price-based-heater.json", PriceBasedHeater()),
         ("forecast-preheat.json", ForecastPreheat()),
         ("llm-heat-schedule.json", LlmHeatSchedule()),
-        ("sauna-ready-announcement.json", SaunaReadyAnnouncement())
+        ("sauna-ready-announcement.json", SaunaReadyAnnouncement()),
+        ("voice-assistant.json", VoiceAssistant())
     ];
+
+    /// <summary>
+    /// A voice satellite's transcript goes to a language model, which may read values and send the allowed commands; its
+    /// answer is spoken by the satellite.
+    /// </summary>
+    public static Workflow VoiceAssistant()
+    {
+        var request = At(new RIoTTrigger { Id = "request", Name = "Request", CanStartWorkflow = true, SelectedTrigger = Selection("Choose a voice satellite's Transcript report", TemplateType.Report, null) }, 0, 0);
+        var answer = At(new RIoTRunLlm
+        {
+            Id = "answer", Name = "Answer",
+            Instructions = new Input<string>("You are the voice assistant of a home. The input's value is what a person just said to a speaker. "
+                + "If they ask about the home, read the values you need; if they ask you to do something, send the matching allowed command. "
+                + "Answer in the language they spoke, in one or two short sentences meant to be heard, without lists, markdown or emoji. "
+                + "If you can't do what they asked, say so briefly."),
+            InputData = Script("return getOutputFrom('Request', 'EventData');"),
+            Tools = new Input<string?>($"{LlmTools.ReadValues},{LlmTools.SendCommands}"),
+            TimeoutSeconds = new Input<int>(20)
+        }, 300, 0);
+        var say = At(new RIoTOutput { Id = "sayAnswer", Name = "SayAnswer", Command = Selection("Choose the voice satellite's Speak command", TemplateType.Command, "return getOutputFrom('Answer', 'Text');") }, 600, -100);
+        var sorry = At(new RIoTOutput { Id = "saySorry", Name = "SaySorry", Command = Selection("Choose the voice satellite's Speak command", TemplateType.Command, "return 'Sorry, I could not answer that.';") }, 600, 100);
+        return Workflow("riot2-template-voice-assistant", "Template: voice assistant",
+            "What a voice satellite heard goes to a language model, which can read the home's values and send the commands you allow; the satellite speaks its answer. Choose the satellite's Transcript report in Request, the model connection and the allowed commands in Answer, and the satellite's Speak command in SayAnswer and SaySorry, then publish. Keep Answer's timeout under the satellite's replyTimeoutSeconds.",
+            Flowchart(request, [request, answer, say, sorry],
+                Connect(request, "Done", answer),
+                Connect(answer, RIoTRunLlm.DoneOutcome, say),
+                Connect(answer, RIoTRunLlm.FailedOutcome, sorry)));
+    }
 
     /// <summary>
     /// A Google Cast speaker says "Sauna is ready" when the sauna gets above 80 °C; it speaks again after the sauna has

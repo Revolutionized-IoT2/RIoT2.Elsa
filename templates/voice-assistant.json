@@ -1,0 +1,234 @@
+{
+  "id": "riot2-template-voice-assistant:1",
+  "definitionId": "riot2-template-voice-assistant",
+  "name": "Template: voice assistant",
+  "description": "What a voice satellite heard goes to a language model, which can read the home's values and send the commands you allow; the satellite speaks its answer. Choose the satellite's Transcript report in Request, the model connection and the allowed commands in Answer, and the satellite's Speak command in SayAnswer and SaySorry, then publish. Keep Answer's timeout under the satellite's replyTimeoutSeconds.",
+  "createdAt": "2026-11-03T00:00:00+00:00",
+  "version": 1,
+  "variables": [],
+  "inputs": [],
+  "outputs": [],
+  "outcomes": [],
+  "customProperties": {},
+  "isReadonly": false,
+  "isSystem": false,
+  "isLatest": true,
+  "isPublished": false,
+  "options": {
+    "autoUpdateConsumingWorkflows": false
+  },
+  "root": {
+    "id": "flowchart",
+    "type": "Elsa.Flowchart",
+    "version": 1,
+    "customProperties": {},
+    "metadata": {},
+    "activities": [
+      {
+        "selectedTrigger": {
+          "typeName": "RIoT2.RIoTTemplateItem",
+          "expression": {
+            "type": "Literal",
+            "value": "{\"Id\":\"\",\"Name\":\"Choose a voice satellite's Transcript report\",\"Type\":0,\"Node\":null,\"Device\":null,\"Value\":null,\"Model\":null,\"TemplateType\":2}"
+          }
+        },
+        "eventData": null,
+        "id": "request",
+        "nodeId": null,
+        "name": "Request",
+        "type": "RIoT2.RIoTTrigger",
+        "version": 1,
+        "customProperties": {
+          "canStartWorkflow": true
+        },
+        "metadata": {
+          "designer": {
+            "position": {
+              "x": 0,
+              "y": 0
+            },
+            "size": {
+              "width": 220,
+              "height": 60
+            }
+          }
+        }
+      },
+      {
+        "connection": {
+          "typeName": "String",
+          "expression": {
+            "type": "Literal",
+            "value": ""
+          }
+        },
+        "instructions": {
+          "typeName": "String",
+          "expression": {
+            "type": "Literal",
+            "value": "You are the voice assistant of a home. The input's value is what a person just said to a speaker. If they ask about the home, read the values you need; if they ask you to do something, send the matching allowed command. Answer in the language they spoke, in one or two short sentences meant to be heard, without lists, markdown or emoji. If you can't do what they asked, say so briefly."
+          }
+        },
+        "inputData": {
+          "typeName": "Object",
+          "expression": {
+            "type": "JavaScript",
+            "value": "return getOutputFrom('Request', 'EventData');"
+          }
+        },
+        "responseFormat": {
+          "typeName": "String",
+          "expression": {
+            "type": "Literal",
+            "value": "Text"
+          }
+        },
+        "jsonSchema": null,
+        "tools": {
+          "typeName": "String",
+          "expression": {
+            "type": "Literal",
+            "value": "ReadValues,SendCommands"
+          }
+        },
+        "allowedCommands": null,
+        "maxCommands": {
+          "typeName": "Int32",
+          "expression": {
+            "type": "Literal",
+            "value": 3
+          }
+        },
+        "maxToolCalls": {
+          "typeName": "Int32",
+          "expression": {
+            "type": "Literal",
+            "value": 10
+          }
+        },
+        "timeoutSeconds": {
+          "typeName": "Int32",
+          "expression": {
+            "type": "Literal",
+            "value": 20
+          }
+        },
+        "text": null,
+        "json": null,
+        "commandsSent": null,
+        "toolCalls": null,
+        "totalTokens": null,
+        "errorCode": null,
+        "error": null,
+        "id": "answer",
+        "nodeId": null,
+        "name": "Answer",
+        "type": "RIoT2.RIoTRunLlm",
+        "version": 1,
+        "customProperties": {},
+        "metadata": {
+          "designer": {
+            "position": {
+              "x": 300,
+              "y": 0
+            },
+            "size": {
+              "width": 220,
+              "height": 60
+            }
+          }
+        }
+      },
+      {
+        "command": {
+          "typeName": "RIoT2.RIoTTemplateItem",
+          "expression": {
+            "type": "Literal",
+            "value": "{\"Id\":\"\",\"Name\":\"Choose the voice satellite's Speak command\",\"Type\":0,\"Node\":null,\"Device\":null,\"Value\":\"return getOutputFrom('Answer', 'Text');\",\"Model\":null,\"TemplateType\":1}"
+          }
+        },
+        "id": "sayAnswer",
+        "nodeId": null,
+        "name": "SayAnswer",
+        "type": "RIoT2.RIoTOutput",
+        "version": 1,
+        "customProperties": {},
+        "metadata": {
+          "designer": {
+            "position": {
+              "x": 600,
+              "y": -100
+            },
+            "size": {
+              "width": 220,
+              "height": 60
+            }
+          }
+        }
+      },
+      {
+        "command": {
+          "typeName": "RIoT2.RIoTTemplateItem",
+          "expression": {
+            "type": "Literal",
+            "value": "{\"Id\":\"\",\"Name\":\"Choose the voice satellite's Speak command\",\"Type\":0,\"Node\":null,\"Device\":null,\"Value\":\"return 'Sorry, I could not answer that.';\",\"Model\":null,\"TemplateType\":1}"
+          }
+        },
+        "id": "saySorry",
+        "nodeId": null,
+        "name": "SaySorry",
+        "type": "RIoT2.RIoTOutput",
+        "version": 1,
+        "customProperties": {},
+        "metadata": {
+          "designer": {
+            "position": {
+              "x": 600,
+              "y": 100
+            },
+            "size": {
+              "width": 220,
+              "height": 60
+            }
+          }
+        }
+      }
+    ],
+    "variables": [],
+    "connections": [
+      {
+        "source": {
+          "activity": "request",
+          "port": "Done"
+        },
+        "target": {
+          "activity": "answer",
+          "port": "In"
+        },
+        "vertices": []
+      },
+      {
+        "source": {
+          "activity": "answer",
+          "port": "Done"
+        },
+        "target": {
+          "activity": "sayAnswer",
+          "port": "In"
+        },
+        "vertices": []
+      },
+      {
+        "source": {
+          "activity": "answer",
+          "port": "Failed"
+        },
+        "target": {
+          "activity": "saySorry",
+          "port": "In"
+        },
+        "vertices": []
+      }
+    ]
+  }
+}

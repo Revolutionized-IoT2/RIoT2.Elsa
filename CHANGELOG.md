@@ -5,6 +5,9 @@ pushes the Docker image to GitHub Container Registry.
 
 ## [Unreleased]
 
+- Added: the template `voice-assistant.json`. A voice satellite's transcript goes to RIoT Run LLM (tools `ReadValues`
+  and `SendCommands`, the commands you allow), and RIoT Output speaks the answer with the satellite's Speak command
+  (the Voice satellite device, RIoT2.Net.Devices 3.1.0); a failed run says a short apology.
 - Added: the template `sauna-ready-announcement.json`. When the sauna gets above 80 °C, a Google Cast speaker says
   "Sauna is ready" (RIoT Trigger, RIoT Threshold, RIoT Output to the Speak command of a Google Cast speaker device,
   RIoT2.Net.Devices 3.0.0). It speaks again after the sauna has cooled below 60 °C.
